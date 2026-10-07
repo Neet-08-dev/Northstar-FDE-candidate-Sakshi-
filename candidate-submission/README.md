@@ -1,8 +1,21 @@
-# Local review: scheduling slice
+# Submission
 
-Candidate: Sakshi. This is the first working slice, not the final assessment submission.
+This is the existing-ticket scheduling checkpoint, not the final assessment submission. Original submission fields are retained below so remaining work is visible.
 
-From the worktree root:
+- Candidate identifier: Sakshi.
+- Repository and exact commit: [Northstar repository](https://github.com/Neet-08-dev/Northstar-FDE-candidate-Sakshi-), branch `codex/scheduling-workflow`, [draft PR #1](https://github.com/Neet-08-dev/Northstar-FDE-candidate-Sakshi-/pull/1) against `staging`. The latest verified runtime revision is `071a6f2f97a8fcfff8e2139386be259efa61251e`. This documentation follow-up is local pending review. Use `git rev-parse HEAD` for the exact checkout revision, and include the final selected SHA when submitting.
+- Actual time spent: The candidate estimates 10 to 20 minutes of planning and about 30 minutes of review per slice, or 40 to 50 minutes combined. This excludes implementation/testing time and is not a measured total assessment duration. The complete total remains unrecorded.
+- Start command and health check: Run `make setup`, configure ignored `.env`, then `make dev`. The default demo is http://localhost:8000; health checks are http://localhost:8000/health and http://localhost:8001/health. See the isolated Docker command below for ports 8010/8011.
+- Model/provider, settings and environment variable names (no values): OpenAI Responses through the Agents SDK. Development defaults to `gpt-6-luna`; final validation uses `gpt-6.1-sol`. Low reasoning, 1,600 maximum output tokens and eight SDK turns. Configure `OPENAI_API_KEY` and optionally `OPENAI_MODEL`; environment values override `.env`. `ADMIN_TOKEN` is only for local demo administration. `AGENT_PORT` and `MOCK_PORT` select Docker host ports.
+- Run public and authored evals: `make check` runs offline lint, formatting, types and tests. `make eval-offline` runs authored cases with controlled interpretation. `make eval-live` runs the current configured model and consumes credit. `make public-evals` runs the original public suite against default local service ports; unsupported workflows mean full success is not claimed. See [EVALS.md](EVALS.md) for Sol and repeated-trial commands.
+- Expected costs and required access: Offline checks require no model key. Setup needs Python/bootstrap tooling and network access to dependencies. Docker is required for the container demo. Live requests need an OpenAI key with model access and available capacity. Dollar cost is unavailable; [EVALS.md](EVALS.md) reports measured tokens and explains the missing pricing/billing evidence. No fixed spend estimate is claimed.
+- Supported scope, limitations and known failures: Scheduling for existing open tickets, authorized earliest or exact times, clarification and real human handoffs. Ticket creation, billing, cancellation, rescheduling and message drafting are unsupported. The demo resets state per submission. Customer-friendly intake and persistent clarification remain incomplete. See [DESIGN.md](DESIGN.md) and [EVALS.md](EVALS.md) for specific failure modes and verification limits.
+- Ten-minute demo plan: Show an ordinary booking with confirmed evidence for three minutes, an ambiguous equipment request for two minutes, a safety handoff for two minutes, and timeout replay plus evaluation evidence for three minutes.
+- Relevant files and any interface/image changes: [Design](DESIGN.md), [evaluation report](EVALS.md), [build log](AI_BUILD_LOG.md), [sanitized evidence](evidence/scheduling-evaluations.json), [repository instructions](../AGENTS.md), [runtime prompt](../starter/prompts/assistant.md), [authored cases](../evals/scheduling.json) and [tests](../tests/test_scheduling.py). Runtime modules are `starter/orchestration.py`, `starter/actions.py` and `starter/backend.py`. `starter/index.html` provides the demo, and the Docker image installs locked Python dependencies. The existing `/process` contract remains intact; `/demo` is a local convenience route.
+
+POST `/process` accepts the per-request API URL and session token from [docs/API.md](../docs/API.md). The hiring team's injected backend remains authoritative. The processing path neither reads fixture files nor requires administrative access. Remove `ADMIN_TOKEN` from the runtime environment to disable `/demo` during grading. Credentials are excluded from Git and the Docker build context.
+
+## Local setup and demo
 
 ```sh
 make setup
@@ -10,26 +23,18 @@ make check
 make dev
 ```
 
-`make setup` uses installed uv or bootstraps a pinned local copy. Python 3.12 is selected by `.python-version`; dependencies are locked in `uv.lock`. `make dev` starts the mock and assistant on ports 8001/8000 and stops both on exit. Configure `OPENAI_API_KEY` in ignored `.env`. `OPENAI_MODEL` defaults to `gpt-6-luna`; use `gpt-6.1-sol` for final validation. Environment variables override `.env`. No model call occurs in `make check`.
+`make setup` uses installed uv or bootstraps a pinned local copy. `.python-version` selects Python 3.12 and `uv.lock` pins dependencies. Put the key in ignored `.env`; never include it in a commit. `make dev` stops its child services on exit.
 
-For the isolated Docker demo used in this review:
+For the isolated Docker demo used during development:
 
 ```sh
 AGENT_PORT=8010 MOCK_PORT=8011 docker compose -p northstar-scheduling up --build -d
 ```
 
-Open http://localhost:8010. Health endpoints: http://localhost:8010/health and http://localhost:8011/health. Stop with `docker compose -p northstar-scheduling down`. Each demo submission uses fresh synthetic state. The demo clock is fixed at 8 April 2030, 14:30 IST for repeatable availability and contract checks. The default example books T001 at 15:30 IST that day. Replies display India Standard Time; backend timestamps remain UTC. Buttons also cover ambiguity, a safety hazard and an exact time. The request body, not this example's IDs, drives interpretation.
+Open http://localhost:8010. Health endpoints are http://localhost:8010/health and http://localhost:8011/health. Stop it with `docker compose -p northstar-scheduling down`.
 
-Verification commands:
+Each submission starts fresh synthetic state at the fixed scenario time of 8 April 2030, 14:30 IST. This keeps availability and contract checks repeatable. The default example books T001 at 15:30 IST that day. Backend timestamps remain UTC. The example buttons cover booking, ambiguity, a safety hazard and an exact time. Explicit IDs make the first demo repeatable but are not a requirement imposed on future customers.
 
-```sh
-make eval-offline
-make eval-live
-OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run python -m evals.run --cases earliest,ambiguous-equipment,indirect-hazard --out reports/sol-smoke.json
-```
+## Review status
 
-Live evaluations consume the existing API balance and stop on provider failure. `--cases`, `--trials` (1–5), `--interval` and `--out` select the run. Reports are ignored local artifacts. Run the original full public suite with `make public-evals` against the default local ports; it includes ticket creation and billing workflows not yet implemented.
-
-POST /process honors per-request api_url/session_token and finishes synchronously. The runtime never requires an administrative credential. ADMIN_TOKEN is for the optional local demo only; remove it from the environment to disable /demo during grading. Keys are excluded from Git and Docker build context.
-
-Ten-minute walkthrough: ordinary booking and confirmed evidence (3 min), unclear equipment (2 min), safety escalation (2 min), timeout replay and independent evaluation results (3 min). Review this local branch with `git diff origin/main...HEAD`; the exact local commit is available from `git rev-parse HEAD`. No push or code review has been performed.
+The implementation PR is a draft and remains unmerged. The user is reviewing it. No code-review workflow has been run and auto-merge is off. This documentation correction is committed locally for review and has not been pushed. Full model results, later IST checks and unmeasured production claims are distinguished in [EVALS.md](EVALS.md).
