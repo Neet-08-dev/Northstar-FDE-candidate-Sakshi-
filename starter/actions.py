@@ -561,7 +561,7 @@ class Actions:
                 return Outcome("completed", ineligible)
             return Outcome(
                 "completed",
-                f"Invoice {invoice_id} for ticket {ticket['id']} is eligible for a service credit of up to {dollars(remaining)}{self._approval_note(limit, always, remaining)}. Would you like me to request one? Tell me the amount.",
+                f"Invoice {invoice_id} for ticket {ticket['id']} is eligible for a service credit of up to {dollars(remaining)}{self._approval_note(limit, always, remaining)}. If you'd like a credit on it, tell me the amount.",
             )
         if ineligible:
             return Outcome("blocked", ineligible + " No credit or approval request was created.")
