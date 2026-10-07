@@ -628,6 +628,26 @@ const statusLabels = {
   blocked: "Blocked",
   error: "Unable to complete",
 };
+// OpenAI's published standard prices in USD per million tokens (requests under
+// 272K input tokens), checked on 8 October 2026. The usage report does not
+// separate cached input, so estimates bill all input at the uncached rate.
+const PRICING = {
+  source: "https://developers.openai.com/api/docs/pricing",
+  checked: "8 October 2026",
+  models: {
+    "gpt-6-luna": { input: 0.1, cachedInput: 0.01, output: 0.5 },
+    "gpt-6.1-sol": { input: 2, cachedInput: 0.1, output: 10 },
+  },
+};
+function estimatedCost(usage) {
+  const price = PRICING.models[usage.model];
+  if (!price || typeof usage.input_tokens !== "number" || typeof usage.output_tokens !== "number")
+    return null;
+  return (usage.input_tokens * price.input + usage.output_tokens * price.output) / 1e6;
+}
+function usd(value) {
+  return `$${value < 0.01 ? value.toFixed(5) : value.toFixed(4)}`;
+}
 function count(n) {
   return typeof n === "number" ? n.toLocaleString("en-US") : "Not reported";
 }
@@ -663,6 +683,8 @@ function runDetails(result, meta) {
   chip(usedModel ? usage.model : "No model call");
   if (meta.ms !== undefined) chip(`${(meta.ms / 1000).toFixed(1)} s`);
   if (usedModel) chip(tokens === null ? "Tokens not reported" : `${count(tokens)} tokens`);
+  const estimate = usedModel ? estimatedCost(usage) : 0;
+  if (estimate !== null) chip(`≈ ${usd(estimate)}`);
   chip(`${evidence.length} ${evidence.length === 1 ? "record" : "records"} cited`);
   if (usage.provider_error) chip("Provider error", "warn");
   summary.append(node("span", "Run details", "rd-title"), chips);
@@ -683,10 +705,20 @@ function runDetails(result, meta) {
     ),
   );
 
-  const cost =
-    usage.cost_usd === null || usage.cost_usd === undefined
-      ? "Unknown (no verified pricing)"
-      : `$${Number(usage.cost_usd).toFixed(4)}`;
+  const price = PRICING.models[usage.model];
+  const source = node("a", "OpenAI pricing");
+  source.href = PRICING.source;
+  source.target = "_blank";
+  source.rel = "noopener noreferrer";
+  const priced = node("span");
+  if (price)
+    priced.append(
+      document.createTextNode(
+        `$${price.input.toFixed(2)} input, $${price.output.toFixed(2)} output per 1M tokens (`,
+      ),
+      source,
+      document.createTextNode(`, checked ${PRICING.checked})`),
+    );
   box.append(
     detailSection(
       "Model usage",
@@ -695,8 +727,16 @@ function runDetails(result, meta) {
         ["Input tokens", count(usage.input_tokens)],
         ["Output tokens", count(usage.output_tokens)],
         ["Total tokens", tokens === null ? undefined : count(tokens)],
-        ["Cost", cost],
-        ["Pricing source", usage.pricing_source],
+        [
+          "Estimated cost",
+          !usedModel
+            ? "$0: no model call"
+            : estimate === null
+              ? "Unknown: no published price for this model"
+              : `${usd(estimate)} at list price, an upper bound (all input billed uncached)`,
+        ],
+        ["List price", price && usedModel ? priced : undefined],
+        ["Service-reported cost", usage.cost_usd === null || usage.cost_usd === undefined ? "Not reported by the service" : `$${usage.cost_usd}`],
         ["Provider error", usage.provider_error],
       ]),
       node(
