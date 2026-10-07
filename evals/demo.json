@@ -184,8 +184,8 @@
     "id": "demo-booking",
     "category": "ordinary",
     "request": {
-      "subject": "Visit for our reported cooling problem",
-      "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
+      "subject": "Visit for our cooling problem",
+      "body": "Book ticket T001 at the earliest available time."
     },
     "decision": {
       "intent": "schedule",
@@ -223,15 +223,15 @@
     "id": "demo-time",
     "category": "time",
     "request": {
-      "subject": "Visit on 8 April at 7:30 pm",
-      "body": "Could a technician come for ticket T001 on 8 April 2030 at 7:30 pm IST?"
+      "subject": "Visit on 8 April",
+      "body": "Book T001 on 8 april 7:30 PM."
     },
     "decision": {
       "intent": "schedule",
       "ticket_id": "T001",
       "site_id": "S001",
       "time_mode": "exact",
-      "starts_at": "2030-04-08T14:00:00Z"
+      "requested_time": "8 april 7:30 PM"
     },
     "fixture": {},
     "expected": {
@@ -264,15 +264,15 @@
     "id": "demo-unavailableTime",
     "category": "availability",
     "request": {
-      "subject": "Visit on 8 April at 5:30 pm",
-      "body": "Could a technician come for ticket T001 on 8 April 2030 at 5:30 pm IST? Please check with me before booking a different time."
+      "subject": "Visit at 5:30 PM",
+      "body": "Book T001 on 8 april 5:30 PM. Check with me before choosing another time."
     },
     "decision": {
       "intent": "schedule",
       "ticket_id": "T001",
       "site_id": "S001",
       "time_mode": "exact",
-      "starts_at": "2030-04-08T12:00:00Z"
+      "requested_time": "8 april 5:30 PM"
     },
     "fixture": {},
     "expected": {
@@ -281,7 +281,7 @@
       "escalations": 0,
       "reply_contains": [
         "requested time is unavailable",
-        "8 April 2030, 15:30 IST",
+        "8 April 2030, 3:30 PM IST",
         "No new visit was booked."
       ],
       "unchanged_collections": [
@@ -584,7 +584,7 @@
     "id": "demo-namedMessage",
     "category": "messages",
     "request": {
-      "subject": "Ticket update for Contact 01",
+      "subject": "Update for our site contact",
       "body": "Write a message I can send to our site contact, named \"Contact 01\", about the current status of T001."
     },
     "decision": {
@@ -639,7 +639,7 @@
     "id": "demo-bookingMessage",
     "category": "messages",
     "request": {
-      "subject": "Service message",
+      "subject": "Appointment update",
       "body": "Book T001 at the earliest slot and write an appointment update I can send."
     },
     "decision": {
@@ -672,7 +672,7 @@
       "no_message": false,
       "message_contains": [
         "VISIT-0001",
-        "15:30 IST"
+        "3:30 PM IST"
       ],
       "reply_contains": [
         "Booked: ticket T001"

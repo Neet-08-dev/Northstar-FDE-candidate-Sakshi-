@@ -86,7 +86,7 @@ class MessageIntegrationTests(unittest.TestCase):
         for response in [first, second]:
             self.assertEqual(response["status"], "completed", response)
             self.assertIn("Subject: Confirmed appointment for ticket T001", response["reply"])
-            self.assertIn("8 April 2030, 15:30 IST (UTC+05:30)", response["reply"])
+            self.assertIn("8 April 2030, 3:30 PM IST (UTC+05:30)", response["reply"])
             self.assertIn("not been sent or saved as a draft", response["reply"])
             self.assertNotIn(session["session_token"], json.dumps(response))
         snapshot = self.snapshot(session)
@@ -147,16 +147,15 @@ class MessageIntegrationTests(unittest.TestCase):
         self.assertEqual(len(snapshot["state"]["visits"]), 1)
 
     def test_demo_message_examples_match_evaluated_requests(self):
-        with urlopen(self.agent_url + "/") as response:
-            html = response.read().decode()
-        examples = json.loads(html.split("const examples=", 1)[1].split(";", 1)[0])
-        cases = {c["id"]: c for c in load_cases()}
-        for example, case in [
-            ("message", "message-ticket"),
-            ("bookingMessage", "message-book-generic"),
-        ]:
-            self.assertEqual(examples[example], cases[case]["request"])
-        self.assertIn("Messages are not sent or saved as drafts", html)
+        with urlopen(self.agent_url + "/service_desk.js") as response:
+            script = response.read().decode()
+        samples = json.loads(script.split("const samples =", 1)[1].split(";", 1)[0])
+        cases = {c["example_id"]: c for c in load_cases("demo")}
+        for sample in [s for s in samples if s["group"] == "Messages"]:
+            self.assertEqual(
+                {k: sample[k] for k in ["subject", "body"]}, cases[sample["id"]]["request"]
+            )
+        self.assertIn("Not sent or stored", script)
 
 
 class MessageGraderTests(unittest.TestCase):

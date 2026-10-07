@@ -42,18 +42,22 @@ class DemoExamplesTests(unittest.TestCase):
         try:
             with urlopen(agent_url + "/") as response:
                 html = response.read().decode()
-            examples = json.loads(html.split("const examples=", 1)[1].split(";", 1)[0])
-            cases = load_cases("demo")
+            with urlopen(agent_url + "/service_desk.js") as response:
+                script = response.read().decode()
+            samples = json.loads(script.split("const samples =", 1)[1].split(";", 1)[0])
+            examples = {s["id"]: {k: s[k] for k in ["subject", "body"]} for s in samples}
+            cases = [c for c in load_cases("demo") if c["example_id"] in examples]
             self.assertEqual(set(examples), {c["example_id"] for c in cases})
-            self.assertEqual(len(cases), 16)
-            for group in ["Billing", "Scheduling", "Tickets", "Messages"]:
-                self.assertEqual(sum(c["group"] == group for c in cases), 4)
-                self.assertIn(f'aria-labelledby="{group.lower()}-heading"', html)
+            self.assertEqual(len(cases), 10)
+            self.assertEqual(
+                {s["group"] for s in samples}, {"Visits", "Credits", "Safety", "Messages"}
+            )
+            self.assertIn("Send request", html)
+            self.assertNotIn("Preview response", html)
             for case in cases:
                 with self.subTest(example=case["example_id"]):
                     self.assertEqual(case["fixture"], {}, "Every button uses baseline demo data")
                     self.assertEqual(examples[case["example_id"]], case["request"])
-                    self.assertIn(f'data-example="{case["example_id"]}"', html)
                     captured = {}
 
                     def recording_process(payload):

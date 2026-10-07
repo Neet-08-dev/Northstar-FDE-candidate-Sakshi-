@@ -23,6 +23,7 @@ class Decision(BaseModel):
     asset_id: str = Field(default="", max_length=100)
     time_mode: Literal["earliest", "exact", "unclear"] = "unclear"
     starts_at: str = Field(default="", max_length=80)
+    requested_time: str = Field(default="", max_length=160)
     clarification: Literal[
         "identity",
         "time",
@@ -70,7 +71,8 @@ def utc(value: str) -> datetime:
 
 def display_time(value: str) -> str:
     local = utc(value).astimezone(ZoneInfo("Asia/Kolkata"))
-    return f"{local.day} {local:%B %Y, %H:%M} IST (UTC+05:30)"
+    clock = f"{local.hour % 12 or 12}:{local:%M} {local:%p}"
+    return f"{local.day} {local:%B %Y}, {clock} IST (UTC+05:30)"
 
 
 def clarification(reason: str) -> Outcome:
@@ -81,7 +83,7 @@ def clarification(reason: str) -> Outcome:
         "identity": "Please confirm the ticket ID, or the site and asset needing service.",
         "issue": "Please describe whether equipment has stopped working or needs nonurgent maintenance.",
         "conditional": "Recording a ticket, booking a visit and preparing a message are separate steps. May I retain completed service actions if a later step cannot finish?",
-        "time": "Please confirm the date, time and timezone, or authorize the earliest available qualified slot.",
+        "time": "Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
         "intent": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
         "message": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
         "recipient": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",

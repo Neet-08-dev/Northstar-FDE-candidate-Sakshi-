@@ -838,7 +838,7 @@
       "no_message": false,
       "message_contains": [
         "Confirmed appointment",
-        "8 April 2030, 15:30 IST (UTC+05:30)",
+        "8 April 2030, 3:30 PM IST (UTC+05:30)",
         "VISIT-EXISTING",
         "Repair completion is not yet confirmed."
       ],
@@ -1722,7 +1722,7 @@
       "no_message": false,
       "message_contains": [
         "VISIT-0001",
-        "15:30 IST"
+        "3:30 PM IST"
       ],
       "reply_contains": [
         "Booked: ticket T001"
@@ -1765,7 +1765,7 @@
       "no_message": false,
       "message_contains": [
         "VISIT-0001",
-        "15:30 IST"
+        "3:30 PM IST"
       ],
       "reply_contains": [
         "Booked: ticket T001"
@@ -1815,7 +1815,7 @@
       "replay_tool": "schedule_visit",
       "message_contains": [
         "VISIT-0001",
-        "15:30 IST"
+        "3:30 PM IST"
       ]
     }
   },

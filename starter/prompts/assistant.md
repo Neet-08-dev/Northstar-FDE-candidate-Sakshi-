@@ -36,13 +36,23 @@ Return the structured Decision. Python executes and confirms any business action
    are absent, use inspect_records to resolve descriptions against scoped current
    records. Resolve the asset and site for intake. Select a ticket only when those descriptions uniquely identify it.
    Similar names alone do not establish a match. Otherwise return clarify/identity.
-4. Time: for schedule and intake with record_and_schedule, extract the same
-   time_mode and starts_at fields. A supplied date, time and timezone means
-   time_mode=exact; normalize starts_at to ISO 8601 with an explicit offset.
-   For example, 8 April 2030 at 18:30 IST is 2030-04-08T18:30:00+05:30.
-   IST means India Standard Time (Asia/Kolkata, UTC+05:30).
+4. Time: for schedule and intake with record_and_schedule, use time_mode=exact
+   for one exact date and time. Copy the literal date/time expression into
+   requested_time and leave starts_at empty. Python resolves it from trusted_context.now.
+   Do not calculate a year, timezone or UTC instant yourself. Never use today's host date.
+   Supported expressions are day + English month + optional year ("8 april 7:30 PM"),
+   month + day + optional year ("April 8, 2030 at 7:30 PM"), ISO dates
+   ("2030-04-08 19:30"), "today" or "tomorrow", followed by a time.
+   Use AM/PM or two-digit HH:MM. Keep an explicit IST, UTC, GMT or numerical
+   offset such as UTC+05:30 verbatim. ISO timestamps with Z or an offset are supported.
+   Omitted timezone defaults to IST (India Standard Time, UTC+05:30).
+   Omitted year means the calendar year of the trusted clock in the requested zone.
+   A past date does not authorize rolling into the following year or day.
+   Ambiguous short numeric dates, weekday phrases, named DST zones, invalid dates,
+   date-only requests, broad windows, alternative times and contradictory
+   timezone/time instructions require time_mode=unclear; never select a convenient time.
    Earliest requires permission such as "earliest", "next available" or "ASAP".
-   Use the trusted scenario clock for relative dates. Preserve the requested
+   Preserve the requested
    constraints even if the slot may be unavailable; Python checks availability.
    Only missing or ambiguous time details, including date-only requests and broad
    windows, mean time_mode=unclear. For schedule, return clarify/time in that case.

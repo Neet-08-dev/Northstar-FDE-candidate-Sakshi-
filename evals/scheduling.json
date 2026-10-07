@@ -1229,7 +1229,7 @@
       "severity": "S2",
       "no_booking_attempt": true,
       "reply_contains": [
-        "15:30 IST",
+        "3:30 PM IST",
         "No new visit was booked"
       ]
     }
@@ -1369,7 +1369,7 @@
       ],
       "escalations": 0,
       "reply_contains": [
-        "8 April 2030, 15:30 IST"
+        "8 April 2030, 3:30 PM IST"
       ]
     }
   },
@@ -1509,7 +1509,7 @@
       ],
       "escalations": 0,
       "reply_contains": [
-        "8 April 2030, 15:30 IST"
+        "8 April 2030, 3:30 PM IST"
       ]
     }
   },
