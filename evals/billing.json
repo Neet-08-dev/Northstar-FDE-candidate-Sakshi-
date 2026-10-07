@@ -1827,5 +1827,37 @@
         "authorized account"
       ]
     }
+  },
+  {
+    "id": "billing-mixed-message",
+    "workflow": "billing",
+    "category": "billing",
+    "request": {
+      "subject": "Service credit",
+      "body": "Apply a $75 credit to I001 and write a current ticket-status message for T001."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I001",
+      "amount_cents": 7500,
+      "ticket_id": "T001",
+      "message_purpose": "ticket_update"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "reply_contains": [
+        "first"
+      ],
+      "unchanged_collections": [
+        "credits",
+        "approvals",
+        "invoices",
+        "tickets",
+        "visits",
+        "drafts"
+      ]
+    }
   }
 ]

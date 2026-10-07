@@ -1,0 +1,155 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62",
+  "mode": "offline-controlled-interpretation",
+  "model": null,
+  "passed": 0,
+  "total": 1,
+  "results": [
+    {
+      "id": "message-malformed-site-list",
+      "category": "messages",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": false,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 49,
+      "decision": {
+        "intent": "compose",
+        "ticket_id": "T001",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "unclear",
+        "issue_summary": "",
+        "message_purpose": "ticket_update",
+        "recipient_mode": "named",
+        "contact_id": "CONTACT001"
+      },
+      "response": {
+        "status": "completed",
+        "summary": "Here is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+        "reply": "Here is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S001"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        ],
+        "usage": {
+          "model": "none",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0,
+          "pricing_source": "No model calls"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "trial": 1
+    }
+  ]
+}

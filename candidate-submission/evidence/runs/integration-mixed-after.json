@@ -1,0 +1,95 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "1d4870f6f8ba4e475d09f5a463cf7583d2a668664f22a0804d114573f9956236",
+  "mode": "offline-controlled-interpretation",
+  "model": null,
+  "entrypoint": "process_async",
+  "passed": 1,
+  "total": 1,
+  "results": [
+    {
+      "id": "billing-mixed-message",
+      "category": "billing",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 36,
+      "decision": {
+        "intent": "credit",
+        "ticket_id": "T001",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "unclear",
+        "issue_summary": "",
+        "invoice_id": "I001",
+        "amount_cents": 7500,
+        "currency": "USD",
+        "message_purpose": "ticket_update",
+        "recipient_mode": "generic",
+        "contact_id": ""
+      },
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Would you like me to handle the credit request or the service request first? No action has been taken.",
+        "reply": "Would you like me to handle the credit request or the service request first? No action has been taken.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "none",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0,
+          "pricing_source": "No model calls"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    }
+  ]
+}

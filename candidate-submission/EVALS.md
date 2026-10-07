@@ -1,6 +1,38 @@
 # Evaluation report
 
-This report leads with current billing verification. Older intake and scheduling checkpoints follow as historical evidence; their unsupported-scope statements describe those earlier revisions.
+This report leads with integrated offline verification. The later billing, message, intake and scheduling sections retain historical results for their original prompts. Results from those separate prompts do not establish live coverage for the integrated prompt.
+
+## Billing and message integration, 7 October 2026
+
+Message PR #4 was rebased onto staging `6f6f368`, which includes billing PR #5. The combined Decision, dispatch, recipient and billing checks, prompt instructions, exact retries and both evidence archives are retained. Sol remains the default. `make check` passes Ruff, formatting, mypy and 34 test methods, including all 158 authored scenarios: 46 intake/scheduling, 62 billing and 50 message cases. HTTP checks cover financial effects, recipient failures, confirmed booking recovery and replay. `--suite messages` selects message-only cases; the default suite includes all three files.
+
+The integration regression `billing-mixed-message` initially applied a $75 credit while dropping the requested ticket-status message. The corrected dispatch asks which workflow to handle first and attempts no writes. Independent state assertions check unchanged invoices, credits, approvals, tickets, visits and drafts. Both the failing trial and passing correction are retained in [integration evidence](evidence/integration-evaluations.json); the same regression passes through the HTTP handler. All 41 existing report hash references validated during integration.
+
+No paid model evaluation, Docker rebuild or browser trial was performed for this combined revision. Model interpretation of the combined schema and prompt still needs final live/demo verification. Stored drafts, sending, billing-message composition, persistent conversation, cancellation and rescheduling remain unsupported.
+
+## Copyable-message live sample, 7 October 2026
+
+After the offline implementation commit `7db5e62b57cfb96351da8f5902793c497c29c1f8`, the user explicitly authorized paid evaluations. The bounded sample contains three cases: a generic ticket-status message, an unauthorized named recipient, and a booking with an authorized named-recipient appointment message. Each ran once on Luna and successfully once on Sol. An initial Sol attempt failed at the provider and is retained separately. No runtime or prompt changes were made.
+
+| Run | Passed | Median | Maximum | Reported input / output tokens | Maximum backend attempts |
+| --- | --- | --- | --- | --- | --- |
+| messages-live-luna | 3/3 | 5.145s | 5.834s | 16085 / 333 | 33 |
+| messages-live-sol | 0/1 | 1.767s | 1.767s | unknown | 3 |
+| messages-live-sol-retry | 3/3 | 7.063s | 8.996s | 5825 / 218 | 31 |
+
+There were seven attempted trials, one more than the proposed six because of the provider failure. The first Sol ticket-message trial returned `InternalServerError`; the runner stopped immediately, and the assistant recorded an operations handoff without a booking or draft. That trial failed and has unknown token usage. One bounded retry of the three-case Sol sample passed 3/3. Overall, six trials passed and one failed due to the provider. Reported usage totals 21910 input and 551 output tokens, excluding unavailable usage for the failed attempt. Billed dollar cost is unknown.
+
+Independent checks confirmed factual message content and evidence, no draft-storage attempts, no business changes for standalone messages or the refused recipient, and exactly one confirmed visit per combined request. The six successful trials had no forbidden tool attempts. Prompt SHA-256 remained `7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62`. Exact requests, decisions, replies, sanitized audits, per-check outcomes and report hashes are preserved in [live message evidence](evidence/message-live-evaluations.json), including the failed provider attempt. All three referenced source reports are committed in the [report archive](evidence/README.md), with their original hashes preserved.
+
+This sample uses explicit ticket/contact IDs. It does not establish live coverage for ambiguous names, implicit references, other message purposes, intake with messages, injection variants, storage-versus-delivery intent, or the full 95-case suite. Each successful model/case pair has one trial; there is no estimated rare-failure rate. The prior offline suite remains 29 test methods and 95 scenarios. It was not rerun for these documentation-only result updates. No Docker rebuild or browser execution was performed.
+
+Reproduce the three-case sample only when further paid calls are intended:
+
+```sh
+MESSAGE_SAMPLE=message-ticket,message-book-named,message-unauthorized-contact
+OPENAI_MODEL=gpt-6-luna .tools/uv/bin/uv run --frozen python -m evals.run --cases "$MESSAGE_SAMPLE" --interval 0 --out reports/messages-live-luna-new.json
+OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run --frozen python -m evals.run --cases "$MESSAGE_SAMPLE" --interval 0 --out reports/messages-live-sol-new.json
+```
 
 ## Billing and approvals, 7 October 2026
 
@@ -49,6 +81,21 @@ docker compose -p northstar-billing run --rm public-evals
 ```
 
 `--suite billing` selects the 61 billing cases; `--suite service` selects the 46 service cases. Offline interpretation is controlled and does not test language understanding. The complete final-prompt suite was run on Sol; a complete final-prompt Luna sweep was not run. Luna remains optional and has the retained failures above. General billing support, standalone approval-status queries, multi-workflow execution, persistent clarification, cross-session deduplication, real payments and held-out/production reliability remain outside the supported claims.
+## Copyable-message verification, 7 October 2026
+
+This slice starts from staging `e61a9510635d67be8bb2ce80924c1168bc099582`, including merged PR #2. Final `make check` passes Ruff, formatting, mypy and all 29 test methods. `make eval-offline` passes 95/95 scenarios: the previous 45 plus 50 new message and handoff-linkage cases in `evals/messages.json`. The runner loads both case files. The separate report was run to retain evaluation evidence, not as a claim of additional model trials.
+
+The new cases cover generic and authorized named recipients, account/site mismatch, unauthorized contacts, unverified identity, finance/viewer roles, missing and contradictory records, verified resolution, confirmed/missing/conflicting/past/cancelled appointments, malformed records, injection, unsupported delivery/storage/billing, current safety policy, combined intake and booking, exact replay, and tool failure. Independent checks examine actual backend state and attempted tools. Successful standalone messages leave business collections unchanged. No case may call `draft_message`; unsafe cases must avoid create/booking attempts. Handoff assertions inspect the stored ticket linkage. Existing scenarios also assert no unsolicited message body.
+
+Additional integration tests exercise the actual HTTP `/process` handler with controlled interpretation. Repeating a combined request creates one visit and no draft. Tests revoke contact authorization or make reads fail after a real booking, then check that the receipt survives and no message body appears. They also exercise failed recovery and outer orchestration timeout. A grader regression proves that an attempted draft write or a handoff linked to the wrong ticket cannot pass. HTTP checks confirm that the two new UI examples exactly match evaluated requests; no browser execution was performed.
+
+A targeted adversarial case initially failed: a contact's malformed `site_ids` string passed Python's membership test. The action now requires a list before testing site membership. The failed trial and passing regression are both retained in [message evidence](evidence/message-evaluations.json). A separate initial test expectation used null for an unlinked escalation; the backend stores an empty string. That fixture expectation was corrected without weakening linked-handoff checks.
+
+The final prompt SHA-256 is `7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62`. Source hashes, all 50 new results and the 45 previous-case check results are in the evidence. The original 95-case report and failed regression report are committed in the [report archive](evidence/README.md), with exact-byte hashes and relative references. New-case median latency was 23.0 ms and maximum latency 341 ms. The full run used at most 43 backend attempts per request. These are local synthetic timings with controlled interpretation, not model or production latency. At this offline checkpoint, model calls, model tokens and model spend for the message slice were zero; the later live sample is reported above.
+
+No live model trial had been authorized or performed at the offline checkpoint. Offline cases supply the Decision, so they do not establish that the model correctly recognizes drafting, sending, recipient ambiguity, commitments or combined requests. The prompt had not yet been evaluated with Luna or Sol at that checkpoint; the later three-case sample above is the only new live coverage. Earlier full live runs and targeted intake/demo runs below remain associated with their own prompts. No Docker rebuild, full public-suite success, held-out evaluation or production reliability is claimed for this slice.
+
+Reproduce with `make check` and, when a saved JSON report is useful, `make eval-offline`. `--cases` accepts IDs from either authored file. The later live evaluation was separately authorized and is reported above. Stored drafts, draft retrieval, sending, billing messages, arbitrary wording customization and persistent conversations remain unsupported.
 
 ## Customer demo wording checks, 7 October 2026
 

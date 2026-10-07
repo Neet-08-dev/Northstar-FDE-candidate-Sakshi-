@@ -1,6 +1,6 @@
 # Saved evaluation evidence
 
-The four summary JSON files reference committed reports in `runs/`. Every `report` or `source_file` path is relative to the JSON file containing it. The adjacent `report_sha256` or `source_sha256` identifies the exact report bytes, including whitespace. A matching hash establishes file identity, not the validity of an evaluation.
+The seven summary JSON files reference committed reports in `runs/`. Every `report`, `report_path` or `source_file` path is relative to the JSON file containing it. The adjacent `report_sha256` or `source_sha256` identifies the exact report bytes, including whitespace. A matching hash establishes file identity, not the validity of an evaluation.
 
 These are existing development reports, including failed trials. Packaging them did not run new evaluations or alter results. The files were checked for configured secrets and credential fields; their existing reduced audit format needed no redaction, so the original bytes and recorded hashes are preserved. Demo report hashes were added during packaging.
 
@@ -46,3 +46,17 @@ The 11 source reports preserve all 370 authored and published-suite trial outcom
 - [billing-public.json](runs/billing-public.json)
 - [billing-public-final.json](runs/billing-public-final.json)
 - [billing-public-sol-final.json](runs/billing-public-sol-final.json)
+
+## Copyable service messages
+
+- [messages-offline.json](runs/messages-offline.json): final 95-case offline run.
+- [message-malformed-before.json](runs/message-malformed-before.json): failed recipient-shape regression before the fix.
+- [messages-live-luna.json](runs/messages-live-luna.json): three passing Luna trials.
+- [messages-live-sol.json](runs/messages-live-sol.json): the initial provider-failed Sol attempt.
+- [messages-live-sol-retry.json](runs/messages-live-sol-retry.json): three passing Sol retry trials.
+
+The message summaries retain embedded results as well as archive references. Their contents were compared against the original reports before copying. Existing live-report hashes remain unchanged; hashes for the two offline source reports were added during packaging. The `source_sha256` mapping in `message-evaluations.json` refers to repository-relative implementation files at the original checkpoint, rather than report paths. Historical commit IDs describe the evaluated revisions before the branch rebase; they were not replaced with newly generated evidence or rebased commit IDs.
+
+## Billing and message integration
+
+[integration-evaluations.json](integration-evaluations.json) references the failing mixed-credit/message regression and its passing correction. Both are offline controlled-interpretation runs against the real synthetic backend. They do not measure model understanding.

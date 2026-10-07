@@ -45,13 +45,14 @@ async def interpret(
         "timezone",
         "ticket_id",
         "currency",
+        "site_ids",
     }
 
     @function_tool(failure_error_function=None)
     async def inspect_records(
-        collection: Literal["tickets", "sites", "assets", "invoices"], query: str
+        collection: Literal["tickets", "sites", "assets", "invoices", "contacts"], query: str
     ) -> str:
-        """Find scoped records to resolve an ambiguous invoice, ticket, site or equipment.
+        """Find scoped records to resolve an ambiguous invoice, ticket, site, equipment or registered contact.
 
         Args:
             collection: Kind of record to inspect.

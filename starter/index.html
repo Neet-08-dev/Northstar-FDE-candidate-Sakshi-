@@ -20,12 +20,15 @@
 <button type="button" data-example="time">Choose a visit time</button>
 <button type="button" data-example="credit">Request a service credit</button>
 <button type="button" data-example="approval">Request a larger credit</button>
+<button type="button" data-example="message">Write a ticket update</button>
+<button type="button" data-example="bookingMessage">Book and write an update</button>
 </div>
 <form id="request" class="card">
 <label for="subject">Subject</label><input id="subject" value="Visit for our reported cooling problem" maxlength="500">
 <label for="body">Request</label><textarea id="body" rows="5" maxlength="15000">I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?</textarea>
 <button id="run">Send request</button>
 <p class="muted">This demo uses a fixed simulated date: 8 April 2030, 14:30 IST (India Standard Time, UTC+05:30). Each request starts with fresh test records. Service credits require a paid invoice and a recorded missed service commitment. Larger credits may need supervisor approval; pending approval does not mean a credit has been applied. Cancellation and rescheduling go to human review. A recorded ticket remains open if booking needs clarification or cannot finish.</p>
+<p class="muted">Ask for a ticket-status or appointment message to copy from the reply. Messages are not sent or saved as drafts. To book and prepare an update in this demo, request both together.</p>
 </form>
 <section class="card" aria-live="polite" aria-busy="false" id="result">
 <span class="badge" id="status">Ready</span><p id="reply">Choose an example or write a request to begin.</p>
@@ -65,6 +68,14 @@ const examples={
   "time": {
     "subject": "Visit at 7:30 pm",
     "body": "We already have a ticket for HVAC unit 01 at Aster Foods Loading Dock. Could a technician come today at 7:30 pm IST?"
+  },
+  "message": {
+    "subject": "Service message",
+    "body": "Write a message I can send about the current status of T001."
+  },
+  "bookingMessage": {
+    "subject": "Service message",
+    "body": "Book T001 at the earliest slot and write an appointment update I can send."
   }
 };
 document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{

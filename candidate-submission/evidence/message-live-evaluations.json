@@ -1,0 +1,1350 @@
+{
+  "date": "2026-10-07",
+  "implementation_sha": "7db5e62b57cfb96351da8f5902793c497c29c1f8",
+  "prompt_sha256": "7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62",
+  "scope": "Three cases on Luna, one failed Sol provider attempt, then the same three cases on Sol. No best-of-N selection; all outcomes retained. This is a targeted live sample, not the full 95-case suite.",
+  "billing": "Billed cost unavailable. Token totals include only reported usage; the initial provider error returned no usage.",
+  "requests": [
+    {
+      "id": "message-ticket",
+      "request": {
+        "subject": "Service message",
+        "body": "Write a message I can send about the current status of T001."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 0,
+        "escalations": 0,
+        "unchanged_collections": [
+          "tickets",
+          "visits",
+          "credits",
+          "approvals",
+          "drafts"
+        ],
+        "forbidden_tools": [
+          "create_ticket",
+          "schedule_visit",
+          "issue_credit",
+          "request_approval",
+          "update_ticket",
+          "draft_message"
+        ],
+        "no_message": false,
+        "message_contains": [
+          "Service update for ticket T001",
+          "equipment A001 at site S001 is open."
+        ],
+        "message_evidence": [
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          }
+        ]
+      }
+    },
+    {
+      "id": "message-unauthorized-contact",
+      "request": {
+        "subject": "Service message",
+        "body": "Write a status message for T001 for CONTACT101."
+      },
+      "expected": {
+        "status": "blocked",
+        "new_visits": 0,
+        "escalations": 0,
+        "unchanged_collections": [
+          "tickets",
+          "visits",
+          "credits",
+          "approvals",
+          "drafts"
+        ],
+        "forbidden_tools": [
+          "create_ticket",
+          "schedule_visit",
+          "issue_credit",
+          "request_approval",
+          "update_ticket",
+          "draft_message"
+        ],
+        "no_message": true
+      }
+    },
+    {
+      "id": "message-book-named",
+      "request": {
+        "subject": "Service message",
+        "body": "Book T001 at the earliest slot and write an appointment update for CONTACT001."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1,
+        "escalations": 0,
+        "unchanged_collections": [
+          "tickets",
+          "credits",
+          "approvals",
+          "drafts"
+        ],
+        "forbidden_tools": [
+          "create_ticket",
+          "issue_credit",
+          "request_approval",
+          "update_ticket",
+          "draft_message"
+        ],
+        "no_message": false,
+        "message_contains": [
+          "VISIT-0001",
+          "15:30 IST"
+        ],
+        "reply_contains": [
+          "Booked: ticket T001"
+        ]
+      }
+    }
+  ],
+  "runs": [
+    {
+      "summary": {
+        "name": "messages-live-luna",
+        "model": "gpt-6-luna",
+        "passed": 3,
+        "total": 3,
+        "incomplete": false,
+        "median_ms": 5145,
+        "maximum_ms": 5834,
+        "maximum_backend_attempts": 33,
+        "known_input_tokens": 16085,
+        "known_output_tokens": 333,
+        "unknown_usage_trials": 0
+      },
+      "report_path": "runs/messages-live-luna.json",
+      "report_sha256": "0656798a6bfeba95265a4d377c1d45336fc519a84c996a98191ebc5e0dbe87a3",
+      "report": {
+        "incomplete": false,
+        "prompt_sha256": "7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62",
+        "mode": "live",
+        "model": "gpt-6-luna",
+        "passed": 3,
+        "total": 3,
+        "results": [
+          {
+            "id": "message-ticket",
+            "category": "messages",
+            "passed": true,
+            "checks": {
+              "status": true,
+              "ticket_count": true,
+              "create_attempts": true,
+              "visit_count": true,
+              "no_other_business_writes": true,
+              "response_shape": true,
+              "attempt_budget": true,
+              "reply_details": true,
+              "no_disclosure": true,
+              "message_content": true,
+              "message_evidence": true,
+              "message_not_sent_or_stored": true,
+              "unchanged_records": true,
+              "forbidden_attempts": true,
+              "forbidden_reads": true,
+              "handoff_count": true,
+              "model_completed": true,
+              "deadline": true,
+              "no_token_leak": true
+            },
+            "latency_ms": 5145,
+            "decision": {
+              "intent": "compose",
+              "ticket_id": "T001",
+              "site_id": "",
+              "asset_id": "",
+              "time_mode": "unclear",
+              "starts_at": "",
+              "clarification": "intent",
+              "intake_mode": "record_only",
+              "issue_category": "unclear",
+              "issue_summary": "",
+              "message_purpose": "ticket_update",
+              "recipient_mode": "generic",
+              "contact_id": ""
+            },
+            "response": {
+              "status": "completed",
+              "summary": "Here is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+              "reply": "Here is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+              "evidence": [
+                {
+                  "collection": "policy",
+                  "record_id": "NS-2030.1"
+                },
+                {
+                  "collection": "tickets",
+                  "record_id": "T001"
+                },
+                {
+                  "collection": "assets",
+                  "record_id": "A001"
+                },
+                {
+                  "collection": "sites",
+                  "record_id": "S001"
+                },
+                {
+                  "collection": "customers",
+                  "record_id": "C001"
+                }
+              ],
+              "usage": {
+                "model": "gpt-6-luna",
+                "input_tokens": 3961,
+                "output_tokens": 95,
+                "cost_usd": null,
+                "pricing_source": "unknown"
+              }
+            },
+            "audit": [
+              {
+                "tool": "get_context",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              }
+            ],
+            "trial": 1
+          },
+          {
+            "id": "message-unauthorized-contact",
+            "category": "messages",
+            "passed": true,
+            "checks": {
+              "status": true,
+              "ticket_count": true,
+              "create_attempts": true,
+              "visit_count": true,
+              "no_other_business_writes": true,
+              "response_shape": true,
+              "attempt_budget": true,
+              "reply_details": true,
+              "no_disclosure": true,
+              "no_message": true,
+              "unchanged_records": true,
+              "forbidden_attempts": true,
+              "forbidden_reads": true,
+              "handoff_count": true,
+              "model_completed": true,
+              "deadline": true,
+              "no_token_leak": true
+            },
+            "latency_ms": 4623,
+            "decision": {
+              "intent": "compose",
+              "ticket_id": "T001",
+              "site_id": "",
+              "asset_id": "",
+              "time_mode": "unclear",
+              "starts_at": "",
+              "clarification": "recipient",
+              "intake_mode": "record_only",
+              "issue_category": "unclear",
+              "issue_summary": "",
+              "message_purpose": "ticket_update",
+              "recipient_mode": "named",
+              "contact_id": "CONTACT101"
+            },
+            "response": {
+              "status": "blocked",
+              "summary": "The requested contact is not authorized for this site's message.",
+              "reply": "The requested contact is not authorized for this site's message.",
+              "evidence": [
+                {
+                  "collection": "policy",
+                  "record_id": "NS-2030.1"
+                },
+                {
+                  "collection": "tickets",
+                  "record_id": "T001"
+                },
+                {
+                  "collection": "contacts",
+                  "record_id": "CONTACT101"
+                },
+                {
+                  "collection": "assets",
+                  "record_id": "A001"
+                },
+                {
+                  "collection": "sites",
+                  "record_id": "S001"
+                },
+                {
+                  "collection": "customers",
+                  "record_id": "C001"
+                }
+              ],
+              "usage": {
+                "model": "gpt-6-luna",
+                "input_tokens": 6060,
+                "output_tokens": 119,
+                "cost_usd": null,
+                "pricing_source": "unknown"
+              }
+            },
+            "audit": [
+              {
+                "tool": "get_context",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              }
+            ],
+            "trial": 1
+          },
+          {
+            "id": "message-book-named",
+            "category": "messages",
+            "passed": true,
+            "checks": {
+              "status": true,
+              "ticket_count": true,
+              "create_attempts": true,
+              "visit_count": true,
+              "no_other_business_writes": true,
+              "response_shape": true,
+              "attempt_budget": true,
+              "booking_details": true,
+              "booking_evidence": true,
+              "reply_details": true,
+              "no_disclosure": true,
+              "message_content": true,
+              "message_evidence": true,
+              "message_not_sent_or_stored": true,
+              "unchanged_records": true,
+              "forbidden_attempts": true,
+              "forbidden_reads": true,
+              "handoff_count": true,
+              "model_completed": true,
+              "deadline": true,
+              "no_token_leak": true
+            },
+            "latency_ms": 5834,
+            "decision": {
+              "intent": "schedule",
+              "ticket_id": "T001",
+              "site_id": "",
+              "asset_id": "",
+              "time_mode": "earliest",
+              "starts_at": "",
+              "clarification": "recipient",
+              "intake_mode": "record_only",
+              "issue_category": "unclear",
+              "issue_summary": "",
+              "message_purpose": "appointment_update",
+              "recipient_mode": "named",
+              "contact_id": "CONTACT001"
+            },
+            "response": {
+              "status": "completed",
+              "summary": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket T001\n\nA one-hour service visit for ticket T001, equipment A001 at site S001, is confirmed for 8 April 2030, 15:30 IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+              "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket T001\n\nA one-hour service visit for ticket T001, equipment A001 at site S001, is confirmed for 8 April 2030, 15:30 IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+              "evidence": [
+                {
+                  "collection": "policy",
+                  "record_id": "NS-2030.1"
+                },
+                {
+                  "collection": "tickets",
+                  "record_id": "T001"
+                },
+                {
+                  "collection": "contacts",
+                  "record_id": "CONTACT001"
+                },
+                {
+                  "collection": "assets",
+                  "record_id": "A001"
+                },
+                {
+                  "collection": "sites",
+                  "record_id": "S001"
+                },
+                {
+                  "collection": "customers",
+                  "record_id": "C001"
+                },
+                {
+                  "collection": "contracts",
+                  "record_id": "CON001"
+                },
+                {
+                  "collection": "technicians",
+                  "record_id": "TECH001"
+                },
+                {
+                  "collection": "visits",
+                  "record_id": "VISIT-0001"
+                }
+              ],
+              "usage": {
+                "model": "gpt-6-luna",
+                "input_tokens": 6064,
+                "output_tokens": 119,
+                "cost_usd": null,
+                "pricing_source": "unknown"
+              }
+            },
+            "audit": [
+              {
+                "tool": "get_context",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "list_slots",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "schedule_visit",
+                "committed": true,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              }
+            ],
+            "trial": 1
+          }
+        ]
+      }
+    },
+    {
+      "summary": {
+        "name": "messages-live-sol",
+        "model": "gpt-6.1-sol",
+        "passed": 0,
+        "total": 1,
+        "incomplete": true,
+        "median_ms": 1767,
+        "maximum_ms": 1767,
+        "maximum_backend_attempts": 3,
+        "known_input_tokens": 0,
+        "known_output_tokens": 0,
+        "unknown_usage_trials": 1
+      },
+      "report_path": "runs/messages-live-sol.json",
+      "report_sha256": "1c8bbb4e77ae0549fa3c9be98386c3f5191da5f89531995d6be79657fce6197a",
+      "report": {
+        "incomplete": true,
+        "prompt_sha256": "7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62",
+        "mode": "live",
+        "model": "gpt-6.1-sol",
+        "passed": 0,
+        "total": 1,
+        "results": [
+          {
+            "id": "message-ticket",
+            "category": "messages",
+            "passed": false,
+            "checks": {
+              "status": false,
+              "ticket_count": true,
+              "create_attempts": true,
+              "visit_count": true,
+              "no_other_business_writes": true,
+              "response_shape": true,
+              "attempt_budget": true,
+              "reply_details": true,
+              "no_disclosure": true,
+              "message_content": false,
+              "message_evidence": false,
+              "message_not_sent_or_stored": false,
+              "unchanged_records": true,
+              "forbidden_attempts": true,
+              "forbidden_reads": true,
+              "handoff_count": false,
+              "model_completed": false,
+              "deadline": true,
+              "no_token_leak": true
+            },
+            "latency_ms": 1767,
+            "decision": {},
+            "response": {
+              "status": "escalated",
+              "summary": "The request could not be completed because processing was unavailable. Operations must reconcile any uncertain action. A operations handoff is recorded as HANDOFF-0001.",
+              "reply": "The request could not be completed because processing was unavailable. Operations must reconcile any uncertain action. A operations handoff is recorded as HANDOFF-0001.",
+              "evidence": [
+                {
+                  "collection": "policy",
+                  "record_id": "NS-2030.1"
+                },
+                {
+                  "collection": "escalations",
+                  "record_id": "HANDOFF-0001"
+                }
+              ],
+              "usage": {
+                "model": "gpt-6.1-sol",
+                "input_tokens": null,
+                "output_tokens": null,
+                "cost_usd": null,
+                "pricing_source": "unknown",
+                "provider_error": "InternalServerError"
+              }
+            },
+            "audit": [
+              {
+                "tool": "get_context",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "escalate",
+                "committed": true,
+                "code": null
+              }
+            ],
+            "trial": 1
+          }
+        ]
+      }
+    },
+    {
+      "summary": {
+        "name": "messages-live-sol-retry",
+        "model": "gpt-6.1-sol",
+        "passed": 3,
+        "total": 3,
+        "incomplete": false,
+        "median_ms": 7063,
+        "maximum_ms": 8996,
+        "maximum_backend_attempts": 31,
+        "known_input_tokens": 5825,
+        "known_output_tokens": 218,
+        "unknown_usage_trials": 0
+      },
+      "report_path": "runs/messages-live-sol-retry.json",
+      "report_sha256": "67ad3c110ea748a8b5cc514929547910aa80486639741683140ec2ef2eace286",
+      "report": {
+        "incomplete": false,
+        "prompt_sha256": "7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62",
+        "mode": "live",
+        "model": "gpt-6.1-sol",
+        "passed": 3,
+        "total": 3,
+        "results": [
+          {
+            "id": "message-ticket",
+            "category": "messages",
+            "passed": true,
+            "checks": {
+              "status": true,
+              "ticket_count": true,
+              "create_attempts": true,
+              "visit_count": true,
+              "no_other_business_writes": true,
+              "response_shape": true,
+              "attempt_budget": true,
+              "reply_details": true,
+              "no_disclosure": true,
+              "message_content": true,
+              "message_evidence": true,
+              "message_not_sent_or_stored": true,
+              "unchanged_records": true,
+              "forbidden_attempts": true,
+              "forbidden_reads": true,
+              "handoff_count": true,
+              "model_completed": true,
+              "deadline": true,
+              "no_token_leak": true
+            },
+            "latency_ms": 8996,
+            "decision": {
+              "intent": "compose",
+              "ticket_id": "T001",
+              "site_id": "",
+              "asset_id": "",
+              "time_mode": "unclear",
+              "starts_at": "",
+              "clarification": "message",
+              "intake_mode": "record_only",
+              "issue_category": "unclear",
+              "issue_summary": "",
+              "message_purpose": "ticket_update",
+              "recipient_mode": "generic",
+              "contact_id": ""
+            },
+            "response": {
+              "status": "completed",
+              "summary": "Here is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+              "reply": "Here is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+              "evidence": [
+                {
+                  "collection": "policy",
+                  "record_id": "NS-2030.1"
+                },
+                {
+                  "collection": "tickets",
+                  "record_id": "T001"
+                },
+                {
+                  "collection": "assets",
+                  "record_id": "A001"
+                },
+                {
+                  "collection": "sites",
+                  "record_id": "S001"
+                },
+                {
+                  "collection": "customers",
+                  "record_id": "C001"
+                }
+              ],
+              "usage": {
+                "model": "gpt-6.1-sol",
+                "input_tokens": 1942,
+                "output_tokens": 72,
+                "cost_usd": null,
+                "pricing_source": "unknown"
+              }
+            },
+            "audit": [
+              {
+                "tool": "get_context",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              }
+            ],
+            "trial": 1
+          },
+          {
+            "id": "message-unauthorized-contact",
+            "category": "messages",
+            "passed": true,
+            "checks": {
+              "status": true,
+              "ticket_count": true,
+              "create_attempts": true,
+              "visit_count": true,
+              "no_other_business_writes": true,
+              "response_shape": true,
+              "attempt_budget": true,
+              "reply_details": true,
+              "no_disclosure": true,
+              "no_message": true,
+              "unchanged_records": true,
+              "forbidden_attempts": true,
+              "forbidden_reads": true,
+              "handoff_count": true,
+              "model_completed": true,
+              "deadline": true,
+              "no_token_leak": true
+            },
+            "latency_ms": 7063,
+            "decision": {
+              "intent": "compose",
+              "ticket_id": "T001",
+              "site_id": "",
+              "asset_id": "",
+              "time_mode": "unclear",
+              "starts_at": "",
+              "clarification": "message",
+              "intake_mode": "record_only",
+              "issue_category": "unclear",
+              "issue_summary": "",
+              "message_purpose": "ticket_update",
+              "recipient_mode": "named",
+              "contact_id": "CONTACT101"
+            },
+            "response": {
+              "status": "blocked",
+              "summary": "The requested contact is not authorized for this site's message.",
+              "reply": "The requested contact is not authorized for this site's message.",
+              "evidence": [
+                {
+                  "collection": "policy",
+                  "record_id": "NS-2030.1"
+                },
+                {
+                  "collection": "tickets",
+                  "record_id": "T001"
+                },
+                {
+                  "collection": "assets",
+                  "record_id": "A001"
+                },
+                {
+                  "collection": "sites",
+                  "record_id": "S001"
+                },
+                {
+                  "collection": "customers",
+                  "record_id": "C001"
+                },
+                {
+                  "collection": "contacts",
+                  "record_id": "CONTACT101"
+                }
+              ],
+              "usage": {
+                "model": "gpt-6.1-sol",
+                "input_tokens": 1941,
+                "output_tokens": 73,
+                "cost_usd": null,
+                "pricing_source": "unknown"
+              }
+            },
+            "audit": [
+              {
+                "tool": "get_context",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              }
+            ],
+            "trial": 1
+          },
+          {
+            "id": "message-book-named",
+            "category": "messages",
+            "passed": true,
+            "checks": {
+              "status": true,
+              "ticket_count": true,
+              "create_attempts": true,
+              "visit_count": true,
+              "no_other_business_writes": true,
+              "response_shape": true,
+              "attempt_budget": true,
+              "booking_details": true,
+              "booking_evidence": true,
+              "reply_details": true,
+              "no_disclosure": true,
+              "message_content": true,
+              "message_evidence": true,
+              "message_not_sent_or_stored": true,
+              "unchanged_records": true,
+              "forbidden_attempts": true,
+              "forbidden_reads": true,
+              "handoff_count": true,
+              "model_completed": true,
+              "deadline": true,
+              "no_token_leak": true
+            },
+            "latency_ms": 7040,
+            "decision": {
+              "intent": "schedule",
+              "ticket_id": "T001",
+              "site_id": "",
+              "asset_id": "",
+              "time_mode": "earliest",
+              "starts_at": "",
+              "clarification": "intent",
+              "intake_mode": "record_only",
+              "issue_category": "unclear",
+              "issue_summary": "",
+              "message_purpose": "appointment_update",
+              "recipient_mode": "named",
+              "contact_id": "CONTACT001"
+            },
+            "response": {
+              "status": "completed",
+              "summary": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket T001\n\nA one-hour service visit for ticket T001, equipment A001 at site S001, is confirmed for 8 April 2030, 15:30 IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+              "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket T001\n\nA one-hour service visit for ticket T001, equipment A001 at site S001, is confirmed for 8 April 2030, 15:30 IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+              "evidence": [
+                {
+                  "collection": "policy",
+                  "record_id": "NS-2030.1"
+                },
+                {
+                  "collection": "tickets",
+                  "record_id": "T001"
+                },
+                {
+                  "collection": "assets",
+                  "record_id": "A001"
+                },
+                {
+                  "collection": "sites",
+                  "record_id": "S001"
+                },
+                {
+                  "collection": "customers",
+                  "record_id": "C001"
+                },
+                {
+                  "collection": "contacts",
+                  "record_id": "CONTACT001"
+                },
+                {
+                  "collection": "contracts",
+                  "record_id": "CON001"
+                },
+                {
+                  "collection": "technicians",
+                  "record_id": "TECH001"
+                },
+                {
+                  "collection": "visits",
+                  "record_id": "VISIT-0001"
+                }
+              ],
+              "usage": {
+                "model": "gpt-6.1-sol",
+                "input_tokens": 1942,
+                "output_tokens": 73,
+                "cost_usd": null,
+                "pricing_source": "unknown"
+              }
+            },
+            "audit": [
+              {
+                "tool": "get_context",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "list_slots",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "schedule_visit",
+                "committed": true,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_policy",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "get_record",
+                "committed": false,
+                "code": null
+              },
+              {
+                "tool": "search_records",
+                "committed": false,
+                "code": null
+              }
+            ],
+            "trial": 1
+          }
+        ]
+      }
+    }
+  ],
+  "report_reference_note": "Report paths are relative to this JSON file. Archived files preserve exact original bytes; hashes identify files, not evaluation validity. Saved reports omit full backend snapshots and tool arguments, so historical state checks cannot be independently recomputed."
+}

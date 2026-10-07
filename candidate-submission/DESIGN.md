@@ -1,6 +1,6 @@
 # Design
 
-This document describes intake, scheduling and service credits. Billing builds on staging commit `e61a9510635d67be8bb2ce80924c1168bc099582`, which includes the merged intake PR. Proposed production rollout steps remain separate from implemented behavior.
+This document describes the integrated intake, scheduling, service-credit and copyable-message workflows. Proposed production rollout steps remain separate from implemented behavior.
 
 ## Workflow and success criteria
 
@@ -45,11 +45,11 @@ Writes are serialized within each request. Retries replay the same complete argu
 
 Execution is bounded to eight SDK turns, 48 backend attempts and a 55-second processing budget. Recovery reserves five seconds and three attempts. Provider retries are disabled. Unresolved or uncertain processing creates an operations handoff when possible; a failed handoff returns an error. The assistant never claims an unconfirmed booking or repair completion.
 
-General billing inquiries, standalone approval-status queries, existing-ticket severity/status updates, cancellation, rescheduling and message drafting are unsupported. They receive a human handoff. Service-credit requests and their approval workflow are supported as described below.
+General billing inquiries, standalone approval-status queries, existing-ticket severity/status updates, cancellation, rescheduling, stored drafts and message delivery are unsupported. They receive a human handoff. Service-credit requests and their approval workflow are supported as described below.
 
 ## Service credits and supervisor approval
 
-The action interface remains `Actions.handle(Decision)`. A credit decision supplies candidate invoice, ticket or equipment identity and an exact integer-cent amount. A small interface hides scoped relationship lookup, role checks, ledger validation, current policy, approval discovery and financial writes. The model resolves descriptions through read-only scoped tools. Python follows equipment to a unique ticket and invoice, and asks when those relationships are ambiguous. Explicit conflicting references remain constraints. A credit request and a service request in the same message require clarification before either workflow runs.
+The action interface remains `Actions.handle(Decision)`. A credit decision supplies candidate invoice, ticket or equipment identity and an exact integer-cent amount. A small interface hides scoped relationship lookup, role checks, ledger validation, current policy, approval discovery and financial writes. The model resolves descriptions through read-only scoped tools. Python follows equipment to a unique ticket and invoice, and asks when those relationships are ambiguous. Explicit conflicting references remain constraints. A credit request combined with intake, booking or a service message require clarification before either workflow runs.
 
 The permitted session roles are customer, dispatcher, finance and supervisor. Viewers cannot request approval or issue credits; an unverified requester receives an identity handoff before customer reads. A paid invoice and the linked ticket's authoritative SLA breach are required even when a supervisor grant exists. Credits cannot exceed the remaining paid amount. Invalid ledger types, currencies, relationships or policy shapes receive a billing handoff. Requests over the available balance ask whether to use the smaller amount; they never silently change the request. No remaining amount means refusal. Missing or unsupported amounts require clarification, and requested non-USD credits are refused without conversion.
 
@@ -68,6 +68,20 @@ Intake reuses an open/in-progress ticket for the asset, or creates one using a s
 Creation and booking are separate writes. A confirmed ticket remains when booking needs clarification or fails, and its ID and evidence remain in the response and recovery handoff. Missing booking time does not prevent authorized intake. Requests conditioned on successful booking require clarification before writing because the backend has no transaction spanning both actions. A failed handoff returns error rather than claiming a completed escalation.
 
 Authorization to create, issue classification and conditional-request recognition depend on interpretation. The action module independently enforces tenant, role, relationships and live eligibility. Coverage/safety changes between reads and creation remain a race because the backend does not atomically enforce all preconditions. No new top-level runtime modules were added.
+
+## Copyable service messages
+
+Customers can explicitly request a current ticket-status message or a confirmed appointment update. The existing reply contains a subject and body to copy, with a clear statement that the message has not been sent or saved as a draft. No new screen, persistence, draft tool call or retrieval workflow is involved. Generic messages need no recipient. A named recipient must resolve to one currently authorized contact for the same account and site. An unresolved named recipient requires clarification before service writes.
+
+`Actions.handle(Decision)` remains the interface. `intent=compose` reads an existing ticket; `message_purpose` also attaches an explicitly requested message to scheduling or intake. `recipient_mode` and `contact_id` retain the recipient constraint. Defaults preserve the previous behavior. The interpreter gets scoped contact lookup alongside ticket/site/asset lookup, but no write tools. Python owns recipient authority, relationships, confirmed state and fixed templates. There is no arbitrary message-body field or extra model generation call.
+
+Message composition is a deep module behind the existing seam: callers supply purpose and record references rather than performing checks themselves. It checks ownership and matching ticket/asset/site records but does not reuse scheduling eligibility. A status update can truthfully describe a resolved ticket or retired equipment without authorizing another visit. Resolved status requires verified resolution. Appointment updates require exactly one scheduled, future, one-hour visit for the same ticket/account. Missing visits ask a specific clarification; conflicting, malformed or obsolete visit records require reconciliation. Current safety holds or S1 tickets still receive a safety handoff.
+
+Templates use record identifiers, bounded status values and confirmed appointment times. Record names, notes, summaries, communications and requested commitments never enter the message. This sacrifices personalized wording to make factual content deterministic. Finance can prepare messages but cannot book visits; unknown roles and viewers remain blocked for this workflow. Identity and current policy come from the injected scoped backend. Successful standalone composition makes no business writes. Failure and safety paths can create real escalations.
+
+Combined requests check named recipients before service writes and again before presenting a message. A completed booking or ticket remains committed if later message preparation fails. The reply retains its receipt and does not substitute unverified confirmation prose. Conditional requests require clarification because the steps are not atomic. Confirmed receipts and verified ticket identity also survive outer orchestration failures. Handoffs now link an already verified existing ticket, fixing the previous scheduling failure path that only retained intake ticket IDs. Operation-key construction lives in actions; backend transport retains byte-for-byte retries.
+
+The demo starts fresh state for every submission, so it offers an explicit combined booking-and-message example. The runtime does not assume conversation history. Natural-language intent, purpose and recipient resolution still depend on the model; offline controlled-interpretation checks do not validate those language decisions. A later authorized three-case live sample passed on Luna and Sol, with one additional Sol provider failure retained. This sample does not establish broad language coverage; see EVALS.md. Billing messages, stored drafts, sending, tone customization and persistent conversations remain unsupported.
 
 ## Observability and rollout
 
