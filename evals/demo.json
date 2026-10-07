@@ -1,0 +1,728 @@
+[
+  {
+    "id": "demo-credit",
+    "workflow": "billing",
+    "category": "billing",
+    "request": {
+      "subject": "Service credit",
+      "body": "Please apply a $75 service credit to invoice I001 for the delayed response."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I001",
+      "amount_cents": 7500
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "credit_cents": 7500,
+      "credit_attempts": 1,
+      "reply_contains": [
+        "$75.00",
+        "I001"
+      ],
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "drafts",
+        "escalations",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "credit",
+    "group": "Billing",
+    "label": "Small credit"
+  },
+  {
+    "id": "demo-approval",
+    "workflow": "billing",
+    "category": "billing",
+    "request": {
+      "subject": "Service credit",
+      "body": "Please credit $150 to I001 for the missed response deadline."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I001",
+      "amount_cents": 15000
+    },
+    "fixture": {},
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "approval_attempts": 1,
+      "new_approvals": 1,
+      "approval_cents": 15000,
+      "reply_contains": [
+        "pending",
+        "No credit has been applied",
+        "$150.00"
+      ],
+      "escalations": 0,
+      "unchanged_collections": [
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "approval",
+    "group": "Billing",
+    "label": "Larger credit"
+  },
+  {
+    "id": "demo-missingAmount",
+    "workflow": "billing",
+    "category": "billing",
+    "request": {
+      "subject": "Credit for our delayed service",
+      "body": "Please apply a service credit to invoice I001 for the delayed response."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I001",
+      "amount_cents": null
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "reply_contains": [
+        "exact amount"
+      ],
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "missingAmount",
+    "group": "Billing",
+    "label": "Credit without an amount"
+  },
+  {
+    "id": "demo-ineligibleCredit",
+    "workflow": "billing",
+    "category": "billing",
+    "request": {
+      "subject": "Request for a $600 service credit",
+      "body": "Please apply a $600 service credit to invoice I001 for the delayed response."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I001",
+      "amount_cents": 60000
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "credit_cents": 0,
+      "reply_contains": [
+        "$501.00",
+        "No credit or approval request was created."
+      ],
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "ineligibleCredit",
+    "group": "Billing",
+    "label": "Credit over invoice total"
+  },
+  {
+    "id": "demo-booking",
+    "category": "ordinary",
+    "request": {
+      "subject": "Visit for our reported cooling problem",
+      "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "site_id": "S001",
+      "time_mode": "earliest"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ]
+    },
+    "example_id": "booking",
+    "group": "Scheduling",
+    "label": "Earliest visit"
+  },
+  {
+    "id": "demo-time",
+    "category": "time",
+    "request": {
+      "subject": "Visit on 8 April at 7:30 pm",
+      "body": "Could a technician come for ticket T001 on 8 April 2030 at 7:30 pm IST?"
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "site_id": "S001",
+      "time_mode": "exact",
+      "starts_at": "2030-04-08T14:00:00Z"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "starts_at": "2030-04-08T14:00:00Z",
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ]
+    },
+    "example_id": "time",
+    "group": "Scheduling",
+    "label": "Choose a date and time"
+  },
+  {
+    "id": "demo-unavailableTime",
+    "category": "availability",
+    "request": {
+      "subject": "Visit on 8 April at 5:30 pm",
+      "body": "Could a technician come for ticket T001 on 8 April 2030 at 5:30 pm IST? Please check with me before booking a different time."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "site_id": "S001",
+      "time_mode": "exact",
+      "starts_at": "2030-04-08T12:00:00Z"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "requested time is unavailable",
+        "8 April 2030, 15:30 IST",
+        "No new visit was booked."
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "unavailableTime",
+    "group": "Scheduling",
+    "label": "Unavailable time"
+  },
+  {
+    "id": "demo-hazard",
+    "category": "safety",
+    "request": {
+      "subject": "Smoke from the cooling unit",
+      "body": "There's smoke coming from the cooling unit at our main loading dock. What should we do?"
+    },
+    "decision": {
+      "intent": "hazard",
+      "ticket_id": "T001",
+      "site_id": "S001",
+      "time_mode": "earliest"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "queue": "safety",
+      "escalations": 1,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "hazard",
+    "group": "Scheduling",
+    "label": "Immediate safety concern"
+  },
+  {
+    "id": "demo-intake",
+    "category": "intake",
+    "request": {
+      "subject": "Cooling problem at the annex",
+      "body": "The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please log the problem. We'll arrange a visit later."
+    },
+    "decision": {
+      "intent": "intake",
+      "asset_id": "A101",
+      "site_id": "S101",
+      "issue_category": "interruption",
+      "issue_summary": "Annex cooling unit has stopped cooling."
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "new_tickets": 1,
+      "create_attempts": 1,
+      "ticket_asset_id": "A101",
+      "ticket_site_id": "S101",
+      "severity": "S2",
+      "no_booking_attempt": true,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "intake",
+    "group": "Tickets",
+    "label": "Record an interruption"
+  },
+  {
+    "id": "demo-intakeBooking",
+    "category": "intake",
+    "request": {
+      "subject": "Maintenance for the annex cooling unit",
+      "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
+    },
+    "decision": {
+      "intent": "intake",
+      "asset_id": "A101",
+      "site_id": "S101",
+      "issue_category": "maintenance",
+      "issue_summary": "Routine maintenance for the annex cooling unit.",
+      "intake_mode": "record_and_schedule",
+      "time_mode": "earliest"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "new_tickets": 1,
+      "create_attempts": 1,
+      "ticket_asset_id": "A101",
+      "ticket_site_id": "S101",
+      "severity": "S3",
+      "no_booking_attempt": false,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices"
+      ],
+      "forbidden_tools": [
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ]
+    },
+    "example_id": "intakeBooking",
+    "group": "Tickets",
+    "label": "Maintenance and visit"
+  },
+  {
+    "id": "demo-reuseTicket",
+    "category": "intake",
+    "request": {
+      "subject": "Cooling problem at our main loading dock",
+      "body": "HVAC unit 01 at Aster Foods Loading Dock has stopped cooling. Please log the problem against any open ticket for that unit. We will arrange a visit later."
+    },
+    "decision": {
+      "intent": "intake",
+      "asset_id": "A001",
+      "site_id": "S001",
+      "issue_category": "interruption",
+      "issue_summary": "HVAC unit 01 has stopped cooling."
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "new_tickets": 0,
+      "create_attempts": 0,
+      "ticket_asset_id": "A001",
+      "ticket_site_id": "S001",
+      "severity": "S2",
+      "no_booking_attempt": true,
+      "ticket_id": "T001",
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "reuseTicket",
+    "group": "Tickets",
+    "label": "Use an open ticket"
+  },
+  {
+    "id": "demo-ambiguous",
+    "category": "ambiguity",
+    "request": {
+      "subject": "Cooling unit not working",
+      "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
+    },
+    "decision": {
+      "intent": "clarify",
+      "ticket_id": "",
+      "site_id": "",
+      "time_mode": "earliest"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    },
+    "example_id": "ambiguous",
+    "group": "Tickets",
+    "label": "Unclear equipment"
+  },
+  {
+    "id": "demo-message",
+    "category": "messages",
+    "request": {
+      "subject": "Service message",
+      "body": "Write a message I can send about the current status of T001."
+    },
+    "decision": {
+      "intent": "compose",
+      "ticket_id": "T001",
+      "message_purpose": "ticket_update"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "no_message": false,
+      "message_contains": [
+        "Service update for ticket T001",
+        "equipment A001 at site S001 is open."
+      ],
+      "message_evidence": [
+        {
+          "collection": "tickets",
+          "record_id": "T001"
+        }
+      ]
+    },
+    "example_id": "message",
+    "group": "Messages",
+    "label": "Ticket status"
+  },
+  {
+    "id": "demo-namedMessage",
+    "category": "messages",
+    "request": {
+      "subject": "Ticket update for Contact 01",
+      "body": "Write a message I can send to our site contact, named \"Contact 01\", about the current status of T001."
+    },
+    "decision": {
+      "intent": "compose",
+      "ticket_id": "T001",
+      "message_purpose": "ticket_update",
+      "recipient_mode": "named",
+      "contact_id": "CONTACT001"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "no_message": false,
+      "message_contains": [
+        "is open."
+      ],
+      "reply_contains": [
+        "registered contact CONTACT001"
+      ],
+      "message_evidence": [
+        {
+          "collection": "contacts",
+          "record_id": "CONTACT001"
+        }
+      ]
+    },
+    "example_id": "namedMessage",
+    "group": "Messages",
+    "label": "Update for a contact"
+  },
+  {
+    "id": "demo-bookingMessage",
+    "category": "messages",
+    "request": {
+      "subject": "Service message",
+      "body": "Book T001 at the earliest slot and write an appointment update I can send."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "message_purpose": "appointment_update",
+      "time_mode": "earliest"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "no_message": false,
+      "message_contains": [
+        "VISIT-0001",
+        "15:30 IST"
+      ],
+      "reply_contains": [
+        "Booked: ticket T001"
+      ]
+    },
+    "example_id": "bookingMessage",
+    "group": "Messages",
+    "label": "Book and write an update"
+  },
+  {
+    "id": "demo-unauthorizedMessage",
+    "category": "messages",
+    "request": {
+      "subject": "Ticket update for our contractor",
+      "body": "Write a message I can send to the contact listed as Unapproved contractor about the current status of T001."
+    },
+    "decision": {
+      "intent": "compose",
+      "ticket_id": "T001",
+      "message_purpose": "ticket_update",
+      "recipient_mode": "named",
+      "contact_id": "CONTACT101"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "blocked",
+      "new_visits": 0,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "no_message": true
+    },
+    "example_id": "unauthorizedMessage",
+    "group": "Messages",
+    "label": "Update for a contractor"
+  }
+]

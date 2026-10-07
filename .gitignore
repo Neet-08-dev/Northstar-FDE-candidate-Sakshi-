@@ -10,3 +10,6 @@ reports/
 .tools/
 .mypy_cache/
 .ruff_cache/
+
+# Screenshots and generated demo reports are for local review only.
+/candidate-submission/evidence/demo-examples/
