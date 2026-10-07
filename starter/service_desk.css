@@ -583,6 +583,30 @@ textarea {
 .thread-assistant {
   color: var(--muted);
 }
+.suggestion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 12px;
+}
+.suggestion-label {
+  color: var(--muted);
+}
+.suggestion-use {
+  min-height: 36px;
+  padding: 7px 12px;
+  border-radius: 18px;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.suggestion-use:hover {
+  background: #e1efe5;
+}
 .primary {
   min-height: 44px;
   padding: 11px 18px;
