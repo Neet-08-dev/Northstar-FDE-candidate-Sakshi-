@@ -52,7 +52,7 @@ async def interpret(
     async def inspect_records(
         collection: Literal["tickets", "sites", "assets", "invoices", "contacts"], query: str
     ) -> str:
-        """Find scoped records to resolve an ambiguous invoice, ticket, site equipment or registered contact.
+        """Find scoped records to resolve an ambiguous invoice, ticket, site, equipment or registered contact.
 
         Args:
             collection: Kind of record to inspect.

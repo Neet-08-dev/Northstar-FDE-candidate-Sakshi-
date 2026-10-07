@@ -55,6 +55,7 @@ class BillingTests(unittest.TestCase):
             "billing-unpaid",
             "billing-viewer",
             "billing-mixed",
+            "billing-mixed-message",
             "billing-handoff-outage",
         }
         for case in cases:

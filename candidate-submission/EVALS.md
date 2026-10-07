@@ -1,6 +1,14 @@
 # Evaluation report
 
-This report covers targeted live and offline copyable-message verification followed by preserved intake, demo and scheduling evidence. Results from different prompts are kept separate.
+This report leads with integrated offline verification. The later billing, message, intake and scheduling sections retain historical results for their original prompts. Results from those separate prompts do not establish live coverage for the integrated prompt.
+
+## Billing and message integration, 7 October 2026
+
+Message PR #4 was rebased onto staging `6f6f368`, which includes billing PR #5. The combined Decision, dispatch, recipient and billing checks, prompt instructions, exact retries and both evidence archives are retained. Sol remains the default. `make check` passes Ruff, formatting, mypy and 34 test methods, including all 158 authored scenarios: 46 intake/scheduling, 62 billing and 50 message cases. HTTP checks cover financial effects, recipient failures, confirmed booking recovery and replay. `--suite messages` selects message-only cases; the default suite includes all three files.
+
+The integration regression `billing-mixed-message` initially applied a $75 credit while dropping the requested ticket-status message. The corrected dispatch asks which workflow to handle first and attempts no writes. Independent state assertions check unchanged invoices, credits, approvals, tickets, visits and drafts. Both the failing trial and passing correction are retained in [integration evidence](evidence/integration-evaluations.json); the same regression passes through the HTTP handler. All 41 existing report hash references validated during integration.
+
+No paid model evaluation, Docker rebuild or browser trial was performed for this combined revision. Model interpretation of the combined schema and prompt still needs final live/demo verification. Stored drafts, sending, billing-message composition, persistent conversation, cancellation and rescheduling remain unsupported.
 
 ## Copyable-message live sample, 7 October 2026
 

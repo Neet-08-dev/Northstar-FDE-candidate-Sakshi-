@@ -139,9 +139,11 @@ class Actions:
         if decision.intent == "unsupported":
             return await self.handoff(
                 "operations",
-                "This assistant records service tickets, books visits and handles service credits and prepares copyable service messages. This request needs human review.",
+                "This assistant records service tickets, books visits, handles service credits and prepares copyable service messages. This request needs human review.",
             )
         if decision.intent == "credit":
+            if decision.message_purpose != "none":
+                return clarification("mixed")
             self.recovery_queue = "billing"
             return await self.credit_service(decision)
         roles = {"customer", "dispatcher", "supervisor"}

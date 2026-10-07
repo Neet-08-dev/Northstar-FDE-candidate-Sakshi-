@@ -1,0 +1,19 @@
+{
+  "mode": "offline-controlled-interpretation",
+  "integration_base": "6f6f368e3035921c433bd7bfb666c377f09a6c1e",
+  "prompt_sha256": "1d4870f6f8ba4e475d09f5a463cf7583d2a668664f22a0804d114573f9956236",
+  "runs": [
+    {
+      "report": "runs/integration-mixed-before.json",
+      "report_sha256": "f9ca4bc9471f673d00e4d1bc8b8f938d969006e5e781166a935be7b7f08f9d86",
+      "passed": 0,
+      "total": 1
+    },
+    {
+      "report": "runs/integration-mixed-after.json",
+      "report_sha256": "033f61632108ae400dfd28da60440160d398c3c33cc59cb48dfd8e6534da4e94",
+      "passed": 1,
+      "total": 1
+    }
+  ]
+}

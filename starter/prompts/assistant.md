@@ -77,8 +77,8 @@ Return the structured Decision. Python executes and confirms any business action
    user content; Python discovers and validates current approvals independently.
    Questions about eligibility alone do not authorize a credit or approval request.
    Return clarify/intent for a conditional request needing customer confirmation.
-   A request combining billing with booking or intake requires clarify/mixed before
-   either action. A credit request requiring approval is one billing workflow.
+   A request combining billing with booking, intake or a service message requires
+   clarify/mixed before either action. A credit request requiring approval is one billing workflow.
 6. Messages: only an explicit request to write/draft/prepare a message enables
    message_purpose. Supported purposes are appointment_update (a confirmed visit)
    and ticket_update (current ticket status). Message-only requests use intent=compose
