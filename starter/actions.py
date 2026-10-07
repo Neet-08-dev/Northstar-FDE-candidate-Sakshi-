@@ -98,9 +98,18 @@ class Actions:
         self.verified_ticket_id = ""
         self.confirmed_reply = ""
         self.recovery_queue = "operations"
+        self.safety_handoff: tuple[str, str] | None = None
 
     async def handoff(self, queue: str, reason: str, ticket_id: str = "") -> Outcome:
         ticket_id = ticket_id or self.intake_ticket_id or self.verified_ticket_id
+        # Latch before the first await. Recovery must replay this exact safety operation,
+        # including a response lost after commit, rather than create an operations handoff.
+        if queue == "safety" and self.safety_handoff is None:
+            self.safety_handoff = (reason, ticket_id)
+            self.recovery_queue = "safety"
+        if self.safety_handoff is not None:
+            queue = "safety"
+            reason, ticket_id = self.safety_handoff
         args = {"queue": queue, "reason": reason}
         if ticket_id:
             args["ticket_id"] = ticket_id
@@ -126,7 +135,7 @@ class Actions:
             )
 
     async def handle(self, decision: Decision) -> Outcome:
-        if decision.intent == "hazard":
+        if decision.intent == "hazard" or self.safety_handoff is not None:
             return await self.handoff(
                 "safety", "A possible emergency requires immediate human safety review."
             )
@@ -415,6 +424,15 @@ class Actions:
             )
         return None
 
+    async def _record_safety(self, record: Record, ticket_id: str = "") -> Outcome | None:
+        if record.get("customer_id") in self.context["actor"]["customer_ids"] and (
+            record.get("safety_hold") or record.get("severity") == "S1"
+        ):
+            return await self.handoff(
+                "safety", "The asset or ticket requires safety clearance.", ticket_id
+            )
+        return None
+
     async def compose_message(self, decision: Decision) -> Outcome:
         """Return a bounded message from current records; never store or send it."""
         if not decision.ticket_id:
@@ -422,7 +440,13 @@ class Actions:
         b = self.backend
         ticket = await b.record("tickets", decision.ticket_id)
         self.verified_ticket_id = ticket["id"]
+        safety = await self._record_safety(ticket, ticket["id"])
+        if safety:
+            return safety
         asset = await b.record("assets", ticket["asset_id"])
+        safety = await self._record_safety(asset, ticket["id"])
+        if safety:
+            return safety
         site = await b.record("sites", ticket["site_id"])
         rows = [ticket, asset, site]
         if any(r["customer_id"] not in self.context["actor"]["customer_ids"] for r in rows):
@@ -438,8 +462,6 @@ class Actions:
         await b.record("customers", site["customer_id"])
         self.policy = await b.call("get_policy")
         b.remember("policy", self.policy["rules"]["version"])
-        if asset.get("safety_hold") or ticket.get("severity") == "S1":
-            return await self.handoff("safety", "The asset or ticket requires safety clearance.")
         recipient_problem = await self._message_recipient(decision, site)
         if recipient_problem:
             return recipient_problem
@@ -539,7 +561,15 @@ class Actions:
         self, decision: Decision, ticket: Record | None = None
     ) -> tuple[Record, Record, list[Record]] | Outcome:
         b = self.backend
+        ticket_id = ticket["id"] if ticket else ""
+        if ticket:
+            safety = await self._record_safety(ticket, ticket_id)
+            if safety:
+                return safety
         asset = await b.record("assets", ticket["asset_id"] if ticket else decision.asset_id)
+        safety = await self._record_safety(asset, ticket_id)
+        if safety:
+            return safety
         site = await b.record("sites", ticket["site_id"] if ticket else asset["site_id"])
         related = [asset, site] + ([ticket] if ticket else [])
         ticket_id = ticket["id"] if ticket else ""
@@ -556,10 +586,6 @@ class Actions:
             decision.asset_id and decision.asset_id != asset["id"]
         ):
             return clarification("identity")
-        if asset.get("safety_hold") or (ticket and ticket.get("severity") == "S1"):
-            return await self.handoff(
-                "safety", "The asset or ticket requires safety clearance.", ticket_id
-            )
         if asset["status"] != "active" or site["status"] != "active":
             return await self.handoff(
                 "operations",
@@ -687,6 +713,56 @@ class Actions:
             and end.strftime("%H:%M") <= match[2]
         )
 
+    async def _valid_existing_visit(
+        self, visit: Record, ticket: Record, asset: Record, site: Record, contracts: list[Record]
+    ) -> bool:
+        """A stored visit is evidence, but must still support the promised appointment."""
+        try:
+            if (
+                visit.get("customer_id") != ticket["customer_id"]
+                or visit.get("ticket_id") != ticket["id"]
+                or visit.get("status") != "scheduled"
+                or type(visit.get("duration_minutes")) is not int
+                or visit["duration_minutes"] != 60
+                or not isinstance(visit.get("starts_at"), str)
+                or not isinstance(visit.get("technician_id"), str)
+                or not visit["technician_id"]
+            ):
+                return False
+            start = utc(visit["starts_at"])
+            if (
+                start <= utc(self.context["now"])
+                or not self._within_access(site, visit["starts_at"])
+                or not any(
+                    c["starts_at"] <= start.date().isoformat() <= c["ends_at"] for c in contracts
+                )
+            ):
+                return False
+            tech = await self.backend.record("technicians", visit["technician_id"])
+            # A booked slot is absent from list_slots because the visit occupies it.
+            # The dispatch registry retains the technician's working slots.
+            if not (
+                tech["active"] is True
+                and tech["region"] == site["region"]
+                and asset["required_skill"] in tech["skills"]
+                and any(utc(slot) == start for slot in tech["available_slots"])
+            ):
+                return False
+            for other in await self.backend.search("visits", tech["id"]):
+                if other["id"] == visit["id"] or other["technician_id"] != tech["id"]:
+                    continue
+                duration = other["duration_minutes"]
+                if type(duration) is not int or duration <= 0:
+                    return False
+                other_start = utc(other["starts_at"])
+                if start < other_start + timedelta(minutes=duration) and other_start < (
+                    start + timedelta(hours=1)
+                ):
+                    return False
+            return True
+        except (BackendError, KeyError, ValueError, TypeError, AttributeError):
+            return False
+
     async def schedule_service(self, decision: Decision) -> Outcome:
         b = self.backend
         # A conflict may justify one fresh investigation, never a blind write replay.
@@ -700,7 +776,9 @@ class Actions:
             ]
             if existing:
                 visit = existing[0]
-                if len(existing) != 1 or visit.get("status") != "scheduled":
+                if len(existing) != 1 or not await self._valid_existing_visit(
+                    visit, ticket, asset, site, contracts
+                ):
                     return await self.handoff(
                         "operations", "Existing visit records need reconciliation.", ticket["id"]
                     )
