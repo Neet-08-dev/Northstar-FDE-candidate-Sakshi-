@@ -1,0 +1,2155 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "81ff0098632dea22c6bd55ce34ac67e507332f38d3b9ed04ad101c074805c7cb",
+  "mode": "live",
+  "model": "gpt-6-luna",
+  "entrypoint": "http-process",
+  "passed": 13,
+  "total": 16,
+  "results": [
+    {
+      "id": "heldout-cobalt-fridge-soonest",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 11979,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Booked: ticket T003 for REFRIGERATION unit 03 (A003) at Cobalt Labs Loading Dock (S003), visit VISIT-0001, technician TECH001, at 8 April 2030, 10:00 AM UTC for one hour. Repair completion is not yet confirmed.",
+        "reply": "Booked: ticket T003 for REFRIGERATION unit 03 (A003) at Cobalt Labs Loading Dock (S003), visit VISIT-0001, technician TECH001, at 8 April 2030, 10:00 AM UTC for one hour. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T003"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A003"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S003"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C003"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON003"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 10102,
+          "output_tokens": 985,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C003"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "T003"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "query": "TECH001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-elm-anyone-scheduled",
+      "category": "heldout",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": false,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": false,
+        "forbidden_attempts": false,
+        "forbidden_reads": true,
+        "handoff_count": false,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5861,
+      "decision": {},
+      "response": {
+        "status": "escalated",
+        "summary": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "escalations",
+            "record_id": "HANDOFF-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4610,
+          "output_tokens": 497,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "escalate",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-elm-tomorrow-ten",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 6217,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Booked: ticket T005 for ELECTRICAL unit 05 (A005) at Elm Produce Loading Dock (S005), visit VISIT-0001, technician TECH002, at 9 April 2030, 10:00 AM UTC for one hour. Repair completion is not yet confirmed.",
+        "reply": "Booked: ticket T005 for ELECTRICAL unit 05 (A005) at Elm Produce Loading Dock (S005), visit VISIT-0001, technician TECH002, at 9 April 2030, 10:00 AM UTC for one hour. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T005"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A005"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S005"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C005"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON005"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH002"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 5444,
+          "output_tokens": 407,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T005"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T005"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A005"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A005"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S005"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S005"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C005"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C005"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S005"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "T005"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "query": "TECH002"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "record_id": "TECH002"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-granite-tuesday-afternoon",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5582,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "When would you like the visit for ticket T007, HVAC unit 07 (A007) at Granite Textiles Loading Dock (S007)? There are no open slots matching that preference. The nearest open one-hour slots are:\n- 8 April 2030, 10:00 AM UTC\n- 8 April 2030, 2:00 PM UTC\n- 9 April 2030, 10:00 AM UTC\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+        "reply": "When would you like the visit for ticket T007, HVAC unit 07 (A007) at Granite Textiles Loading Dock (S007)? There are no open slots matching that preference. The nearest open one-hour slots are:\n- 8 April 2030, 10:00 AM UTC\n- 8 April 2030, 2:00 PM UTC\n- 9 April 2030, 10:00 AM UTC\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T007"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A007"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S007"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C007"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON007"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4608,
+          "output_tokens": 403,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T007"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T007"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A007"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A007"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S007"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S007"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C007"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C007"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S007"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "T007"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-granite-no-details",
+      "category": "heldout",
+      "passed": false,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": false,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 11630,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Which equipment is this about? Your equipment:\n- HVAC unit 07 (A007) at Granite Textiles Loading Dock (S007)\n\nReply with the equipment. Also tell me when: the earliest available slot, or a date and time.",
+        "reply": "Which equipment is this about? Your equipment:\n- HVAC unit 07 (A007) at Granite Textiles Loading Dock (S007)\n\nReply with the equipment. Also tell me when: the earliest available slot, or a date and time.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A007"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4594,
+          "output_tokens": 1174,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-cobalt-four-thirty",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5420,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "8 April 2030, 4:30 PM UTC is not available for ticket T003. The nearest open one-hour slots for REFRIGERATION unit 03 (A003) at Cobalt Labs Loading Dock (S003) are:\n- 8 April 2030, 10:00 AM UTC\n- 8 April 2030, 2:00 PM UTC\n- 9 April 2030, 10:00 AM UTC\n\nReply with the slot you want. No new visit was booked.",
+        "reply": "8 April 2030, 4:30 PM UTC is not available for ticket T003. The nearest open one-hour slots for REFRIGERATION unit 03 (A003) at Cobalt Labs Loading Dock (S003) are:\n- 8 April 2030, 10:00 AM UTC\n- 8 April 2030, 2:00 PM UTC\n- 9 April 2030, 10:00 AM UTC\n\nReply with the slot you want. No new visit was booked.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T003"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A003"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S003"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C003"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON003"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4616,
+          "output_tokens": 436,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C003"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "T003"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-elm-call-off",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "real_handoff": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 4681,
+      "decision": {},
+      "response": {
+        "status": "escalated",
+        "summary": "I can't reschedule or cancel existing visits yet. I've passed your request to the operations team for review. An operations handoff is recorded as HANDOFF-0001.",
+        "reply": "I can't reschedule or cancel existing visits yet. I've passed your request to the operations team for review. An operations handoff is recorded as HANDOFF-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "escalations",
+            "record_id": "HANDOFF-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4614,
+          "output_tokens": 272,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "escalate",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-elm-buzzing-not-hazard",
+      "category": "heldout",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": false,
+        "reply_details": false,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": false,
+        "forbidden_attempts": false,
+        "forbidden_reads": true,
+        "handoff_count": false,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5564,
+      "decision": {},
+      "response": {
+        "status": "escalated",
+        "summary": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "escalations",
+            "record_id": "HANDOFF-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4640,
+          "output_tokens": 440,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "escalate",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-granite-burning-odour",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "real_handoff": true,
+        "safety_reply": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 1230,
+      "decision": {},
+      "response": {
+        "status": "escalated",
+        "summary": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "escalations",
+            "record_id": "HANDOFF-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 434,
+          "output_tokens": 27,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "escalate",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-cobalt-sixty-credit",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5465,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Applied a $60.00 service credit to invoice I003. Credit reference: CREDIT-0001.",
+        "reply": "Applied a $60.00 service credit to invoice I003. Credit reference: CREDIT-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "invoices",
+            "record_id": "I003"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T003"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A003"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S003"
+          },
+          {
+            "collection": "credits",
+            "record_id": "CREDIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 5482,
+          "output_tokens": 315,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "query": "I003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "record_id": "I003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T003"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "issue_credit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-cobalt-larger-credit",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3766,
+      "decision": {},
+      "response": {
+        "status": "escalated",
+        "summary": "Supervisor approval PENDING-0001 is pending for a $220.00 credit on invoice I003. No credit has been applied.",
+        "reply": "Supervisor approval PENDING-0001 is pending for a $220.00 credit on invoice I003. No credit has been applied.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "invoices",
+            "record_id": "I003"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T003"
+          },
+          {
+            "collection": "approvals",
+            "record_id": "PENDING-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4614,
+          "output_tokens": 293,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "query": "I003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "record_id": "I003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T003"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "approvals",
+            "query": "I003"
+          }
+        },
+        {
+          "tool": "request_approval",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-dune-unpaid-credit",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 4418,
+      "decision": {},
+      "response": {
+        "status": "blocked",
+        "summary": "Invoice I004 is not recorded as paid. A service credit requires a paid invoice. No credit or approval request was created.",
+        "reply": "Invoice I004 is not recorded as paid. A service credit requires a paid invoice. No credit or approval request was created.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "invoices",
+            "record_id": "I004"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T004"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4604,
+          "output_tokens": 280,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "query": "I004"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "record_id": "I004"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T004"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T004"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-dune-resolved-booking",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 4496,
+      "decision": {},
+      "response": {
+        "status": "blocked",
+        "summary": "This ticket is resolved or unavailable for scheduling. No visit was booked.",
+        "reply": "This ticket is resolved or unavailable for scheduling. No visit was booked.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T004"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A004"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S004"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4610,
+          "output_tokens": 316,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T004"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T004"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A004"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A004"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S004"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S004"
+          }
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-granite-sister-company",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5232,
+      "decision": {},
+      "response": {
+        "status": "blocked",
+        "summary": "The requested billing record is unavailable within your authorized account. Please confirm the reference or contact support for access verification.",
+        "reply": "The requested billing record is unavailable within your authorized account. Please confirm the reference or contact support for access verification.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4630,
+          "output_tokens": 443,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "query": "I003"
+          }
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-cobalt-forwardable-summary",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "message_content": true,
+        "message_evidence": true,
+        "message_not_sent_or_stored": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 4837,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Here is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T003\n\nTicket T003 for equipment A003 at site S003 is open. Repair completion is not yet confirmed.",
+        "reply": "Here is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T003\n\nTicket T003 for equipment A003 at site S003 is open. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T003"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A003"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S003"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C003"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4618,
+          "output_tokens": 403,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S003"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C003"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C003"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "heldout-elm-qualify-question",
+      "category": "heldout",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5329,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Invoice I005 for ticket T005 is eligible for a service credit of up to $505.00; credits above $100.00 need supervisor approval. If you'd like a credit on it, tell me the amount.",
+        "reply": "Invoice I005 for ticket T005 is eligible for a service credit of up to $505.00; credits above $100.00 need supervisor approval. If you'd like a credit on it, tell me the amount.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "invoices",
+            "record_id": "I005"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T005"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4612,
+          "output_tokens": 308,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "query": "I005"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "invoices",
+            "record_id": "I005"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T005"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T005"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    }
+  ]
+}

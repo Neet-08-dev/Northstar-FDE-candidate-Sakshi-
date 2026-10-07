@@ -11,14 +11,15 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 from urllib.error import HTTPError
 from urllib.request import urlopen
+from zoneinfo import ZoneInfo
 
 from agents.tool_context import ToolContext
 
 from northstar.api import APIServer
 from northstar.http import request_json
-from starter.actions import Decision, RequestedTime
+from starter.actions import Decision, RequestedTime, resolve_requested_time
 from starter.agent import Handler
-from starter.orchestration import SafetyScreen, interpret, resolve_requested_time
+from starter.orchestration import SafetyScreen, interpret
 
 # Interpretation is controlled in these tests; the independent write check approves.
 # Its own behavior, including rejection and failure, is covered in test_write_check.py.
@@ -54,54 +55,85 @@ def run_result(output):
 
 class NaturalTimeTests(unittest.TestCase):
     def test_defaults_overrides_and_scoped_calendar(self):
+        india = ZoneInfo("Asia/Kolkata")
         cases = [
-            # 8 april 7:30 PM, defaulting to IST and the scoped year.
+            # 8 april 2 PM, defaulting to the site's UTC zone and the scoped year.
             (
-                requested(month=4, day=8, hour=19, minute=30),
+                requested(month=4, day=8, hour=14),
                 "2030-04-08T09:00:00Z",
+                None,
                 "2030-04-08T14:00:00Z",
             ),
             (
                 requested(month=4, day=8, hour=19, minute=30, year=2031, offset=330),
                 "2030-04-08T09:00:00Z",
+                None,
                 "2031-04-08T14:00:00Z",
             ),
             (
                 requested(month=4, day=8, hour=14, offset=0),
                 "2030-04-08T09:00:00Z",
+                india,
                 "2030-04-08T14:00:00Z",
             ),
             (
                 requested(month=4, day=8, hour=7, offset=-180),
                 "2030-04-08T09:00:00Z",
+                None,
                 "2030-04-08T10:00:00Z",
             ),
-            (requested("today", hour=0), "2030-12-31T20:00:00Z", "2030-12-31T18:30:00Z"),
+            (requested("today", hour=0), "2030-12-31T20:00:00Z", None, "2030-12-31T00:00:00Z"),
             (
-                requested("tomorrow", hour=19, minute=30),
+                requested("tomorrow", hour=10),
                 "2030-12-31T20:00:00Z",
-                "2031-01-02T14:00:00Z",
+                None,
+                "2031-01-01T10:00:00Z",
             ),
-            # The scoped IST date has already rolled into 2031.
+            # A site in another zone: its local date has already rolled into 2031.
             (
                 requested(month=1, day=1, hour=19, minute=30),
                 "2030-12-31T20:00:00Z",
+                india,
                 "2031-01-01T14:00:00Z",
             ),
             (
-                requested(month=1, day=1, hour=19, minute=30, offset=0),
+                requested("tomorrow", hour=19, minute=30),
                 "2030-12-31T20:00:00Z",
+                india,
+                "2031-01-02T14:00:00Z",
+            ),
+            (
+                requested(month=1, day=1, hour=19, minute=30),
+                "2030-12-31T20:00:00Z",
+                None,
                 "2030-01-01T19:30:00Z",
             ),
             (
-                requested(month=2, day=29, hour=19, minute=30),
+                requested(month=2, day=29, hour=14),
                 "2032-01-01T00:00:00Z",
+                None,
                 "2032-02-29T14:00:00Z",
             ),
         ]
-        for value, now, expected in cases:
-            with self.subTest(value=value, now=now):
-                self.assertEqual(resolve_requested_time(value, now), expected)
+        for value, now, zone, expected in cases:
+            with self.subTest(value=value, now=now, zone=zone):
+                args = (value, now) if zone is None else (value, now, zone)
+                self.assertEqual(resolve_requested_time(*args), expected)
+
+    def test_daylight_saving_gaps_and_repeats_are_not_one_instant(self):
+        new_york = ZoneInfo("America/New_York")
+        for value in [
+            requested(month=3, day=10, hour=2, minute=30),
+            requested(month=11, day=3, hour=1, minute=30),
+        ]:
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                resolve_requested_time(value, "2030-01-02T00:00:00Z", new_york)
+        self.assertEqual(
+            resolve_requested_time(
+                requested(month=7, day=1, hour=10), "2030-01-02T00:00:00Z", new_york
+            ),
+            "2030-07-01T14:00:00Z",
+        )
 
     def test_impossible_or_incomplete_fields_are_rejected(self):
         for value in [
@@ -227,16 +259,37 @@ class NaturalTimeTests(unittest.TestCase):
             threads.append(thread)
         api_url = f"http://127.0.0.1:{backend.server_port}"
         agent_url = f"http://127.0.0.1:{agent.server_port}"
+        afternoon = requested(month=4, day=8, hour=14)
         evening = requested(month=4, day=8, hour=19, minute=30)
+        india = {
+            "patches": [{"collection": "sites", "id": "S001", "set": {"timezone": "Asia/Kolkata"}}]
+        }
         cases = [
-            ("8 april 7:30 PM", evening, {}, "completed", "2030-04-08T14:00:00Z", "7:30 PM IST"),
+            ("8 april 2 PM", afternoon, {}, "completed", "2030-04-08T14:00:00Z", "2:00 PM UTC"),
             (
                 "8 april 14:00 UTC",
                 requested(month=4, day=8, hour=14, offset=0),
                 {},
                 "completed",
                 "2030-04-08T14:00:00Z",
-                "7:30 PM IST",
+                "2:00 PM UTC",
+            ),
+            # Times without a zone are local to the site, never a fixed default zone.
+            (
+                "8 april 7:30 PM",
+                evening,
+                india,
+                "completed",
+                "2030-04-08T14:00:00Z",
+                "7:30 PM IST (14:00 UTC)",
+            ),
+            (
+                "8 april 7:30 PM",
+                evening,
+                {},
+                "needs_clarification",
+                None,
+                "7:30 PM UTC is not available",
             ),
             (
                 "8 april 5:30 PM",
@@ -244,29 +297,29 @@ class NaturalTimeTests(unittest.TestCase):
                 {},
                 "needs_clarification",
                 None,
-                "3:30 PM IST",
+                "10:00 AM UTC",
             ),
             # The model reports an ambiguous time as unclear with no fields.
-            ("8 april 7:30", None, {}, "needs_clarification", None, "No visit has been booked"),
+            ("8 april 2:00", None, {}, "needs_clarification", None, "No visit has been booked"),
             (
-                "31 april 7:30 PM",
-                requested(month=4, day=31, hour=19, minute=30),
+                "31 april 2 PM",
+                requested(month=4, day=31, hour=14),
                 {},
                 "needs_clarification",
                 None,
                 "No visit has been booked",
             ),
             (
-                "8 april 7:30 PM",
-                evening,
+                "8 april 2 PM",
+                afternoon,
                 {"now": "2030-04-09T09:00:00Z"},
                 "needs_clarification",
                 None,
                 "No new visit was booked",
             ),
             (
-                "8 april 7:30 PM",
-                evening,
+                "8 april 2 PM",
+                afternoon,
                 {"patches": [{"collection": "assets", "id": "A001", "set": {"safety_hold": True}}]},
                 "escalated",
                 None,

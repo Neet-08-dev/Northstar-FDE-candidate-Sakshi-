@@ -1,0 +1,40 @@
+{
+  "model": "gpt-6-luna",
+  "prompt_sha256": "855e1aea91e8467cb27d0f91d526572c392dfa7664758184b5d9e99a091c8940",
+  "passed": 3,
+  "total": 4,
+  "usage": {
+    "input_tokens": 3872,
+    "output_tokens": 271
+  },
+  "results": [
+    {
+      "case": "wrong amount",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 2256
+    },
+    {
+      "case": "follow-up yes to wrong amount",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 2122
+    },
+    {
+      "case": "follow-up amount answer",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 2293
+    },
+    {
+      "case": "follow-up amount mismatch",
+      "expected": false,
+      "verdict": true,
+      "ok": false,
+      "ms": 2268
+    }
+  ]
+}

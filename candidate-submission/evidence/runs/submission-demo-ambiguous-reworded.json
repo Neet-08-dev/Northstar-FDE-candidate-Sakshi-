@@ -1,0 +1,422 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "d2472b33bd171d62d23a5cc5a4d0fa888a4c129dfbbd31e142cac6466df87f1c",
+  "mode": "live",
+  "model": "gpt-6-luna",
+  "entrypoint": "http-process",
+  "passed": 3,
+  "total": 3,
+  "results": [
+    {
+      "id": "demo-ambiguous",
+      "category": "ambiguity",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 9527,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Which ticket, or which equipment and site, do you mean? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nYour equipment:\n- HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)\n- Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)\n\nReply with the ticket or the equipment.",
+        "reply": "Which ticket, or which equipment and site, do you mean? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nYour equipment:\n- HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)\n- Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)\n\nReply with the ticket or the equipment.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 13762,
+          "output_tokens": 703,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "demo-ambiguous",
+      "category": "ambiguity",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 6832,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Which ticket, or which equipment and site, do you mean? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nYour equipment:\n- HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)\n- Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)\n\nReply with the ticket or the equipment.",
+        "reply": "Which ticket, or which equipment and site, do you mean? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nYour equipment:\n- HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)\n- Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)\n\nReply with the ticket or the equipment.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 13634,
+          "output_tokens": 437,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        }
+      ],
+      "trial": 2
+    },
+    {
+      "id": "demo-ambiguous",
+      "category": "ambiguity",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 10011,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Which ticket, or which equipment and site, do you mean? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nYour equipment:\n- HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)\n- Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)\n\nReply with the ticket or the equipment.",
+        "reply": "Which ticket, or which equipment and site, do you mean? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nYour equipment:\n- HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)\n- Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)\n\nReply with the ticket or the equipment.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 13692,
+          "output_tokens": 686,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        }
+      ],
+      "trial": 3
+    }
+  ]
+}

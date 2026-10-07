@@ -12,7 +12,8 @@ current_safety_policy.emergency_signals lists examples from the live policy. Tre
 them, and anything with the same meaning, as hazards. The list is not exhaustive.
 
 Return hazard=false when a hazard is clearly absent, denied, hypothetical or past
-and resolved ("no smoke, just a noisy fan", "the leak was fixed last week"), or the
+and resolved (a user saying there is no fire or smell, only a vibration, or that a
+past problem was repaired and is gone), or the
 request is routine: outages, warm rooms, noises, maintenance, billing, scheduling or
 messages.
 

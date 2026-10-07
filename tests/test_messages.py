@@ -98,7 +98,7 @@ class MessageIntegrationTests(unittest.TestCase):
         for response in [first, second]:
             self.assertEqual(response["status"], "completed", response)
             self.assertIn("Subject: Confirmed appointment for ticket T001", response["reply"])
-            self.assertIn("8 April 2030, 3:30 PM IST (UTC+05:30)", response["reply"])
+            self.assertIn("8 April 2030, 10:00 AM UTC", response["reply"])
             self.assertIn("not been sent or saved as a draft", response["reply"])
             self.assertNotIn(session["session_token"], json.dumps(response))
         snapshot = self.snapshot(session)

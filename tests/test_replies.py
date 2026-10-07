@@ -16,7 +16,6 @@ from starter.actions import Decision, name
 from starter.agent import Handler
 from starter.orchestration import SafetyScreen, interpret, validate_payload
 
-
 # Interpretation is controlled in these tests; the independent write check approves.
 # Its own behavior, including rejection and failure, is covered in test_write_check.py.
 _approve_writes = patch("starter.orchestration.verify_write", AsyncMock(return_value=True))
@@ -180,9 +179,7 @@ class DemoConversationTests(unittest.TestCase):
                     self.agent_url + "/demo",
                     {"body": "Hi", "conversation_id": conversation, "customer_id": customer},
                 )
-                actors = [
-                    s["world"].actor["customer_ids"] for s in self.backend.sessions.values()
-                ]
+                actors = [s["world"].actor["customer_ids"] for s in self.backend.sessions.values()]
                 self.assertEqual(actors, [[customer]])
         request_json(self.agent_url + "/demo/end", {"conversation_id": conversation})
         self.assertEqual(self.backend.sessions, {})

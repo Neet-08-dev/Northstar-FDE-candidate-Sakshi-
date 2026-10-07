@@ -1,6 +1,6 @@
 # Saved evaluation evidence
 
-The nine summary JSON files reference committed reports in `runs/`. Every `report`, `report_path` or `source_file` path is relative to the JSON file containing it. The adjacent `report_sha256` or `source_sha256` identifies the exact report bytes, including whitespace. A matching hash establishes file identity, not the validity of an evaluation.
+The ten summary JSON files reference committed reports in `runs/`. Every `report`, `report_path` or `source_file` path is relative to the JSON file containing it. The adjacent `report_sha256` or `source_sha256` identifies the exact report bytes, including whitespace. A matching hash establishes file identity, not the validity of an evaluation.
 
 These are existing development reports, including failed trials. Packaging them did not run new evaluations or alter results. The files were checked for configured secrets and credential fields; their existing reduced audit format needed no redaction, so the original bytes and recorded hashes are preserved. Demo report hashes were added during packaging.
 
@@ -68,3 +68,7 @@ The message summaries retain embedded results as well as archive references. The
 ## Helpful replies and the write check
 
 [reply-evaluations.json](reply-evaluations.json) summarizes the Luna runner reports, the 30-request probes and the final write-check probe for this change. Reports are archived under `runs/replies-*.json` with their hashes. The incomplete `luna-all-1` run is retained as stopped by a session restart.
+
+## Submission finalization
+
+[submission-evaluations.json](submission-evaluations.json) summarizes the final branch's Luna runs: time-expectation and risky-case shards, the demo sweeps, the clarification repeats after the identity fix, both published-suite runs and every write-check probe, including the prompt variants that were reverted. Each raw report is archived under `runs/submission-*.json` with its hash. The published-suite reports record checks only, not replies or usage.

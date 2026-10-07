@@ -39,6 +39,12 @@ class Backend:
         if ref not in self.evidence:
             self.evidence.append(ref)
 
+    def cite(self, collection: str, rows: list[Record]) -> list[Record]:
+        """Record search results that support the outcome as evidence."""
+        for row in rows:
+            self.remember(collection, row["id"])
+        return rows
+
     async def call(self, tool: str, *, recovery: bool = False, **arguments: Any) -> Record:
         # Reserve three attempts and five seconds for an operational handoff.
         limit = self.max_attempts if recovery else self.max_attempts - 3
@@ -97,12 +103,13 @@ class Backend:
         raise BackendError("RETRIES_EXHAUSTED")
 
     async def search(self, collection: str, query: str = "") -> list[Record]:
+        # Listing is discovery, not evidence: callers cite the rows the outcome uses.
         result = await self.call("search_records", collection=collection, query=query)
         rows = result["records"]
-        if not isinstance(rows, list):
+        if not isinstance(rows, list) or not all(
+            isinstance(row, dict) and isinstance(row.get("id"), str) for row in rows
+        ):
             raise BackendError("INVALID_TOOL_RESPONSE")
-        for row in rows:
-            self.remember(collection, row["id"])
         return rows
 
     async def record(self, collection: str, record_id: str) -> Record:

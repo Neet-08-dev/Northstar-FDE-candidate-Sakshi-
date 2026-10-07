@@ -30,6 +30,10 @@ def load_cases(suite: str = "all") -> list[dict]:
     # Exact UI wording is an opt-in suite; the default already covers these action rules.
     if suite == "demo":
         return json.loads(Path(__file__).with_name("demo.json").read_text())
+    # Held-out wording for other customers, written after the prompts were frozen.
+    # Kept out of "all" so prompt work is never tuned against it.
+    if suite == "heldout":
+        return json.loads(Path(__file__).with_name("heldout.json").read_text())
     sources = {
         "service": CASES,
         "billing": BILLING_CASES,
@@ -95,7 +99,7 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
         checks["ticket_details"] = len(tickets) == 1 and all(
             row["asset_id"] == expected["ticket_asset_id"]
             and row["site_id"] == expected["ticket_site_id"]
-            and row["customer_id"] == "C001"
+            and row["customer_id"] == expected.get("customer_id", "C001")
             and row["severity"] == expected["severity"]
             and row["status"] in {"open", "in_progress"}
             and bool(row["summary"].strip())
@@ -211,7 +215,7 @@ def check_billing(expected: dict, response: dict, snapshot: dict) -> dict[str, b
         "credit_details": all(
             row["invoice_id"] == invoice_id
             and row["amount_cents"] == amount
-            and row["customer_id"] == "C001"
+            and row["customer_id"] == expected.get("customer_id", "C001")
             and row.get("approval_id", "") == expected.get("used_approval", "")
             for row in credits
         ),
@@ -221,7 +225,7 @@ def check_billing(expected: dict, response: dict, snapshot: dict) -> dict[str, b
             and row["amount_cents"] == expected.get("approval_cents")
             and row["status"] == "pending"
             and row["issuer_role"] is None
-            and row["customer_id"] == "C001"
+            and row["customer_id"] == expected.get("customer_id", "C001")
             for row in approvals
         ),
         "no_service_writes": not any(
@@ -335,7 +339,7 @@ def main():
     )
     parser.add_argument(
         "--suite",
-        choices=["all", "service", "billing", "messages", "demo", "time", "replies"],
+        choices=["all", "service", "billing", "messages", "demo", "time", "replies", "heldout"],
         default="all",
     )
     parser.add_argument("--interval", type=float, default=10, help="Seconds between paid cases")

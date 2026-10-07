@@ -5,9 +5,9 @@ import json
 import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Literal
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
@@ -130,14 +130,79 @@ def utc(value: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
-IST = ZoneInfo("Asia/Kolkata")
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
 
-def display_time(value: str) -> str:
-    local = utc(value).astimezone(IST)
-    clock = f"{local.hour % 12 or 12}:{local:%M} {local:%p}"
-    return f"{local.day} {local:%B %Y}, {clock} IST (UTC+05:30)"
+def site_zone(site: Record) -> tzinfo:
+    """The site's recorded timezone; times without a stated zone are local to the site."""
+    try:
+        return ZoneInfo(site["timezone"])
+    except (KeyError, TypeError, ValueError, ZoneInfoNotFoundError) as exc:
+        raise ValueError("Site timezone unavailable") from exc
+
+
+def display_zone(site: Record) -> tzinfo:
+    """For showing a stored instant only: every displayed time also states UTC."""
+    try:
+        return site_zone(site)
+    except ValueError:
+        return timezone.utc
+
+
+def display_time(value: str, zone: tzinfo = timezone.utc) -> str:
+    """A date and clock time in the site's zone, always with the UTC time."""
+    instant = utc(value)
+    local = instant.astimezone(zone)
+    text = f"{local.day} {local:%B %Y}, {local.hour % 12 or 12}:{local:%M} {local:%p}"
+    if local.utcoffset() == timedelta(0):
+        return text + " UTC"
+    return f"{text} {local.tzname()} ({instant:%H:%M} UTC)"
+
+
+def resolve_requested_time(requested: RequestedTime, now: str, zone: tzinfo = timezone.utc) -> str:
+    """Resolve model-read calendar fields using only the request-scoped clock.
+
+    The model decides what the user meant; this only does calendar arithmetic.
+    A time without a stated offset is local to the site's zone. An omitted year
+    means the current calendar year in that zone, even when that date has passed.
+    Availability checks decide whether it is bookable.
+    """
+    if requested.utc_offset_minutes is not None:
+        if not -720 <= requested.utc_offset_minutes <= 840:
+            raise ValueError("Invalid UTC offset")
+        zone = timezone(timedelta(minutes=requested.utc_offset_minutes))
+    scoped_now = utc(now).astimezone(zone)
+    if requested.relative_day != "none":
+        if any(v is not None for v in [requested.year, requested.month, requested.day]):
+            raise ValueError("Relative day conflicts with a calendar date")
+        day = scoped_now.date() + timedelta(days=int(requested.relative_day == "tomorrow"))
+    else:
+        if requested.month is None or requested.day is None:
+            raise ValueError("One calendar date required")
+        day = datetime(requested.year or scoped_now.year, requested.month, requested.day).date()
+    local = datetime.combine(day, datetime.min.time()).replace(
+        hour=requested.hour, minute=requested.minute
+    )
+    instant = local.replace(tzinfo=zone)
+    # A wall time skipped or repeated by a daylight-saving change is not one instant.
+    if instant.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None) != local or (
+        instant.utcoffset() != instant.replace(fold=1).utcoffset()
+    ):
+        raise ValueError("Ambiguous local time")
+    return instant.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def resolve_time(decision: Decision, now: str, zone: tzinfo = timezone.utc) -> Decision:
+    """Fill starts_at from requested_time, or mark the time unclear so the user is asked."""
+    if decision.requested_time is None:
+        return decision
+    try:
+        if decision.time_mode != "exact":
+            raise ValueError("Conflicting time modes")
+        resolved = resolve_requested_time(decision.requested_time, now, zone)
+        return decision.model_copy(update={"starts_at": resolved})
+    except (ValueError, TypeError, OverflowError):
+        return decision.model_copy(update={"time_mode": "unclear", "starts_at": ""})
 
 
 def name(value: object) -> str:
@@ -187,7 +252,7 @@ def clarification(reason: str, decision: Decision | None = None) -> Outcome:
         "identity": "Which ticket, or which equipment and site, do you mean?",
         "issue": "What is wrong with the equipment: has it stopped working, or does it need nonurgent maintenance?",
         "conditional": "Recording a ticket, booking a visit and preparing a message are separate steps. May I keep the completed steps if a later step cannot finish?",
-        "time": "When would you like the visit? Tell me a date and time, or ask for the earliest available slot. Times default to IST; include a UTC offset for another timezone.",
+        "time": "When would you like the visit? Tell me a date and time, or ask for the earliest available slot. Times are in the site's local timezone unless you state another.",
         "intent": HELP_REPLY,
         "help": HELP_REPLY,
         "message": (
@@ -239,7 +304,15 @@ class Actions:
             for a in sorted(await self.backend.search("assets"), key=lambda a: a["id"])
             if a.get("customer_id") in customers and a.get("site_id") in sites
         ][:40]
-        facts = {"current_time": display_time(self.context["now"]), "account_equipment": equipment}
+        facts = {
+            "current_time": display_time(self.context["now"]),
+            "site_timezones": {
+                s["id"]: s.get("timezone")
+                for s in sites.values()
+                if s.get("customer_id") in customers
+            },
+            "account_equipment": equipment,
+        }
         if await self.verify(action, facts):
             self.write_confirmed = True
             return None
@@ -318,7 +391,7 @@ class Actions:
         try:
             if decision.intent == "clarify":
                 if decision.clarification == "identity":
-                    return await self._ticket_options(clarification("identity").reply)
+                    return await self._identity_options()
                 return clarification(decision.clarification, decision)
             if decision.intent == "status":
                 return await self.answer_status(decision)
@@ -488,7 +561,7 @@ class Actions:
                 return Outcome("completed", ineligible)
             return Outcome(
                 "completed",
-                f"Invoice {invoice_id} for ticket {ticket['id']} is eligible for a service credit of up to {dollars(remaining)}{self._approval_note(limit, always, remaining)}. Would you like me to request one? Tell me the amount.",
+                f"Invoice {invoice_id} for ticket {ticket['id']} is eligible for a service credit of up to {dollars(remaining)}{self._approval_note(limit, always, remaining)}. If you'd like a credit on it, tell me the amount.",
             )
         if ineligible:
             return Outcome("blocked", ineligible + " No credit or approval request was created.")
@@ -521,6 +594,7 @@ class Actions:
                 and row["amount_cents"] == amount
                 and row.get("customer_id") == invoice["customer_id"]
             ]
+            b.cite("approvals", approvals)
             grant = None
             pending = None
             for candidate in sorted(approvals, key=lambda row: row["id"]):
@@ -628,8 +702,8 @@ class Actions:
             f"{percent}% of invoice {invoice_id}'s {dollars(total)} total is {dollars(amount)}. Would you like me to {step} to invoice {invoice_id}? No credit or approval request was created.",
         )
 
-    async def _ticket_options(self, question: str, ask_time: bool = False) -> Outcome:
-        """Ask which ticket, offering the requester's own open tickets as verified options."""
+    async def _ticket_lines(self) -> list[str]:
+        """The requester's own open tickets, with equipment and site names, as options."""
         b = self.backend
         customers = self.context["actor"]["customer_ids"]
         tickets = sorted(
@@ -640,18 +714,42 @@ class Actions:
             ),
             key=lambda t: t["id"],
         )
-        if tickets:
-            assets = {a["id"]: a for a in await b.search("assets")}
-            sites = {s["id"]: s for s in await b.search("sites")}
-            lines = []
-            for t in tickets[:3]:
-                asset, site = assets.get(t["asset_id"]), sites.get(t["site_id"])
-                where = (
-                    describe(asset, site)
-                    if asset and site
-                    else f"equipment {t['asset_id']} at site {t['site_id']}"
-                )
-                lines.append(f"- {t['id']}: {where}, {t['status'].replace('_', ' ')}")
+        if not tickets:
+            return []
+        assets = {a["id"]: a for a in await b.search("assets")}
+        sites = {s["id"]: s for s in await b.search("sites")}
+        lines = []
+        for t in b.cite("tickets", tickets[:3]):
+            asset, site = assets.get(t["asset_id"]), sites.get(t["site_id"])
+            where = (
+                describe(asset, site)
+                if asset and site
+                else f"equipment {t['asset_id']} at site {t['site_id']}"
+            )
+            lines.append(f"- {t['id']}: {where}, {t['status'].replace('_', ' ')}")
+        return lines
+
+    async def _equipment_lines(self) -> list[str]:
+        """The requester's own active equipment, with site names, as options."""
+        customers = self.context["actor"]["customer_ids"]
+        assets = sorted(
+            (
+                a
+                for a in await self.backend.search("assets")
+                if a.get("customer_id") in customers and a.get("status") == "active"
+            ),
+            key=lambda a: a["id"],
+        )
+        if not assets:
+            return []
+        sites = {s["id"]: s for s in await self.backend.search("sites")}
+        shown = self.backend.cite("assets", [a for a in assets[:3] if a["site_id"] in sites])
+        return [f"- {describe(a, sites[a['site_id']])}" for a in shown]
+
+    async def _ticket_options(self, question: str, ask_time: bool = False) -> Outcome:
+        """Ask which ticket, offering the requester's own open tickets as verified options."""
+        lines = await self._ticket_lines()
+        if lines:
             text = (
                 f"{question} Your open tickets:\n"
                 + "\n".join(lines)
@@ -665,25 +763,27 @@ class Actions:
 
     async def _equipment_options(self, question: str, ask_time: bool = False) -> Outcome:
         """Ask which equipment, offering the requester's own active assets as verified options."""
-        customers = self.context["actor"]["customer_ids"]
-        assets = sorted(
-            (
-                a
-                for a in await self.backend.search("assets")
-                if a.get("customer_id") in customers and a.get("status") == "active"
-            ),
-            key=lambda a: a["id"],
-        )
-        if not assets:
+        lines = await self._equipment_lines()
+        if not lines:
             return clarification("identity")
-        sites = {s["id"]: s for s in await self.backend.search("sites")}
-        lines = [
-            f"- {describe(a, sites[a['site_id']])}" for a in assets[:3] if a["site_id"] in sites
-        ]
         text = f"{question} Your equipment:\n" + "\n".join(lines) + "\n\nReply with the equipment."
         if ask_time:
             text += " Also tell me when: the earliest available slot, or a date and time."
         return Outcome("needs_clarification", text)
+
+    async def _identity_options(self) -> Outcome:
+        """Ask which record a description meant, offering open tickets and active equipment."""
+        tickets, equipment = await self._ticket_lines(), await self._equipment_lines()
+        if not tickets and not equipment:
+            return clarification("identity")
+        text = clarification("identity").reply
+        if tickets:
+            text += " Your open tickets:\n" + "\n".join(tickets)
+        if equipment:
+            text += ("\n\nYour equipment:\n" if tickets else " Your equipment:\n") + "\n".join(
+                equipment
+            )
+        return Outcome("needs_clarification", text + "\n\nReply with the ticket or the equipment.")
 
     async def answer_status(self, decision: Decision) -> Outcome:
         """Answer a ticket or visit question from verified records; never writes."""
@@ -725,9 +825,9 @@ class Actions:
             key=lambda v: utc(v["starts_at"]),
         )
         if visits:
-            visit = visits[0]
+            visit = b.cite("visits", visits[:1])[0]
             lines.append(
-                f"The next one-hour visit is booked for {display_time(visit['starts_at'])} with technician {visit['technician_id']} (visit {visit['id']})."
+                f"The next one-hour visit is booked for {display_time(visit['starts_at'], display_zone(site))} with technician {visit['technician_id']} (visit {visit['id']})."
             )
         elif status != "resolved":
             lines.append(
@@ -811,9 +911,14 @@ class Actions:
             f"Ticket {ticket['id']} for equipment {asset['id']} at site {site['id']} is {status}."
         )
         if decision.message_purpose == "appointment_update":
-            visits = [
-                v for v in await b.search("visits", ticket["id"]) if v["ticket_id"] == ticket["id"]
-            ]
+            visits = b.cite(
+                "visits",
+                [
+                    v
+                    for v in await b.search("visits", ticket["id"])
+                    if v["ticket_id"] == ticket["id"]
+                ],
+            )
             if not visits:
                 return Outcome(
                     "needs_clarification",
@@ -839,7 +944,7 @@ class Actions:
             subject = f"Confirmed appointment for ticket {ticket['id']}"
             body = (
                 f"A one-hour service visit for ticket {ticket['id']}, equipment {asset['id']} "
-                f"at site {site['id']}, is confirmed for {display_time(visit['starts_at'])}. "
+                f"at site {site['id']}, is confirmed for {display_time(visit['starts_at'], display_zone(site))}. "
                 f"The visit reference is {visit['id']}. Repair completion is not yet confirmed."
             )
         elif decision.message_purpose != "ticket_update":
@@ -963,7 +1068,7 @@ class Actions:
                 "Service coverage is unavailable or expired. Operations must quote or reconcile coverage.",
                 ticket_id,
             )
-        return asset, site, contracts
+        return asset, site, b.cite("contracts", contracts)
 
     async def _open_ticket(self, asset_id: str) -> Record | None:
         rows = [
@@ -973,7 +1078,7 @@ class Actions:
         ]
         if len(rows) > 1:
             raise BackendError("CONFLICTING_OPEN_TICKETS")
-        return rows[0] if rows else None
+        return self.backend.cite("tickets", rows)[0] if rows else None
 
     async def intake_service(self, decision: Decision) -> Outcome:
         if not decision.asset_id:
@@ -1120,9 +1225,22 @@ class Actions:
                 return eligible
             ticket, asset, site, contracts = eligible
             where = describe(asset, site)
-            existing = [
-                v for v in await b.search("visits", ticket["id"]) if v["ticket_id"] == ticket["id"]
-            ]
+            try:
+                zone = site_zone(site)
+            except ValueError:
+                return await self.handoff(
+                    "operations", "The site timezone needs reconciliation.", ticket["id"]
+                )
+            if decision.requested_time is not None:
+                decision = resolve_time(decision, self.context["now"], zone)
+            existing = b.cite(
+                "visits",
+                [
+                    v
+                    for v in await b.search("visits", ticket["id"])
+                    if v["ticket_id"] == ticket["id"]
+                ],
+            )
             if existing:
                 visit = existing[0]
                 if len(existing) != 1 or not await self._valid_existing_visit(
@@ -1134,9 +1252,9 @@ class Actions:
                 if self._exact(decision) and utc(visit["starts_at"]) != utc(decision.starts_at):
                     return Outcome(
                         "needs_clarification",
-                        f"Ticket {ticket['id']} already has a visit at {display_time(visit['starts_at'])}. Please confirm whether you want operations to reschedule it.",
+                        f"Ticket {ticket['id']} already has a visit at {display_time(visit['starts_at'], zone)}. Please confirm whether you want operations to reschedule it.",
                     )
-                return self._booked(ticket["id"], where, visit, existing=True)
+                return self._booked(ticket["id"], where, visit, zone, existing=True)
             slots = (await b.call("list_slots", asset_id=asset["id"]))["slots"]
             candidates = []
             for slot in slots:
@@ -1155,7 +1273,9 @@ class Actions:
             # Distinct open start times, earliest first; options never book anything.
             times = list(dict.fromkeys(utc(s["starts_at"]) for s in candidates))
             if decision.time_mode != "earliest" and not self._exact(decision) and times:
-                return self._slot_options(ticket["id"], where, times, decision.time_preference)
+                return self._slot_options(
+                    ticket["id"], where, times, decision.time_preference, zone
+                )
             if self._exact(decision):
                 wanted = utc(decision.starts_at)
                 matching = [s for s in candidates if utc(s["starts_at"]) == wanted]
@@ -1163,8 +1283,8 @@ class Actions:
                     nearest = sorted(sorted(times, key=lambda t: abs(t - wanted))[:3])
                     return Outcome(
                         "needs_clarification",
-                        f"{display_time(decision.starts_at)} is not available for ticket {ticket['id']}. The nearest open one-hour slots for {where} are:\n"
-                        + "\n".join(f"- {display_time(t.isoformat())}" for t in nearest)
+                        f"{display_time(decision.starts_at, zone)} is not available for ticket {ticket['id']}. The nearest open one-hour slots for {where} are:\n"
+                        + "\n".join(f"- {display_time(t.isoformat(), zone)}" for t in nearest)
                         + "\n\nReply with the slot you want. No new visit was booked.",
                     )
                 candidates = matching
@@ -1187,7 +1307,7 @@ class Actions:
                 )
             when = (
                 "at the earliest open slot, " if decision.time_mode == "earliest" else ""
-            ) + display_time(slot["starts_at"])
+            ) + display_time(slot["starts_at"], zone)
             check = await self._confirm_write(
                 f"book a one-hour technician visit for ticket {ticket['id']}, {where}, {when}"
             )
@@ -1209,7 +1329,7 @@ class Actions:
                     idempotency_key=operation_key(self.request_id, "schedule_visit", args),
                 )
                 b.remember("visits", visit["id"])
-                return self._booked(ticket["id"], where, visit)
+                return self._booked(ticket["id"], where, visit, zone)
             except BackendError as exc:
                 if replan == 0 and exc.code in {
                     "SLOT_UNAVAILABLE",
@@ -1226,9 +1346,10 @@ class Actions:
         where: str,
         times: list[datetime],
         preference: TimePreference | None,
+        zone: tzinfo,
     ) -> Outcome:
         """Ask when, offering up to three verified open slots; never books."""
-        matching = [t for t in times if self._matches(t, preference)] if preference else times
+        matching = [t for t in times if self._matches(t, preference, zone)] if preference else times
         lead = f"When would you like the visit for ticket {ticket_id}, {where}?"
         if preference and not matching:
             lead += " There are no open slots matching that preference. The nearest open one-hour slots are:"
@@ -1241,14 +1362,14 @@ class Actions:
             "needs_clarification",
             lead
             + "\n"
-            + "\n".join(f"- {display_time(t.isoformat())}" for t in matching[:3])
+            + "\n".join(f"- {display_time(t.isoformat(), zone)}" for t in matching[:3])
             + "\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
         )
 
-    def _matches(self, start: datetime, preference: TimePreference) -> bool:
-        """Calendar filtering of a model-read preference, in IST."""
-        local = start.astimezone(IST)
-        today = utc(self.context["now"]).astimezone(IST).date()
+    def _matches(self, start: datetime, preference: TimePreference, zone: tzinfo) -> bool:
+        """Calendar filtering of a model-read preference, in the site's zone."""
+        local = start.astimezone(zone)
+        today = utc(self.context["now"]).astimezone(zone).date()
         monday = today - timedelta(days=today.weekday())
         if preference.relative == "next_week":
             monday += timedelta(days=7)
@@ -1276,9 +1397,11 @@ class Actions:
         return (days is None or local.date() in days) and hours[0] <= local.hour < hours[1]
 
     @staticmethod
-    def _booked(ticket_id: str, where: str, visit: Record, existing: bool = False) -> Outcome:
+    def _booked(
+        ticket_id: str, where: str, visit: Record, zone: tzinfo, existing: bool = False
+    ) -> Outcome:
         lead = "Already scheduled" if existing else "Booked"
         return Outcome(
             "completed",
-            f"{lead}: ticket {ticket_id} for {where}, visit {visit['id']}, technician {visit['technician_id']}, at {display_time(visit['starts_at'])} for one hour. Repair completion is not yet confirmed.",
+            f"{lead}: ticket {ticket_id} for {where}, visit {visit['id']}, technician {visit['technician_id']}, at {display_time(visit['starts_at'], zone)} for one hour. Repair completion is not yet confirmed.",
         )
