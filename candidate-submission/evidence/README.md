@@ -1,6 +1,6 @@
 # Saved evaluation evidence
 
-The seven summary JSON files reference committed reports in `runs/`. Every `report`, `report_path` or `source_file` path is relative to the JSON file containing it. The adjacent `report_sha256` or `source_sha256` identifies the exact report bytes, including whitespace. A matching hash establishes file identity, not the validity of an evaluation.
+The nine summary JSON files reference committed reports in `runs/`. Every `report`, `report_path` or `source_file` path is relative to the JSON file containing it. The adjacent `report_sha256` or `source_sha256` identifies the exact report bytes, including whitespace. A matching hash establishes file identity, not the validity of an evaluation.
 
 These are existing development reports, including failed trials. Packaging them did not run new evaluations or alter results. The files were checked for configured secrets and credential fields; their existing reduced audit format needed no redaction, so the original bytes and recorded hashes are preserved. Demo report hashes were added during packaging.
 
@@ -60,3 +60,11 @@ The message summaries retain embedded results as well as archive references. The
 ## Billing and message integration
 
 [integration-evaluations.json](integration-evaluations.json) references the failing mixed-credit/message regression and its passing correction. Both are offline controlled-interpretation runs against the real synthetic backend. They do not measure model understanding.
+
+## Model-first interpretation
+
+[model-first-evaluations.json](model-first-evaluations.json) summarizes thirteen GPT-6.1 Sol runs across prompt versions v1 to v6 and two unchanged-staging baselines. Each report is archived under `runs/model-first-*.json` with its hash. The two `final-all-http` and `final-demo-http` reports record the credit-exhausted stops and are retained as failures. A restarted v4 full run (144/145) was deleted before archiving and is described in EVALS.md but not included.
+
+## Helpful replies and the write check
+
+[reply-evaluations.json](reply-evaluations.json) summarizes the Luna runner reports, the 30-request probes and the final write-check probe for this change. Reports are archived under `runs/replies-*.json` with their hashes. The incomplete `luna-all-1` run is retained as stopped by a session restart.

@@ -231,7 +231,15 @@
       "ticket_id": "T001",
       "site_id": "S001",
       "time_mode": "exact",
-      "requested_time": "8 april 7:30 PM"
+      "requested_time": {
+        "relative_day": "none",
+        "year": null,
+        "month": 4,
+        "day": 8,
+        "hour": 19,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
     },
     "fixture": {},
     "expected": {
@@ -272,7 +280,15 @@
       "ticket_id": "T001",
       "site_id": "S001",
       "time_mode": "exact",
-      "requested_time": "8 april 5:30 PM"
+      "requested_time": {
+        "relative_day": "none",
+        "year": null,
+        "month": 4,
+        "day": 8,
+        "hour": 17,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
     },
     "fixture": {},
     "expected": {
@@ -280,7 +296,7 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "requested time is unavailable",
+        "is not available for ticket T001",
         "8 April 2030, 3:30 PM IST",
         "No new visit was booked."
       ],
@@ -622,7 +638,7 @@
         "is open."
       ],
       "reply_contains": [
-        "registered contact CONTACT001"
+        "registered contact Contact 01 (CONTACT001)"
       ],
       "message_evidence": [
         {

@@ -16,9 +16,10 @@ from dotenv import load_dotenv
 
 from northstar.api import APIServer
 from northstar.http import request_json
+from starter import orchestration
 from starter.actions import Decision
 from starter.agent import Handler
-from starter.orchestration import interpret, process_async
+from starter.orchestration import interpret, process_async, verify_write
 
 CASES = Path(__file__).with_name("scheduling.json")
 BILLING_CASES = Path(__file__).with_name("billing.json")
@@ -34,6 +35,7 @@ def load_cases(suite: str = "all") -> list[dict]:
         "billing": BILLING_CASES,
         "messages": MESSAGE_CASES,
         "time": Path(__file__).with_name("time.json"),
+        "replies": Path(__file__).with_name("replies.json"),
     }
     return [
         case
@@ -267,6 +269,9 @@ async def run_case(
         "run_id": run_id,
         "request": {**case["request"], "id": run_id},
     }
+    if case.get("conversation"):
+        # Earlier turns of a follow-up, as the demo dashboard sends them.
+        payload["conversation"] = case["conversation"]
 
     selected_decision: dict = {}
 
@@ -280,7 +285,9 @@ async def run_case(
         response = (
             await asyncio.to_thread(request_json, process_url + "/process", payload, timeout=65)
             if process_url
-            else await process_async(payload, interpreter=interpretation)
+            else await process_async(
+                payload, interpreter=interpretation, verifier=None if offline else verify_write
+            )
         )
         snapshot = request_json(
             api_url + "/admin/sessions/" + session["session_id"] + "/finalize", {}, admin_token
@@ -327,13 +334,23 @@ def main():
         "--http", action="store_true", help="Run live through the real /process HTTP handler"
     )
     parser.add_argument(
-        "--suite", choices=["all", "service", "billing", "messages", "demo", "time"], default="all"
+        "--suite",
+        choices=["all", "service", "billing", "messages", "demo", "time", "replies"],
+        default="all",
     )
     parser.add_argument("--interval", type=float, default=10, help="Seconds between paid cases")
     parser.add_argument("--trials", type=int, default=1)
     parser.add_argument("--cases", help="Comma-separated authored case IDs")
     parser.add_argument("--out", default="reports/scheduling.json")
+    parser.add_argument(
+        "--model",
+        choices=["gpt-6.1-sol", "gpt-6-luna"],
+        default=orchestration.MODEL,
+        help="Evaluation-only model override for comparison; the service is fixed to Luna",
+    )
     args = parser.parse_args()
+    # The runner hosts the agent in-process, so this never changes a deployed service.
+    orchestration.MODEL = args.model
     if args.http and args.offline:
         parser.error("--http requires live interpretation")
     if not 1 <= args.trials <= 5:
@@ -401,7 +418,7 @@ def main():
             "incomplete": stopped,
             "prompt_sha256": prompt_sha256,
             "mode": "offline-controlled-interpretation" if args.offline else "live",
-            "model": None if args.offline else os.environ.get("OPENAI_MODEL", "gpt-6.1-sol"),
+            "model": None if args.offline else orchestration.MODEL,
             "entrypoint": "http-process" if args.http else "process_async",
             "passed": sum(r["passed"] for r in rows),
             "total": len(rows),

@@ -90,6 +90,8 @@ Book ticket T001 at the earliest available time.</textarea
             >
             <div class="form-actions">
               <span id="selection-note" role="status"></span
+              ><button type="button" class="secondary" id="new-conversation" hidden>
+                New conversation</button
               ><button type="submit" class="primary" id="run">
                 Send request <span aria-hidden="true">→</span>
               </button>
@@ -127,8 +129,8 @@ Book ticket T001 at the earliest available time.</textarea
         </section>
       </div>
       <p class="footnote">
-        Each submission uses fresh synthetic records. No real customer visits,
-        payments or messages.
+        Each conversation uses fresh synthetic records; follow-ups continue it. No
+        real customer visits, payments or messages.
       </p>
     </main>
     <div id="toast" role="status"></div>

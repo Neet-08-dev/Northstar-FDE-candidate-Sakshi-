@@ -282,3 +282,54 @@ The time regressions cover IST/year defaults, explicit dates and offsets, ISO ti
 In-app browser checks used the same production HTML/CSS/JS with a separate controlled interpreter and real synthetic backend on ports 8072/8073. Desktop and 390-pixel mobile checks covered example selection without submission, one open category, selection state, old-response clearing, mobile collapse/focus, loading controls, successful and unavailable visits, copyable appointment messages and keyboard/pointer copy. A test-only response exercised Markdown headings, bold, lists, quotation, code and safe links. Script/image text and a javascript link produced zero executable elements or unsafe anchors. Subject/body occurred once and multiline clipboard text matched the displayed message. An injected HTTP 503 produced the unavailable-response state and restored controls. No presentation test response is served by the review dashboard.
 
 The isolated review project is `northstar-ui-integration`, with dashboard http://localhost:8070 and mock backend http://localhost:8071. The existing ignored key is configured for GPT-6.1 Sol. Docker builds, health, process contract, source matching and current browser presentation are verified separately from interpretation. Screenshots, raw reports and synthetic snapshots remain ignored under `reports/ui-integration/`. The user authorized at most six current-prompt GPT-6.1 Sol live HTTP trials. All six passed on code revision `fb16e5e`: IST/year defaults, explicit UTC, tomorrow, New Year rollover from scoped context, ambiguous time and contradictory zones. Four confirmed one-hour UTC bookings; two produced clarification with no booking attempts or other business writes. Finalized synthetic backend snapshots and the response report are retained locally under `reports/ui-integration/live/`. Measured usage was 16,622 input and 597 output tokens; dollar cost is unknown. These are one trial per authored case, not a broad reliability estimate or live verification of every demo wording. Historical live results above do not count toward this change.
+
+## Model-first interpretation, 8 October 2026
+
+This change removes every keyword and phrase rule applied to request text: the fixed hazard regex and policy-signal pre-screen, the literal time-string parser and its verbatim check, the substring record search used by the interpreter, and the dashboard's reply-prose parsing. A parallel GPT-6.1 Sol safety screen, structured time fields and full-scope record listing replace them; the model is fixed to `gpt-6.1-sol`. Sanitized run summaries, report hashes and prompt hashes are in [evidence/model-first-evaluations.json](evidence/model-first-evaluations.json).
+
+Offline, `make check` passes 51 test methods and 169/169 authored scenarios, and all sixteen demo examples pass through controlled `/demo` HTTP with the structured message checked. New regressions cover the screen overriding interpretation, record lookups waiting for the screen, unverified requesters being screened, screen failure not assuming safety, a negated hazard ("no smoke, just a noisy fan") booking normally, strict time fields and impossible dates.
+
+| Run | Prompt | Result | Tokens in / out |
+| --- | --- | --- | --- |
+| Smoke: time and safety | v1 | 12/12 | 22802 / 844 |
+| Full authored suite (stopped by provider connection error) | v1 | 119/120 | 398438 / 11969 |
+| Remaining cases (stopped to fix prompt) | v1 | 28/30 | 101521 / 2956 |
+| All demo examples | v1 | 16/16 | 89807 / 1896 |
+| Identity/recipient fix, three trials | v2 | 21/24 | 133730 / 2793 |
+| Purpose fix, three trials | v3 | 12/15 | 63443 / 1632 |
+| Contradictory intake/message, three trials | v4 | 9/9 | 32242 / 966 |
+| Generic update wording, three trials | v5 | 24/24 | 86200 / 2473 |
+| Untested-on-final authored cases, one trial | v5 | 40/41 | 137646 / 4018 |
+| Demo examples without IDs, one trial | v5 | 5/5 | 45856 / 660 |
+| Injected-instruction fix, three trials | v6 (final) | 15/15 | 54852 / 1526 |
+| Unchanged staging baseline, three trials | staging | 0/9 | 50658 / 1151 |
+
+All live runs use GPT-6.1 Sol through the HTTP `/process` entrypoint. The first live run of the full message suite exposed three interpretation gaps that also fail 0/3 on unchanged staging `8af2471`: selecting the account's only ticket for "Write a ticket-status message", reading contacts for a bare personal name, and replacing a requested appointment message with a ticket-status message on a ticket-only intake. Prompt rules now require the request to identify a record, treat a personal name alone as an unconfirmed recipient, and preserve the requested message purpose. A follow-up purpose edit regressed `message-safety-hold` ("Draft an update for T001" began asking ticket or appointment); a restarted v4 full run caught it at 144/145 and v5 fixed it. That v4 report was deleted on restart and is not counted. `message-untrusted-prose`, never previously run live, handed off instead of ignoring injected instructions; v6 passed it 3/3 with its neighbouring unsupported-message rules.
+
+Final-prompt coverage is targeted rather than one complete pass. A restarted full run stopped when provider credit was exhausted. To stay within a $2 finalizing budget, cases were not rerun when they had passed on an earlier prompt and later edits did not touch their rules: scheduling, billing, intake and time cases passed on v1, and description-based billing and equipment cases passed 3/3 on v2. Every message case and every ID-free demo example passed on v5 or v6. Two runs stopped on provider failures; in both, the assistant recorded an operations handoff, made no other writes and opened with general safety guidance. Live usage totals 1,220,793 input and 32,987 output tokens. Billed cost is unknown; unverified third-party list prices ($2 per million input, $10 per million output tokens) give an uncached upper bound of about $2.77 for the whole change, of which about $0.54 followed the credit top-up.
+
+## Helpful replies, follow-ups and the write check, 8 October 2026
+
+This change makes clarifications offer verified options, answers read-only questions, adds demo follow-ups, and adds an independent model check before the first business write. All live runs use `gpt-6-luna` through the eval runner's `--model` override; the service model `gpt-6.1-sol` was not re-run on this code. Sanitized summaries, report hashes and prompt hashes are in [evidence/reply-evaluations.json](evidence/reply-evaluations.json).
+
+Offline, `make check` passes 68 test methods and 195/195 authored scenarios, including 26 new reply cases (slot options, record options, status and credit answers, percentage confirmation, specific unsupported replies, follow-ups, a claimed approval in an earlier turn and a hazard in a follow-up). All sixteen demo examples pass through controlled `/demo` HTTP. New unit tests cover record-name sanitizing, conversation validation, earlier turns reaching only the interpreter, demo session reuse and cleanup, and the write check rejecting, approving once per request, never gating reads or handoffs, and failing closed.
+
+| Run (Luna) | Result | Tokens in / out |
+| --- | --- | --- |
+| Reply cases, first trial (low effort) | 23/26 | 180021 / 4604 |
+| Full suite before the write check (low effort; stopped by a session restart) | 149/151 | 1008271 / 23338 |
+| Write cases with the check, first trial | 37/41 + 6/6 demo | 316243 / 28641 |
+| Failed write cases after fixes | 4/4 | 25813 / 1582 |
+| All cases not yet run on that code, seven parallel shards, 167 s | 206/207 | 1101036 / 74745 |
+| Relative-date cases after the check received the trusted clock | 3/3 | 16472 / 1217 |
+| Every write case on the final code, parallel, 63 s | 46/47 | 315051 / 21225 |
+| The one final failure, two more trials | 2/2 | 38220 / 1668 |
+| Write check alone, 23 approve/reject actions (final instructions) | 23/23 | 18925 / 1980 |
+
+The first reply trial exposed Luna booking the earliest slot for "Please book a technician for T001" and, in one of three later trials, inventing equipment, creating a ticket and booking for "Book ticket at the earliest available time". Both were unauthorized writes that every business check allowed. The write check now rejects both in the probe. Its early false alarms all came from incomplete context or our wording: an omitted year and timezone, invoice details read as unrequested records, a question that said "request" when the step was "apply", a "main loading dock" description it could not compare without the account's other sites, and "tomorrow" without a clock. Clearer descriptions plus trusted facts (current time and account equipment) fixed them without keyword or quote matching. Supervisor-approval requests are no longer gated because they only route to a person. A combined intake, booking and named-recipient message exceeded the 48-attempt bar after the check's lookups; reusing a record's scope resolution within a request reduced it from 46 to 37 attempts. The two pre-check full-suite failures were the user-approved percentage and eligibility replies, whose cases were updated.
+
+The single final-code failure, "Can someone come look at the HVAC at our main loading dock? Earliest is fine.", was a Luna interpretation miss that asked about the issue without writing; the case passed 3 of 4 trials overall. These are one-trial results on authored development cases, not repeated reliability estimates. Luna usage for this change totals about 3.2 million input and 0.17 million output tokens; at unverified third-party list prices ($0.10/M input, $0.50/M output) that is about $0.45. No Sol credit was used.
+
+## Service model switched to Luna, 8 October 2026
+
+After the results above, the user made `gpt-6-luna` the service model; `gpt-6.1-sol` remains available to the eval runner for comparison. The final-code Luna evidence above therefore now describes the shipped configuration. Across the 254 final-code Luna runner requests, latency had a median of 4.7 s, a 95th percentile of 10.2 s and a maximum of 22.9 s, with no 60-second deadline failures. The model-first commit's live results were measured on Sol and are retained as historical; no additional live run was made for this configuration-only change.

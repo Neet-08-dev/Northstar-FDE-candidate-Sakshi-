@@ -1,0 +1,549 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "a675ba85c49aa1109f8f84175fd89cd238e18e34098a7bd223b05af93e2dd52e",
+  "mode": "live",
+  "model": "gpt-6-luna",
+  "entrypoint": "http-process",
+  "passed": 2,
+  "total": 2,
+  "results": [
+    {
+      "id": "reply-described-equipment-open-ticket",
+      "category": "replies",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 15754,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Booked: ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "reply": "Booked: ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S001"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 18995,
+          "output_tokens": 770,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "T001"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "query": "TECH001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "reply-described-equipment-open-ticket",
+      "category": "replies",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 13994,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Booked: ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "reply": "Booked: ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S001"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 19225,
+          "output_tokens": 898,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "T001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "T001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "T001"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "query": "TECH001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": ""
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 2
+    }
+  ]
+}

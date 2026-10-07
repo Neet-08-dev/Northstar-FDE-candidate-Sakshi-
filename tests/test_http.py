@@ -10,6 +10,19 @@ from northstar.http import request_json, RemoteError, ToolClient
 from starter.agent import process
 
 
+# Interpretation is controlled in these tests; the independent write check approves.
+# Its own behavior, including rejection and failure, is covered in test_write_check.py.
+_approve_writes = patch("starter.orchestration.verify_write", AsyncMock(return_value=True))
+
+
+def setUpModule():
+    _approve_writes.start()
+
+
+def tearDownModule():
+    _approve_writes.stop()
+
+
 class HTTPIsolationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

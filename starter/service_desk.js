@@ -455,7 +455,60 @@ async function loadCustomers() {
   }
 }
 $("customer").addEventListener("change", (event) => {
-  if (!pending) setCustomer(event.target.value, true);
+  if (pending) return;
+  endConversation();
+  setCustomer(event.target.value, true);
+});
+
+// Follow-ups: one conversation keeps one synthetic session on the server, and the
+// last few turns are sent back as untrusted context for the model.
+let conversation = null;
+function conversationId() {
+  if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
+  return Array.from({ length: 4 }, () =>
+    Math.random().toString(36).slice(2, 10).padEnd(8, "0"),
+  ).join("-");
+}
+function endConversation() {
+  if (conversation)
+    fetch("/demo/end", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversation_id: conversation.id }),
+    }).catch(() => {});
+  conversation = null;
+  $("new-conversation").hidden = true;
+  $("body").placeholder = "";
+}
+function thread(turns) {
+  const box = node("details", undefined, "thread");
+  box.append(
+    node(
+      "summary",
+      `Earlier in this conversation (${turns.length} ${turns.length === 1 ? "turn" : "turns"})`,
+    ),
+  );
+  for (const turn of turns) {
+    const item = node("div", undefined, "thread-turn");
+    item.append(
+      node("p", `You: ${turn.body}`, "thread-you"),
+      node(
+        "p",
+        `Assistant: ${turn.reply.length > 280 ? turn.reply.slice(0, 280) + "…" : turn.reply}`,
+        "thread-assistant",
+      ),
+    );
+    box.append(item);
+  }
+  return box;
+}
+$("new-conversation").addEventListener("click", () => {
+  if (pending) return;
+  endConversation();
+  $("body").value = "";
+  $("selection-note").textContent = "New conversation started.";
+  empty("New conversation", "Write a request or choose an example.");
+  $("body").focus();
 });
 
 for (const [index, group] of [
@@ -493,6 +546,7 @@ for (const [index, group] of [
     button.append(label, node("span", "Use", "use-label"));
     button.addEventListener("click", () => {
       if (pending) return;
+      endConversation();
       loadedSample = sample;
       const text = forCustomer(sample);
       $("subject").value = text.subject;
@@ -532,7 +586,7 @@ for (const id of ["subject", "body"])
       .forEach((el) => el.setAttribute("aria-pressed", "false"));
     $("selection-note").textContent = "";
   });
-function render(result, asCustomer) {
+function render(result, asCustomer, earlier = []) {
   const labels = {
     completed: "Completed",
     needs_clarification: "Needs your input",
@@ -566,30 +620,20 @@ function render(result, asCustomer) {
     head.append(
       node("span", `As ${asCustomer.name} · ${asCustomer.id}`, "as-customer"),
     );
-  let text = result.reply;
-  let message = null;
-  // Extract only the action layer's bounded copyable-message envelope. The rest
-  // remains the actual reply. Subject/body are removed here to avoid duplication.
-  const marker = "Here is a message you can copy and send.";
-  const markerIndex = text.indexOf(marker);
-  if (
-    markerIndex >= 0 &&
-    text
-      .slice(markerIndex)
-      .includes("It has not been sent or saved as a draft.")
-  ) {
-    const match = text
-      .slice(markerIndex)
-      .match(/\n\nSubject: ([^\n]+)\n\n([\s\S]+)$/);
-    if (match) {
-      message = { subject: match[1], body: match[2], recipient: "" };
-      text =
-        text.slice(0, markerIndex) +
-        text.slice(markerIndex, markerIndex + match.index);
-    }
-  }
+  // The server returns any prepared message as structured fields, with the
+  // reply text that precedes it, so the reply prose is never parsed here.
+  const message =
+    result.message &&
+    typeof result.message === "object" &&
+    ["subject", "body", "preface"].every(
+      (key) => typeof result.message[key] === "string",
+    )
+      ? result.message
+      : null;
+  const text = message ? message.preface : result.reply;
   $("result").replaceChildren(head, markdown(text));
   if (message) $("result").append(messagePreview(message));
+  if (earlier.length) $("result").prepend(thread(earlier));
 }
 $("composer").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -608,6 +652,7 @@ $("composer").addEventListener("submit", async (event) => {
     ...document.querySelectorAll("[data-example]"),
   ];
   if (catalog) controls.push($("customer"));
+  controls.push($("new-conversation"));
   controls.forEach((el) => (el.disabled = true));
   $("run").textContent = "Submitting…";
   $("selection-note").textContent = "";
@@ -616,7 +661,15 @@ $("composer").addEventListener("submit", async (event) => {
     node("p", "Checking current records and policy…", "pending"),
   );
   const asCustomer = customer;
-  const payload = { subject: $("subject").value, body };
+  conversation ??= { id: conversationId(), turns: [] };
+  const current = conversation;
+  const subject = $("subject").value;
+  const payload = {
+    subject,
+    body,
+    conversation_id: current.id,
+    history: current.turns.slice(-4),
+  };
   if (asCustomer) payload.customer_id = asCustomer.id;
   try {
     const response = await fetch("/demo", {
@@ -625,7 +678,18 @@ $("composer").addEventListener("submit", async (event) => {
       body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error("Request failed");
-    render(await response.json(), asCustomer);
+    const result = await response.json();
+    render(result, asCustomer, current.turns.slice(-4));
+    if (conversation === current) {
+      current.turns.push({ subject, body, reply: result.reply });
+      $("new-conversation").hidden = false;
+      $("body").value = "";
+      $("body").placeholder = "Reply here to continue this conversation…";
+      loadedSample = null;
+      document
+        .querySelectorAll("[data-example]")
+        .forEach((el) => el.setAttribute("aria-pressed", "false"));
+    }
   } catch {
     $("result").replaceChildren(
       node("span", "Response unavailable", "badge red"),

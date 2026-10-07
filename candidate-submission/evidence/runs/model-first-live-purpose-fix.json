@@ -1,0 +1,2708 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "0eb455573621bd294a1131bd3e5dd48888a40365d70e9efb9e0d850e7970cace",
+  "mode": "live",
+  "model": "gpt-6.1-sol",
+  "entrypoint": "http-process",
+  "passed": 12,
+  "total": 15,
+  "results": [
+    {
+      "id": "message-ambiguous-recipient",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "no_customer_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3530,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
+        "reply": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3561,
+          "output_tokens": 102,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "message-ambiguous-recipient",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "no_customer_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3060,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
+        "reply": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3559,
+          "output_tokens": 102,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 2
+    },
+    {
+      "id": "message-ambiguous-recipient",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "no_customer_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3186,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
+        "reply": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3563,
+          "output_tokens": 102,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 3
+    },
+    {
+      "id": "message-missing-reference",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 2796,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3551,
+          "output_tokens": 99,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "message-missing-reference",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3660,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3551,
+          "output_tokens": 99,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 2
+    },
+    {
+      "id": "message-missing-reference",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 2722,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3557,
+          "output_tokens": 99,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 3
+    },
+    {
+      "id": "message-intake-book",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "message_content": true,
+        "message_evidence": true,
+        "message_not_sent_or_stored": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3325,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket NEW-0019\n\nA one-hour service visit for ticket NEW-0019, equipment A101 at site S101, is confirmed for 8 April 2030, 3:30 PM IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket NEW-0019\n\nA one-hour service visit for ticket NEW-0019, equipment A101 at site S101, is confirmed for 8 April 2030, 3:30 PM IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3587,
+          "output_tokens": 110,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "query": "TECH001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          }
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "NEW-0019"
+          }
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "message-intake-book",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "message_content": true,
+        "message_evidence": true,
+        "message_not_sent_or_stored": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 2960,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket NEW-0019\n\nA one-hour service visit for ticket NEW-0019, equipment A101 at site S101, is confirmed for 8 April 2030, 3:30 PM IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket NEW-0019\n\nA one-hour service visit for ticket NEW-0019, equipment A101 at site S101, is confirmed for 8 April 2030, 3:30 PM IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3589,
+          "output_tokens": 110,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "query": "TECH001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          }
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "NEW-0019"
+          }
+        }
+      ],
+      "trial": 2
+    },
+    {
+      "id": "message-intake-book",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "message_content": true,
+        "message_evidence": true,
+        "message_not_sent_or_stored": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3495,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket NEW-0019\n\nA one-hour service visit for ticket NEW-0019, equipment A101 at site S101, is confirmed for 8 April 2030, 3:30 PM IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.\n\nHere is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Confirmed appointment for ticket NEW-0019\n\nA one-hour service visit for ticket NEW-0019, equipment A101 at site S101, is confirmed for 8 April 2030, 3:30 PM IST (UTC+05:30). The visit reference is VISIT-0001. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3585,
+          "output_tokens": 110,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "query": "TECH001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          }
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "query": "CONTACT001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contacts",
+            "record_id": "CONTACT001"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "visits",
+            "query": "NEW-0019"
+          }
+        }
+      ],
+      "trial": 3
+    },
+    {
+      "id": "message-intake-ticket",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "message_content": true,
+        "message_evidence": true,
+        "message_not_sent_or_stored": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3841,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.\n\nHere is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket NEW-0019\n\nTicket NEW-0019 for equipment A101 at site S101 is open. Repair completion is not yet confirmed.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.\n\nHere is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket NEW-0019\n\nTicket NEW-0019 for equipment A101 at site S101 is open. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3569,
+          "output_tokens": 108,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "message-intake-ticket",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "message_content": true,
+        "message_evidence": true,
+        "message_not_sent_or_stored": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3123,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.\n\nHere is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket NEW-0019\n\nTicket NEW-0019 for equipment A101 at site S101 is open. Repair completion is not yet confirmed.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.\n\nHere is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket NEW-0019\n\nTicket NEW-0019 for equipment A101 at site S101 is open. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3573,
+          "output_tokens": 108,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 2
+    },
+    {
+      "id": "message-intake-ticket",
+      "category": "messages",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "message_content": true,
+        "message_evidence": true,
+        "message_not_sent_or_stored": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3179,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.\n\nHere is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket NEW-0019\n\nTicket NEW-0019 for equipment A101 at site S101 is open. Repair completion is not yet confirmed.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.\n\nHere is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket NEW-0019\n\nTicket NEW-0019 for equipment A101 at site S101 is open. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 3567,
+          "output_tokens": 108,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "contracts",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "query": "NEW-0019"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": "A101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "query": "S101"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "query": "C001"
+          }
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "customers",
+            "record_id": "C001"
+          }
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        }
+      ],
+      "trial": 3
+    },
+    {
+      "id": "message-intake-no-booking-permission",
+      "category": "messages",
+      "passed": false,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "no_customer_reads": false,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 5855,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+        "reply": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 6875,
+          "output_tokens": 125,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "message-intake-no-booking-permission",
+      "category": "messages",
+      "passed": false,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "no_customer_reads": false,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 6025,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+        "reply": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 6890,
+          "output_tokens": 125,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        }
+      ],
+      "trial": 2
+    },
+    {
+      "id": "message-intake-no-booking-permission",
+      "category": "messages",
+      "passed": false,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "no_disclosure": true,
+        "no_message": true,
+        "unchanged_records": true,
+        "forbidden_attempts": true,
+        "forbidden_reads": true,
+        "no_customer_reads": false,
+        "handoff_count": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 6923,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+        "reply": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6.1-sol",
+          "input_tokens": 6866,
+          "output_tokens": 125,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null,
+          "lookup": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null,
+          "lookup": {
+            "collection": "assets",
+            "query": ""
+          }
+        }
+      ],
+      "trial": 3
+    }
+  ]
+}

@@ -332,7 +332,7 @@
         "is open."
       ],
       "reply_contains": [
-        "For registered contact CONTACT001"
+        "For registered contact Contact 01 (CONTACT001)"
       ],
       "message_evidence": [
         {
@@ -1391,9 +1391,7 @@
       "body": "Draft an update for T001; smoke is coming from the unit."
     },
     "decision": {
-      "intent": "compose",
-      "ticket_id": "T001",
-      "message_purpose": "ticket_update"
+      "intent": "hazard"
     },
     "fixture": {},
     "expected": {
@@ -1428,9 +1426,7 @@
       "body": "Draft an update for T001; there is a chemical plume."
     },
     "decision": {
-      "intent": "compose",
-      "ticket_id": "T001",
-      "message_purpose": "ticket_update"
+      "intent": "hazard"
     },
     "fixture": {
       "policy_patch": {

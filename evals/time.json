@@ -10,7 +10,15 @@
       "intent": "schedule",
       "ticket_id": "T001",
       "time_mode": "exact",
-      "requested_time": "8 april 7:30 PM"
+      "requested_time": {
+        "relative_day": "none",
+        "year": null,
+        "month": 4,
+        "day": 8,
+        "hour": 19,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
     },
     "fixture": {},
     "expected": {
@@ -50,7 +58,15 @@
       "intent": "schedule",
       "ticket_id": "T001",
       "time_mode": "exact",
-      "requested_time": "8 april 14:00 UTC"
+      "requested_time": {
+        "relative_day": "none",
+        "year": null,
+        "month": 4,
+        "day": 8,
+        "hour": 14,
+        "minute": 0,
+        "utc_offset_minutes": 0
+      }
     },
     "fixture": {},
     "expected": {
@@ -90,7 +106,15 @@
       "intent": "schedule",
       "ticket_id": "T001",
       "time_mode": "exact",
-      "requested_time": "tomorrow at 3:30 PM"
+      "requested_time": {
+        "relative_day": "tomorrow",
+        "year": null,
+        "month": null,
+        "day": null,
+        "hour": 15,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
     },
     "fixture": {},
     "expected": {
@@ -130,7 +154,15 @@
       "intent": "schedule",
       "ticket_id": "T001",
       "time_mode": "exact",
-      "requested_time": "1 january 7:30 PM"
+      "requested_time": {
+        "relative_day": "none",
+        "year": null,
+        "month": 1,
+        "day": 1,
+        "hour": 19,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
     },
     "fixture": {
       "now": "2030-12-31T20:00:00Z",
@@ -189,8 +221,7 @@
     "decision": {
       "intent": "schedule",
       "ticket_id": "T001",
-      "time_mode": "exact",
-      "requested_time": "8 april 7:30"
+      "time_mode": "unclear"
     },
     "fixture": {},
     "expected": {
@@ -198,7 +229,7 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "AM or PM"
+        "No visit has been booked"
       ],
       "unchanged_collections": [
         "approvals",
@@ -230,8 +261,7 @@
     "decision": {
       "intent": "schedule",
       "ticket_id": "T001",
-      "time_mode": "exact",
-      "requested_time": "8 april 7:30 PM IST, actually UTC"
+      "time_mode": "unclear"
     },
     "fixture": {},
     "expected": {
@@ -239,7 +269,7 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "exact time"
+        "No visit has been booked"
       ],
       "unchanged_collections": [
         "approvals",

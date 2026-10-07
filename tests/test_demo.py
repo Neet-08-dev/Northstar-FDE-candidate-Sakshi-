@@ -17,6 +17,18 @@ from northstar.http import request_json
 from starter.actions import Decision
 from starter.agent import Handler, process
 
+# Interpretation is controlled in these tests; the independent write check approves.
+# Its own behavior, including rejection and failure, is covered in test_write_check.py.
+_approve_writes = patch("starter.orchestration.verify_write", AsyncMock(return_value=True))
+
+
+def setUpModule():
+    _approve_writes.start()
+
+
+def tearDownModule():
+    _approve_writes.stop()
+
 
 class DemoExamplesTests(unittest.TestCase):
     def test_every_exact_example_has_independent_backend_effects(self):
@@ -62,9 +74,10 @@ class DemoExamplesTests(unittest.TestCase):
                     self.assertEqual(examples[case["example_id"]], case["request"])
                     captured = {}
 
-                    def recording_process(payload):
+                    def recording_process(payload, include_message=False):
                         self.assertEqual(payload["request"], {**case["request"], "id": "demo"})
-                        result = process(payload)
+                        self.assertTrue(include_message)
+                        result = process(payload, include_message)
                         session_id = next(iter(backend.sessions.values()))["id"]
                         captured["snapshot"] = request_json(
                             api_url + "/admin/sessions/" + session_id + "/snapshot", token=admin
@@ -87,6 +100,16 @@ class DemoExamplesTests(unittest.TestCase):
                     checks = check(case, response, snapshot)
                     checks["demo_session_deleted"] = not backend.sessions
                     checks["zero_model_usage"] = response["usage"]["model"] == "none"
+                    # The UI renders the copyable message from structured fields only.
+                    message = response.get("message")
+                    checks["structured_message"] = (
+                        message is not None
+                        and response["reply"]
+                        == f"{message['preface']}\n\nSubject: {message['subject']}\n\n"
+                        f"{message['body']}"
+                        if "message_contains" in case["expected"]
+                        else message is None
+                    )
                     rows.append(
                         {
                             "id": case["id"],
@@ -150,8 +173,8 @@ class DemoCustomerSelectionTests(unittest.TestCase):
     def demo(self, payload, decision):
         captured = {}
 
-        def recording_process(session_payload):
-            result = process(session_payload)
+        def recording_process(session_payload, include_message=False):
+            result = process(session_payload, include_message)
             session_id = next(iter(self.backend.sessions.values()))["id"]
             captured["snapshot"] = request_json(
                 self.api_url + "/admin/sessions/" + session_id + "/snapshot", token=self.admin

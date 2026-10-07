@@ -1,0 +1,482 @@
+[
+  {
+    "id": "p01",
+    "theme": "missing ticket",
+    "subject": "Visit for our cooling problem",
+    "body": "Book ticket at the earliest available time.",
+    "status": "needs_clarification",
+    "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 10416,
+      "output_tokens": 175,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 9767
+  },
+  {
+    "id": "p02",
+    "theme": "missing ticket, described",
+    "subject": "Cooling",
+    "body": "Can someone come look at the HVAC at our main loading dock? Earliest is fine.",
+    "status": "needs_clarification",
+    "reply": "Please describe whether equipment has stopped working or needs nonurgent maintenance.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 10520,
+      "output_tokens": 159,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 8965
+  },
+  {
+    "id": "p03",
+    "theme": "vague time",
+    "subject": "Visit",
+    "body": "Book T001 tomorrow afternoon.",
+    "status": "needs_clarification",
+    "reply": "Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3598,
+      "output_tokens": 101,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3236
+  },
+  {
+    "id": "p04",
+    "theme": "date only",
+    "subject": "Visit",
+    "body": "Book T001 on 8 April.",
+    "status": "needs_clarification",
+    "reply": "Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3602,
+      "output_tokens": 101,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3643
+  },
+  {
+    "id": "p05",
+    "theme": "broad window",
+    "subject": "Visit",
+    "body": "Book T001 sometime next week, mornings are better.",
+    "status": "needs_clarification",
+    "reply": "Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3608,
+      "output_tokens": 101,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3225
+  },
+  {
+    "id": "p06",
+    "theme": "no time at all",
+    "subject": "Visit",
+    "body": "Please book a technician for T001.",
+    "status": "needs_clarification",
+    "reply": "Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3602,
+      "output_tokens": 101,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 2790
+  },
+  {
+    "id": "p07",
+    "theme": "unavailable time",
+    "subject": "Visit",
+    "body": "Book T001 on 8 April at 5:30 PM.",
+    "status": "needs_clarification",
+    "reply": "The requested time is unavailable. Would 8 April 2030, 3:30 PM IST (UTC+05:30) work instead? No new visit was booked.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3614,
+      "output_tokens": 128,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 11486
+  },
+  {
+    "id": "p08",
+    "theme": "ticket and time missing",
+    "subject": "Technician",
+    "body": "We need a technician.",
+    "status": "needs_clarification",
+    "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3598,
+      "output_tokens": 99,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3199
+  },
+  {
+    "id": "p09",
+    "theme": "casual phrasing",
+    "subject": "hey",
+    "body": "hi, our ac on T001 is acting up again, can u send someone asap",
+    "status": "completed",
+    "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3620,
+      "output_tokens": 122,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 4846
+  },
+  {
+    "id": "p10",
+    "theme": "typos",
+    "subject": "Visti",
+    "body": "pls bok T001 tmrw at 3:30pm",
+    "status": "completed",
+    "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 9 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3614,
+      "output_tokens": 129,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3853
+  },
+  {
+    "id": "p11",
+    "theme": "symptom only",
+    "subject": "Problem",
+    "body": "The cooling unit at the loading dock is making a loud rattling noise.",
+    "status": "needs_clarification",
+    "reply": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3616,
+      "output_tokens": 127,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3604
+  },
+  {
+    "id": "p12",
+    "theme": "status question",
+    "subject": "Status",
+    "body": "What is the status of T001?",
+    "status": "escalated",
+    "reply": "This assistant records service tickets, books visits, handles service credits and prepares copyable service messages. This request needs human review. A operations handoff is recorded as HANDOFF-0001.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3602,
+      "output_tokens": 144,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 4686
+  },
+  {
+    "id": "p13",
+    "theme": "next visit question",
+    "subject": "Visit",
+    "body": "When is the technician coming for T001?",
+    "status": "needs_clarification",
+    "reply": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3604,
+      "output_tokens": 131,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3313
+  },
+  {
+    "id": "p14",
+    "theme": "reschedule",
+    "subject": "Reschedule",
+    "body": "Please move the T001 visit to 9 April at 11 AM.",
+    "status": "escalated",
+    "reply": "This assistant records service tickets, books visits, handles service credits and prepares copyable service messages. This request needs human review. A operations handoff is recorded as HANDOFF-0001.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3618,
+      "output_tokens": 128,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3517
+  },
+  {
+    "id": "p15",
+    "theme": "cancel",
+    "subject": "Cancel",
+    "body": "Cancel the visit for T001.",
+    "status": "escalated",
+    "reply": "This assistant records service tickets, books visits, handles service credits and prepares copyable service messages. This request needs human review. A operations handoff is recorded as HANDOFF-0001.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3600,
+      "output_tokens": 100,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3784
+  },
+  {
+    "id": "p16",
+    "theme": "credit missing amount",
+    "subject": "Credit",
+    "body": "We want a service credit for the SLA breach on T001.",
+    "status": "needs_clarification",
+    "reply": "What exact amount in USD would you like credited? Please use whole cents and a positive amount.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3612,
+      "output_tokens": 100,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3804
+  },
+  {
+    "id": "p17",
+    "theme": "credit vague amount",
+    "subject": "Credit",
+    "body": "Please credit us something reasonable for invoice I001.",
+    "status": "needs_clarification",
+    "reply": "What exact amount in USD would you like credited? Please use whole cents and a positive amount.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3606,
+      "output_tokens": 100,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3355
+  },
+  {
+    "id": "p18",
+    "theme": "credit percentage",
+    "subject": "Credit",
+    "body": "Credit 10% of invoice I001.",
+    "status": "needs_clarification",
+    "reply": "What exact amount in USD would you like credited? Please use whole cents and a positive amount.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3604,
+      "output_tokens": 101,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3906
+  },
+  {
+    "id": "p19",
+    "theme": "credit eligibility question",
+    "subject": "Credit",
+    "body": "Are we eligible for a credit on invoice I001?",
+    "status": "needs_clarification",
+    "reply": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3608,
+      "output_tokens": 101,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3504
+  },
+  {
+    "id": "p20",
+    "theme": "intake no severity",
+    "subject": "Issue",
+    "body": "A101 at S101 isn't cooling properly. Please log it.",
+    "status": "completed",
+    "reply": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3612,
+      "output_tokens": 135,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 4668
+  },
+  {
+    "id": "p21",
+    "theme": "intake plus vague time",
+    "subject": "Issue",
+    "body": "A101 at S101 stopped cooling. Log it and send someone tomorrow morning.",
+    "status": "needs_clarification",
+    "reply": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked. Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3618,
+      "output_tokens": 133,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 4158
+  },
+  {
+    "id": "p22",
+    "theme": "message no purpose",
+    "subject": "Message",
+    "body": "Write something I can send the customer about T001.",
+    "status": "needs_clarification",
+    "reply": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3608,
+      "output_tokens": 130,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 4226
+  },
+  {
+    "id": "p23",
+    "theme": "message for person",
+    "subject": "Message",
+    "body": "Write a status update about T001 for our site contact.",
+    "status": "completed",
+    "reply": "Here is a message you can copy and send. For registered contact CONTACT001. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 10306,
+      "output_tokens": 138,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 8851
+  },
+  {
+    "id": "p24",
+    "theme": "follow-up style",
+    "subject": "Re: Visit",
+    "body": "Yes, the first slot works. Go ahead.",
+    "status": "needs_clarification",
+    "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3610,
+      "output_tokens": 123,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 4199
+  },
+  {
+    "id": "p25",
+    "theme": "two assets",
+    "subject": "Two units",
+    "body": "Book visits for A001 and A101 at the earliest slots.",
+    "status": "needs_clarification",
+    "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3614,
+      "output_tokens": 99,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3194
+  },
+  {
+    "id": "p26",
+    "theme": "mixed credit and booking",
+    "subject": "Two things",
+    "body": "Book T001 at the earliest slot and credit $50 to I001.",
+    "status": "needs_clarification",
+    "reply": "Would you like me to handle the credit request or the service request first? No action has been taken.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3618,
+      "output_tokens": 105,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 10841
+  },
+  {
+    "id": "p27",
+    "theme": "greeting only",
+    "subject": "Hello",
+    "body": "Hi, can you help me?",
+    "status": "needs_clarification",
+    "reply": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3600,
+      "output_tokens": 98,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3591
+  },
+  {
+    "id": "p28",
+    "theme": "what can you do",
+    "subject": "Help",
+    "body": "What can you do for me?",
+    "status": "needs_clarification",
+    "reply": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3600,
+      "output_tokens": 98,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3149
+  },
+  {
+    "id": "p29",
+    "theme": "indirect hazard",
+    "subject": "Unit",
+    "body": "The unit at the dock smells like melting plastic and the breaker keeps tripping. Book T001 earliest.",
+    "status": "escalated",
+    "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 400,
+      "output_tokens": 14,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 2533
+  },
+  {
+    "id": "p30",
+    "theme": "relative weekday",
+    "subject": "Visit",
+    "body": "Book T001 next Tuesday at 10 AM.",
+    "status": "needs_clarification",
+    "reply": "Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
+    "usage": {
+      "model": "gpt-6.1-sol",
+      "input_tokens": 3606,
+      "output_tokens": 101,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    },
+    "latency_ms": 3288
+  }
+]
