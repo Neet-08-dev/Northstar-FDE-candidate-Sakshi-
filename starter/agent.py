@@ -3,6 +3,7 @@ import asyncio
 import json
 import logging
 import os
+import threading
 import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -17,6 +18,63 @@ from .orchestration import process_async
 
 def process(payload):
     return asyncio.run(process_async(payload))
+
+
+# Local demo administration only: the presenter chooses which synthetic customer
+# the fresh session belongs to. Identity reaches the agent solely through the
+# session actor; request text never selects or widens it.
+DEFAULT_DEMO_CUSTOMER = "C001"
+_catalog_lock = threading.Lock()
+_catalog_cache: dict[str, dict] = {}
+
+
+def demo_catalog(api_url, admin_token):
+    """Summarize each synthetic customer's records from an admin snapshot."""
+    with _catalog_lock:
+        if api_url not in _catalog_cache:
+            session = request_json(
+                api_url + "/admin/sessions", {"request_id": str(uuid.uuid4())}, admin_token
+            )
+            try:
+                data = request_json(
+                    api_url + "/admin/sessions/" + session["session_id"] + "/snapshot",
+                    token=admin_token,
+                )["initial"]
+            finally:
+                request_json(
+                    api_url + "/admin/sessions/" + session["session_id"],
+                    token=admin_token,
+                    method="DELETE",
+                )
+            fields = {
+                "sites": ["id", "name", "access_window"],
+                "assets": ["id", "label", "site_id", "required_skill"],
+                "tickets": ["id", "summary", "severity", "status", "asset_id"],
+                "invoices": ["id", "ticket_id", "total_cents", "currency", "status"],
+                "contacts": ["id", "name", "authorized"],
+            }
+            customers = [
+                {
+                    "id": customer["id"],
+                    "name": customer["name"],
+                    "tier": customer["tier"],
+                    "account_status": customer["account_status"],
+                    **{
+                        collection: [
+                            {key: row.get(key) for key in keys}
+                            for row in data.get(collection, [])
+                            if row.get("customer_id") == customer["id"]
+                        ]
+                        for collection, keys in fields.items()
+                    },
+                }
+                for customer in sorted(data["customers"], key=lambda c: c["id"])
+            ]
+            _catalog_cache[api_url] = {
+                "default": DEFAULT_DEMO_CUSTOMER,
+                "customers": customers,
+            }
+        return _catalog_cache[api_url]
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -37,6 +95,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health":
             return self.respond(200, {"ok": True, "service": "candidate-agent", "protocol": 1})
+        if self.path == "/demo/customers":
+            admin_token = os.environ.get("ADMIN_TOKEN", "")
+            if not admin_token:
+                return self.respond(403, {"error": "Demo disabled during private grading"})
+            try:
+                api_url = os.environ.get("API_URL", "http://localhost:8001")
+                return self.respond(200, demo_catalog(api_url, admin_token))
+            except Exception:
+                return self.respond(502, {"error": "Demo customers unavailable"})
         files = {
             "/": ("index.html", "text/html; charset=utf-8"),
             "/service_desk.css": ("service_desk.css", "text/css; charset=utf-8"),
@@ -74,9 +141,18 @@ class Handler(BaseHTTPRequestHandler):
                 if not admin_token:
                     return self.respond(403, {"error": "Demo disabled during private grading"})
                 api_url = os.environ.get("API_URL", "http://localhost:8001")
-                session = request_json(
-                    api_url + "/admin/sessions", {"request_id": str(uuid.uuid4())}, admin_token
-                )
+                config: dict = {"request_id": str(uuid.uuid4())}
+                if "customer_id" in payload:
+                    customer_id = payload["customer_id"]
+                    known = {c["id"] for c in demo_catalog(api_url, admin_token)["customers"]}
+                    if not isinstance(customer_id, str) or customer_id not in known:
+                        return self.respond(400, {"error": "Unknown demo customer"})
+                    config["actor"] = {
+                        "role": "customer",
+                        "customer_ids": [customer_id],
+                        "verified": True,
+                    }
+                session = request_json(api_url + "/admin/sessions", config, admin_token)
                 try:
                     result = process(
                         {
