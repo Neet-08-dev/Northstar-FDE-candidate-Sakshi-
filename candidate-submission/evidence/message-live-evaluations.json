@@ -120,7 +120,7 @@
         "known_output_tokens": 333,
         "unknown_usage_trials": 0
       },
-      "report_path": "reports/messages-live-luna.json",
+      "report_path": "runs/messages-live-luna.json",
       "report_sha256": "0656798a6bfeba95265a4d377c1d45336fc519a84c996a98191ebc5e0dbe87a3",
       "report": {
         "incomplete": false,
@@ -704,7 +704,7 @@
         "known_output_tokens": 0,
         "unknown_usage_trials": 1
       },
-      "report_path": "reports/messages-live-sol.json",
+      "report_path": "runs/messages-live-sol.json",
       "report_sha256": "1c8bbb4e77ae0549fa3c9be98386c3f5191da5f89531995d6be79657fce6197a",
       "report": {
         "incomplete": true,
@@ -800,7 +800,7 @@
         "known_output_tokens": 218,
         "unknown_usage_trials": 0
       },
-      "report_path": "reports/messages-live-sol-retry.json",
+      "report_path": "runs/messages-live-sol-retry.json",
       "report_sha256": "67ad3c110ea748a8b5cc514929547910aa80486639741683140ec2ef2eace286",
       "report": {
         "incomplete": false,
@@ -1345,5 +1345,6 @@
         ]
       }
     }
-  ]
+  ],
+  "report_reference_note": "Report paths are relative to this JSON file. Archived files preserve exact original bytes; hashes identify files, not evaluation validity. Saved reports omit full backend snapshots and tool arguments, so historical state checks cannot be independently recomputed."
 }

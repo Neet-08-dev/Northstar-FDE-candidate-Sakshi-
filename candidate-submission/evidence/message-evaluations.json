@@ -7610,5 +7610,18 @@
         "no_token_leak": true
       }
     }
-  ]
+  ],
+  "source_reports": [
+    {
+      "purpose": "Final 95-case offline evaluation",
+      "report": "runs/messages-offline.json",
+      "report_sha256": "aeeb5316d49160391b19b5f97904155885c6a5e621717c8a647351e4addbe089"
+    },
+    {
+      "purpose": "Failed malformed-contact regression before the fix",
+      "report": "runs/message-malformed-before.json",
+      "report_sha256": "b23026d8010180df5e1e5398bf39e46805c370e08e932bfa45d6006e35efd43b"
+    }
+  ],
+  "report_reference_note": "Report paths are relative to this JSON file. Archived files preserve exact original bytes; hashes identify files, not evaluation validity. Saved reports omit full backend snapshots and tool arguments, so historical state checks cannot be independently recomputed. The source_sha256 mapping identifies repository-relative implementation files at the original checkpoint."
 }
