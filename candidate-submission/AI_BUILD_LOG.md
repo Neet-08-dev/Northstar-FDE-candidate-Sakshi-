@@ -227,3 +227,9 @@ Consequential mistakes found in this pass, and their regression checks:
 One local demo run ended with the Docker agent process exiting 139 (a native crash) on the third turn of a conversation. Twelve replayed requests of the same conversation did not reproduce it. The image now enables Python's fault handler so a repeat records a stack; the cause is unknown.
 
 Verification: `make check` passes 71 test methods, 196 authored scenarios and the sixteen demo examples offline. Paid Luna runs on this branch and their failures are in [EVALS.md](EVALS.md#submission-verification-8-october-2026); all raw reports are archived with hashes. Nothing was pushed.
+
+### Prompt leakage review and held-out check
+
+The user asked whether insight from the in-repository synthetic data had leaked into the prompts. A cross-check of every quoted prompt phrase against all case requests and the fixture files found no record facts, but several worked examples copied case wording or fixture-shaped values, including the exact text of published case P03 that this pass had added. They were replaced with general rules or invented values, the 30 tied cases and the published suite were re-run (30/30, 8/8), and the write-check probe was re-run (27/28, the documented amount weakness).
+
+Sixteen held-out requests for four other customers were then written in new wording and validated offline against the right decisions. The grader gained an expected `customer_id` so cases for other customers can be checked. The live run passed 13/16: the safety screen escalated two electrical non-hazards, and one case's expectation was narrower than a reasonable reply. Nothing was tuned against these results. OpenAI's pricing page was checked for the cost estimate shown in Run details.

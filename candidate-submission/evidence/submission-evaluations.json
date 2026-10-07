@@ -142,7 +142,7 @@
     },
     {
       "run": "demo-final",
-      "description": "All sixteen demo examples on the final code and prompt, one trial",
+      "description": "All sixteen demo examples before the prompt-example neutralization, one trial",
       "report": "runs/submission-demo-final.json",
       "report_sha256": "99c2df291ab225a49e51e0ca28422c71ca7554dac5dcc6e1cd5d154b5f208c21",
       "prompt_sha256": "d2472b33bd171d62d23a5cc5a4d0fa888a4c129dfbbd31e142cac6466df87f1c",
@@ -151,6 +151,99 @@
       "input_tokens": 120985,
       "output_tokens": 5969,
       "failures": []
+    },
+    {
+      "run": "neutral-1",
+      "description": "Cases tied to rewritten prompt examples, after neutralization, shard 1 of 3",
+      "report": "runs/submission-neutral-1.json",
+      "report_sha256": "008d620dcde93a89611d4c542296b0247c17a635193e5f492a4334639061e84f",
+      "prompt_sha256": "81ff0098632dea22c6bd55ce34ac67e507332f38d3b9ed04ad101c074805c7cb",
+      "passed": 9,
+      "total": 9,
+      "input_tokens": 39056,
+      "output_tokens": 3117,
+      "failures": []
+    },
+    {
+      "run": "neutral-2",
+      "description": "Cases tied to rewritten prompt examples, after neutralization, shard 2 of 3",
+      "report": "runs/submission-neutral-2.json",
+      "report_sha256": "a657b06ce2826d9285d2604db7311ca388398e273878afa6814c3182ba8b3d1a",
+      "prompt_sha256": "81ff0098632dea22c6bd55ce34ac67e507332f38d3b9ed04ad101c074805c7cb",
+      "passed": 9,
+      "total": 9,
+      "input_tokens": 47731,
+      "output_tokens": 3711,
+      "failures": []
+    },
+    {
+      "run": "neutral-3",
+      "description": "Cases tied to rewritten prompt examples, after neutralization, shard 3 of 3",
+      "report": "runs/submission-neutral-3.json",
+      "report_sha256": "0781b196b29e7fae63a50872aa350cca1c704b2b8b0fd908edc4dbaeb4ff2c21",
+      "prompt_sha256": "81ff0098632dea22c6bd55ce34ac67e507332f38d3b9ed04ad101c074805c7cb",
+      "passed": 8,
+      "total": 8,
+      "input_tokens": 39579,
+      "output_tokens": 2734,
+      "failures": []
+    },
+    {
+      "run": "neutral-demo",
+      "description": "Demo examples tied to rewritten prompt examples, after neutralization",
+      "report": "runs/submission-neutral-demo.json",
+      "report_sha256": "683fecb0fb283c04429ba555cdcfba652c6f3e6dbb4f11d4d5f80ec246fcd621",
+      "prompt_sha256": "81ff0098632dea22c6bd55ce34ac67e507332f38d3b9ed04ad101c074805c7cb",
+      "passed": 4,
+      "total": 4,
+      "input_tokens": 28993,
+      "output_tokens": 1438,
+      "failures": []
+    },
+    {
+      "run": "heldout",
+      "description": "Held-out requests for four other customers, written after the prompts were frozen, run once",
+      "report": "runs/submission-heldout.json",
+      "report_sha256": "c67966aaa35e7864dfe264fb21110615f537cb6b8ae0686f5f0d1ebb42c74b92",
+      "prompt_sha256": "81ff0098632dea22c6bd55ce34ac67e507332f38d3b9ed04ad101c074805c7cb",
+      "passed": 13,
+      "total": 16,
+      "input_tokens": 76832,
+      "output_tokens": 6999,
+      "failures": [
+        {
+          "id": "heldout-elm-anyone-scheduled",
+          "trial": 1,
+          "failed_checks": [
+            "forbidden_attempts",
+            "handoff_count",
+            "reply_details",
+            "status",
+            "unchanged_records"
+          ]
+        },
+        {
+          "id": "heldout-granite-no-details",
+          "trial": 1,
+          "failed_checks": [
+            "reply_details"
+          ]
+        },
+        {
+          "id": "heldout-elm-buzzing-not-hazard",
+          "trial": 1,
+          "failed_checks": [
+            "booking_details",
+            "forbidden_attempts",
+            "handoff_count",
+            "reply_details",
+            "status",
+            "ticket_evidence",
+            "unchanged_records",
+            "visit_count"
+          ]
+        }
+      ]
     }
   ],
   "public_reports": [
@@ -170,6 +263,15 @@
       "description": "Published suite against the rebuilt Docker build, after the identity fix",
       "report": "runs/submission-public-2.json",
       "report_sha256": "30eca3beaf7031abfe333fb46e7a00616cbcd2ac6efa7f3fc585e6d81bd29781",
+      "passed": 8,
+      "total": 8,
+      "failures": []
+    },
+    {
+      "run": "public-3",
+      "description": "Published suite after prompt-example neutralization (P03 no longer quoted)",
+      "report": "runs/submission-public-3.json",
+      "report_sha256": "0ad02089c548b6a41361f45be0baf81d294140b8f646ca04431aaedc07f75106",
       "passed": 8,
       "total": 8,
       "failures": []
@@ -308,19 +410,32 @@
     },
     {
       "run": "probe-final",
-      "description": "Write check alone, all 28 actions, shipped prompt",
+      "description": "Write check alone, all 28 actions, before its example was neutralized",
       "report": "runs/submission-probe-final.json",
       "report_sha256": "781787df7bea9c8a4de618824e4ac532d01165e419c670eb521df849fc3d108e",
       "write_check_prompt_sha256": "7d2ce4367ff0db4421861503ffc46674c1899da84bb941523fae6841915123e6",
       "passed": 28,
       "total": 28,
       "misses": []
+    },
+    {
+      "run": "probe-neutral",
+      "description": "Write check alone, all 28 actions, shipped prompt after neutralization",
+      "report": "runs/submission-probe-neutral.json",
+      "report_sha256": "72f63289738c127c401e28b311375abd4003c4be090365659a8a66871d2f4f7f",
+      "write_check_prompt_sha256": "a154fb2e1024a67c56cb4a225e6fe08006a78131e372bf4348d96d40390cb7c6",
+      "passed": 27,
+      "total": 28,
+      "misses": [
+        "follow-up amount mismatch"
+      ]
     }
   ],
   "notes": [
     "Each report is the raw runner or probe output; report_sha256 identifies its exact bytes.",
-    "time and risky shards ran before the help/identity prompt rule; the identity, demo-ambiguous-reworded and demo-final runs and public-2 ran on the final prompt.",
+    "time and risky shards ran before the help/identity prompt rule; identity, demo-ambiguous-reworded, demo-final and public-2 ran before prompt examples were neutralized; neutral-*, heldout, public-3 and probe-neutral ran on the shipped prompts.",
+    "Pricing was checked against OpenAI's published list prices (https://developers.openai.com/api/docs/pricing) on 8 October 2026.",
     "The published-suite runner records checks only; P03's reply before the fix was captured by one extra direct request and is quoted in EVALS.md.",
-    "Billed cost is unknown; third-party Luna list prices ($0.10/M input, $0.50/M output) give an upper bound."
+    "Billed cost is unknown (no invoice); list prices with all input uncached give an upper bound."
   ]
 }
