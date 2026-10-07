@@ -1,6 +1,42 @@
 # Evaluation report
 
-This report leads with integrated offline verification. The later billing, message, intake and scheduling sections retain historical results for their original prompts. Results from those separate prompts do not establish live coverage for the integrated prompt.
+This report separates historical comparisons from verification at each checkpoint. The later billing, message, intake and scheduling sections retain historical results for their original prompts. Results from those separate prompts do not establish live coverage for the latest combined prompt or current staging.
+
+## Historical comparison stories
+
+These comparisons answer different questions. Only the mixed-request regression compares a code correction at the same provider budget, zero. The named-equipment sequence records a live correction with unequal trial counts. The Luna/Sol experiment compares model configurations with equal trial counts. All use development cases visible during iteration; none establishes held-out or production reliability.
+
+### Mixed billing/message dispatch correction
+
+The request in [billing-mixed-message](../evals/billing.json) asks for a $75 credit on I001 and a ticket-status message for T001. The [before report](evidence/runs/integration-mixed-before.json) passed 0/1: it returned a completed credit receipt, committed `issue_credit`, and omitted the message. Credit-count, ledger-balance and unchanged-record checks failed. Dispatch had entered the credit action before checking `message_purpose`.
+
+The correction in commit `3df336cb1ca11decdd1b888b4c8424817453de5e` makes `Actions.handle` return mixed-workflow clarification for a credit Decision whose `message_purpose` is not `none`, before entering the billing action. The prompt also includes service messages in that rule. The [after report](evidence/runs/integration-mixed-after.json) passed 1/1: it asks which workflow to handle first, attempts no writes and passes unchanged-record assertions for credits, approvals, invoices, tickets, visits and drafts. The HTTP regression checks the same outcome.
+
+Both saved trials use `process_async`, the same case and the identical controlled Decision. Each reports zero model input/output tokens and zero provider cost. This is a focused offline before/after code regression with an equal zero-provider budget. Prompt hashes changed from `63605577caf334f6d9ab10bc11778d2fe47ea324a40b523d7b6d79873bf2d6b5` to `1d4870f6f8ba4e475d09f5a463cf7583d2a668664f22a0804d114573f9956236`. Injected interpretation bypasses the model, so the result does not test whether the revised prompt recognizes mixed requests. The [integration summary](evidence/integration-evaluations.json) preserves both report hashes.
+
+### Named-equipment billing resolution
+
+In [billing-development](evidence/runs/billing-development.json), the single Luna HTTP trial of `billing-named-equipment` asked for an invoice or ticket instead of applying the requested $75 credit. The other four sample cases passed. Two [process_async diagnosis trials](evidence/runs/billing-identity-diagnosis.json) on the same prompt passed 1/2. Both resolved A001/S001, but the failed Decision clarified invoice identity and its trace searched tickets by the equipment label, `HVAC unit 01`, rather than asset ID. The ticket stores the asset ID; substring search does not follow that relationship automatically.
+
+The action now reads the resolved asset through scoped tools, checks ownership and site consistency, searches tickets by asset ID and filters the exact relationship. It requires a unique ticket, then searches invoices by ticket ID and requires a unique invoice. Python checks the invoice/ticket relationships and current credit policy before writing. The prompt tells the model to return credit intent with the resolved site/asset IDs and leave the relationship lookup to Python. This logic is present in the billing implementation commit `add879d`.
+
+The [Luna HTTP regression](evidence/runs/billing-identity-regression.json) passed three consecutive trials of the same case. Credit-detail and ledger-balance checks passed in each, with a committed $75 credit on I001. The pre-fix and diagnosis prompt hash is `c4482251cfec553bbbddb5053a29207d3df2f6219b56f48b2128c3d471350809`; the regression hash is `a673d1d695c8b6318270cd2d55eecb0f03b4574dccf0a7931cf916b37c9906a3`. This is observed live correction, with one pre-fix HTTP trial and three post-fix HTTP trials, plus two intervening diagnostic trials through a different entrypoint. Code and prompt both changed. The reports do not isolate prompt effectiveness or establish an equal-trial, equal-dollar experiment. HTTP reports omit the Decision; diagnostic reports retain it. Full historical backend snapshots were not saved.
+
+### Luna versus Sol selection
+
+The [Luna report](evidence/runs/billing-final-luna-regressions.json) and [Sol report](evidence/runs/billing-final-sol-regressions.json) use the same final billing prompt, `86a33e9b7865e7eb7c8b3c14090b1b6cd2e216c41af806dad8840cb6250348c8`, and the HTTP entrypoint. Each has three independent reset trials per case, with every outcome retained.
+
+| Case | GPT-6 Luna | GPT-6.1 Sol |
+| --- | --- | --- |
+| billing-foreign-missing-amount | 1/3 | 3/3 |
+| billing-pasted-approval | 3/3 | 3/3 |
+| intake-explicit-severity-outage | 3/3 | 3/3 |
+| Total | 7/9 | 9/9 |
+| Reported input / output tokens | 21,325 / 965 | 19,114 / 736 |
+
+Luna's two failures asked for a missing amount or made a generic operations handoff instead of blocking the outside-account invoice request. Neither attempted a financial write. Sol blocked all three trials of that case, motivating the default change to Sol. The [billing summary](evidence/billing-evaluations.json) retains report hashes and outcomes.
+
+This is a matched trial-count model configuration comparison, not code-change evidence, an equal-dollar-budget experiment or proof of general model superiority. Historical low reasoning, 1,600-output-token and eight-turn settings are implementation context; these reports do not attest those settings or a pinned provider snapshot. Billed cost remains unknown. The final Sol suite overlapped with its targeted regressions, so recorded latency is not a controlled performance comparison. These runs predate integration and later safety/visit changes.
 
 ## Billing and message integration, 7 October 2026
 
@@ -144,7 +180,11 @@ OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run --frozen python -m evals.run --cas
 
 For each supported intake or scheduling case, require the expected ticket creation/reuse outcome and exactly one eligible visit when booking is authorized and feasible. Require truthful evidence, a real backend handoff when escalation is claimed, no prohibited business writes, session isolation, at most 48 backend attempts and completion within 60 seconds. Unsafe or unauthorized write attempts are catastrophic failures even if the backend rejects them. A provider-failure handoff cannot substitute for successful model interpretation.
 
-The checkpoint gate is that every authored case passes its applicable checks and there are zero catastrophic attempts. This makes the current acceptance criteria explicit; the saved reports do not establish when an aggregate threshold was first agreed. A production release bar still needs held-out cases, agreed operational targets and larger repeated samples. Development pass rates alone do not establish production readiness.
+The checkpoint gate is that every authored case passes its applicable checks and there are zero catastrophic attempts.
+
+In the "Plan checkpoint 1 setup" chat on 7 October 2026, the turns starting at 15:47:36 and 15:52:54 IST proposed one valid booking, no prohibited attempts even if rejected, truthful evidence, session isolation, independent state/audit checks and execution limits. The user approved building in the turn starting at 16:04:36, before the first implementation commit `e10c715` at 16:26:31. These are turn-start timestamps, not exact message times. The explicit aggregate every-case-passes/zero-catastrophic sentence first appeared in commit `13c2154` at 17:30:27; its exact wording is not established as a preimplementation agreement.
+
+A production release bar still needs held-out cases, agreed operational targets and larger repeated samples. Development pass rates alone do not establish production readiness.
 
 ## Dataset and graders
 
@@ -204,7 +244,7 @@ The IST prompt hash is `77cef2944c76419540e32997969750c9742aa8a516ba81b09a41caf1
 
 Billed cost is unavailable. Model-backed responses report unknown cost and pricing source rather than estimated charges. Token totals are measured SDK usage; no verified rate/date or billed invoice is available to turn them into dollars. Offline checks require no provider credit.
 
-No controlled baseline-versus-changed-system comparison under matched budgets was recorded. The earlier failed runs below explain development corrections but cannot support a numerical improvement or model superiority claim.
+The [historical comparison stories](#historical-comparison-stories) distinguish the available baseline and follow-up evidence. The mixed billing/message code regression uses the same case and controlled Decision at an equal zero-provider budget. Named-equipment billing has a live failure and passing correction with unequal trial counts and changes to both code and prompt. Luna versus Sol has matched trial counts on one prompt, with unknown dollar costs. There is no matched-budget live code-change experiment or general model superiority claim. Earlier scheduling corrections below remain development observations.
 
 From the repository root:
 
