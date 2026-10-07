@@ -1,7 +1,6 @@
 """Request-scoped transport; every retry preserves the complete operation."""
 
 import asyncio
-import hashlib
 import json
 import logging
 import time
@@ -115,8 +114,3 @@ class Backend:
 
     async def close(self) -> None:
         await self.http.aclose()
-
-
-def operation_key(request_id: str, tool: str, arguments: Record) -> str:
-    content = json.dumps([request_id, tool, arguments], sort_keys=True)
-    return hashlib.sha256(content.encode()).hexdigest()

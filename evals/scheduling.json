@@ -696,7 +696,8 @@
     "expected": {
       "status": "escalated",
       "new_visits": 0,
-      "queue": "operations"
+      "queue": "operations",
+      "escalation_ticket_id": "T001"
     }
   },
   {
@@ -1288,6 +1289,45 @@
         "could not be confirmed"
       ],
       "escalations": 0
+    }
+  },
+  {
+    "id": "intake-explicit-severity-outage",
+    "category": "failure",
+    "request": {
+      "subject": "Service issue",
+      "body": "Create an S2 ticket for A101 at S101. If the service stays unavailable, arrange a human handoff."
+    },
+    "decision": {
+      "intent": "intake",
+      "asset_id": "A101",
+      "site_id": "S101",
+      "issue_category": "interruption",
+      "issue_summary": "S2 service issue reported."
+    },
+    "fixture": {
+      "faults": {
+        "create_ticket": [
+          {
+            "code": "TEMPORARY_UNAVAILABLE"
+          },
+          {
+            "code": "TEMPORARY_UNAVAILABLE"
+          },
+          {
+            "code": "TEMPORARY_UNAVAILABLE"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "create_attempts": 3,
+      "queue": "operations",
+      "reply_contains": [
+        "unavailable"
+      ]
     }
   }
 ]
