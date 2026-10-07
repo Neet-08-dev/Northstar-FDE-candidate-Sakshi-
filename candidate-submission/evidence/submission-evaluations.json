@@ -1,0 +1,326 @@
+{
+  "change": "Submission finalization: site-local time, precise evidence, rewritten demo examples, run details, identity options",
+  "service_model": "gpt-6-luna",
+  "evaluation_model": "gpt-6-luna",
+  "entrypoint": "HTTP /process (runner --http); published suite against the Docker build",
+  "runner_reports": [
+    {
+      "run": "time-0",
+      "description": "Cases whose time expectations changed to site-local UTC, shard 1 of 2, one trial",
+      "report": "runs/submission-time-0.json",
+      "report_sha256": "8007d61873dfb4d285d328fbb624b595e8234ca5c826f83bc96c864ba51bc391",
+      "prompt_sha256": "80c1cb46a9f68339b64ab84908e115a02f3786963a7201988c9160ae9dd48175",
+      "passed": 11,
+      "total": 11,
+      "input_tokens": 59186,
+      "output_tokens": 4407,
+      "failures": []
+    },
+    {
+      "run": "time-1",
+      "description": "Cases whose time expectations changed to site-local UTC, shard 2 of 2, one trial",
+      "report": "runs/submission-time-1.json",
+      "report_sha256": "ad0eccfe12e338b66dd3a9cf6c284816fb5642f55d98c80bece74a4c0547065f",
+      "prompt_sha256": "80c1cb46a9f68339b64ab84908e115a02f3786963a7201988c9160ae9dd48175",
+      "passed": 10,
+      "total": 10,
+      "input_tokens": 44133,
+      "output_tokens": 3728,
+      "failures": []
+    },
+    {
+      "run": "risky-1",
+      "description": "Risky cases (tenancy, roles, injection, hazards, timeouts), shard 1 of 4, three trials",
+      "report": "runs/submission-risky-1.json",
+      "report_sha256": "09502527f8fa7aef4a9e67975a1af9e16f21fd6b4ad96cc9a58760a96ed09621",
+      "prompt_sha256": "80c1cb46a9f68339b64ab84908e115a02f3786963a7201988c9160ae9dd48175",
+      "passed": 18,
+      "total": 18,
+      "input_tokens": 89165,
+      "output_tokens": 5461,
+      "failures": []
+    },
+    {
+      "run": "risky-2",
+      "description": "Risky cases, shard 2 of 4, three trials",
+      "report": "runs/submission-risky-2.json",
+      "report_sha256": "517de0e851ef84289e5290bc3dd812e3e6d0c7d51c2c42ae57adb25f55efa62e",
+      "prompt_sha256": "80c1cb46a9f68339b64ab84908e115a02f3786963a7201988c9160ae9dd48175",
+      "passed": 18,
+      "total": 18,
+      "input_tokens": 50059,
+      "output_tokens": 4973,
+      "failures": []
+    },
+    {
+      "run": "risky-3",
+      "description": "Risky cases, shard 3 of 4, three trials",
+      "report": "runs/submission-risky-3.json",
+      "report_sha256": "881e42d0c80141651d9fd13b7d215ebbdff84a3f8e0023ce0315425201dbf7bd",
+      "prompt_sha256": "80c1cb46a9f68339b64ab84908e115a02f3786963a7201988c9160ae9dd48175",
+      "passed": 18,
+      "total": 18,
+      "input_tokens": 57366,
+      "output_tokens": 3643,
+      "failures": []
+    },
+    {
+      "run": "risky-4",
+      "description": "Risky cases, shard 4 of 4, three trials",
+      "report": "runs/submission-risky-4.json",
+      "report_sha256": "2525da2ae779281ae4dadb50bb83d535df7888635ef56ea3827e5982c7730fa5",
+      "prompt_sha256": "80c1cb46a9f68339b64ab84908e115a02f3786963a7201988c9160ae9dd48175",
+      "passed": 15,
+      "total": 15,
+      "input_tokens": 84164,
+      "output_tokens": 5721,
+      "failures": []
+    },
+    {
+      "run": "demo-first",
+      "description": "The sixteen rewritten demo examples, first live trial",
+      "report": "runs/submission-demo-first.json",
+      "report_sha256": "766d15ce3982c26712cb85760609687935f9abdc0a5c03a67fe811b9718a4082",
+      "prompt_sha256": "80c1cb46a9f68339b64ab84908e115a02f3786963a7201988c9160ae9dd48175",
+      "passed": 15,
+      "total": 16,
+      "input_tokens": 119933,
+      "output_tokens": 6842,
+      "failures": [
+        {
+          "id": "demo-ambiguous",
+          "trial": 1,
+          "failed_checks": [
+            "reply_details"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "identity",
+      "description": "Clarification cases after the identity-options and help-rule fix, three trials",
+      "report": "runs/submission-identity.json",
+      "report_sha256": "c0bd9761abf461ad3ea7a40a0c90468819418ad599313d15f3ef3f69a4302a55",
+      "prompt_sha256": "d2472b33bd171d62d23a5cc5a4d0fa888a4c129dfbbd31e142cac6466df87f1c",
+      "passed": 21,
+      "total": 21,
+      "input_tokens": 196514,
+      "output_tokens": 12140,
+      "failures": []
+    },
+    {
+      "run": "demo-ambiguous",
+      "description": "Ambiguous-equipment demo example after the fix, original wording, three trials",
+      "report": "runs/submission-demo-ambiguous.json",
+      "report_sha256": "41034fe5db946da96a24987496d984b1d126fe03751e6c51cae4c9f0583b5c25",
+      "prompt_sha256": "d2472b33bd171d62d23a5cc5a4d0fa888a4c129dfbbd31e142cac6466df87f1c",
+      "passed": 2,
+      "total": 3,
+      "input_tokens": 55896,
+      "output_tokens": 3184,
+      "failures": [
+        {
+          "id": "demo-ambiguous",
+          "trial": 3,
+          "failed_checks": [
+            "reply_details"
+          ]
+        }
+      ]
+    },
+    {
+      "run": "demo-ambiguous-reworded",
+      "description": "Ambiguous-equipment demo example, reworded, three trials",
+      "report": "runs/submission-demo-ambiguous-reworded.json",
+      "report_sha256": "019effaac811fa5edd2089cf90bbea1e187af0b45ae24c75608e8c58fc1b2bdc",
+      "prompt_sha256": "d2472b33bd171d62d23a5cc5a4d0fa888a4c129dfbbd31e142cac6466df87f1c",
+      "passed": 3,
+      "total": 3,
+      "input_tokens": 41088,
+      "output_tokens": 1826,
+      "failures": []
+    },
+    {
+      "run": "demo-final",
+      "description": "All sixteen demo examples on the final code and prompt, one trial",
+      "report": "runs/submission-demo-final.json",
+      "report_sha256": "99c2df291ab225a49e51e0ca28422c71ca7554dac5dcc6e1cd5d154b5f208c21",
+      "prompt_sha256": "d2472b33bd171d62d23a5cc5a4d0fa888a4c129dfbbd31e142cac6466df87f1c",
+      "passed": 16,
+      "total": 16,
+      "input_tokens": 120985,
+      "output_tokens": 5969,
+      "failures": []
+    }
+  ],
+  "public_reports": [
+    {
+      "run": "public-1",
+      "description": "Published suite against the branch Docker build, before the identity fix",
+      "report": "runs/submission-public-1.json",
+      "report_sha256": "65373bb23f0c0f14b625e68038fb30fcd8fa6650beba13b775bba2461a21ff05",
+      "passed": 7,
+      "total": 8,
+      "failures": [
+        "P03"
+      ]
+    },
+    {
+      "run": "public-2",
+      "description": "Published suite against the rebuilt Docker build, after the identity fix",
+      "report": "runs/submission-public-2.json",
+      "report_sha256": "30eca3beaf7031abfe333fb46e7a00616cbcd2ac6efa7f3fc585e6d81bd29781",
+      "passed": 8,
+      "total": 8,
+      "failures": []
+    }
+  ],
+  "probes": [
+    {
+      "run": "probe-first",
+      "description": "Write check alone, 28 actions, before the eligibility reply was reworded, with an extra follow-up sentence that was later removed",
+      "report": "runs/submission-probe-first.json",
+      "report_sha256": "3d65aed589ad361de4dc31d64f3dc697ea726e68a20e34b096d2d73b8f39ae21",
+      "write_check_prompt_sha256": "20c15906fe6d8733204ccbcd29f2cbe213c653976e8f730f86249fff7ede4515",
+      "passed": 27,
+      "total": 28,
+      "misses": [
+        "follow-up amount answer"
+      ]
+    },
+    {
+      "run": "probe-amount-a1",
+      "description": "Amount follow-ups after rewording the eligibility reply, same removed sentence",
+      "report": "runs/submission-probe-amount-a1.json",
+      "report_sha256": "b6cd1eabc48c19a8a26d05ba9b62aa64a6a7341d21c405bd523499170c0fbcdb",
+      "write_check_prompt_sha256": "20c15906fe6d8733204ccbcd29f2cbe213c653976e8f730f86249fff7ede4515",
+      "passed": 1,
+      "total": 2,
+      "misses": [
+        "follow-up amount mismatch"
+      ]
+    },
+    {
+      "run": "probe-amount-a2",
+      "description": "Amount follow-ups, repeat",
+      "report": "runs/submission-probe-amount-a2.json",
+      "report_sha256": "7ce2f648bf18aa91021aa88220c306abe634d782e16a7971810ade988fbd2ab1",
+      "write_check_prompt_sha256": "20c15906fe6d8733204ccbcd29f2cbe213c653976e8f730f86249fff7ede4515",
+      "passed": 2,
+      "total": 2,
+      "misses": []
+    },
+    {
+      "run": "probe-amount-a3",
+      "description": "Amount follow-ups, repeat",
+      "report": "runs/submission-probe-amount-a3.json",
+      "report_sha256": "e5895ee9dd2aa8a19eefd02715f0c679fb7bc8942c835fa18e17adb42c00f0c0",
+      "write_check_prompt_sha256": "20c15906fe6d8733204ccbcd29f2cbe213c653976e8f730f86249fff7ede4515",
+      "passed": 1,
+      "total": 2,
+      "misses": [
+        "follow-up amount mismatch"
+      ]
+    },
+    {
+      "run": "probe-amount-a4",
+      "description": "Amount follow-ups, repeat",
+      "report": "runs/submission-probe-amount-a4.json",
+      "report_sha256": "0b11d85a76d903fe9766064cac4e7e2b3f463b0d309c968c9588029f87192fd6",
+      "write_check_prompt_sha256": "20c15906fe6d8733204ccbcd29f2cbe213c653976e8f730f86249fff7ede4515",
+      "passed": 2,
+      "total": 2,
+      "misses": []
+    },
+    {
+      "run": "probe-amount-b1",
+      "description": "Amount cases with a stricter amount rule that was later removed",
+      "report": "runs/submission-probe-amount-b1.json",
+      "report_sha256": "0ab138e4dff380393a69a3d3baee3e7defe3bb850e54d8cff31b2589fec4d60d",
+      "write_check_prompt_sha256": "855e1aea91e8467cb27d0f91d526572c392dfa7664758184b5d9e99a091c8940",
+      "passed": 3,
+      "total": 4,
+      "misses": [
+        "follow-up amount mismatch"
+      ]
+    },
+    {
+      "run": "probe-amount-b2",
+      "description": "Amount cases with the stricter rule, repeat",
+      "report": "runs/submission-probe-amount-b2.json",
+      "report_sha256": "91448a66a6a9da9450a13f716cd4ed8717fcce899c05be7b0dcc268dce8f2c03",
+      "write_check_prompt_sha256": "855e1aea91e8467cb27d0f91d526572c392dfa7664758184b5d9e99a091c8940",
+      "passed": 4,
+      "total": 4,
+      "misses": []
+    },
+    {
+      "run": "probe-amount-b3",
+      "description": "Amount cases with the stricter rule, repeat",
+      "report": "runs/submission-probe-amount-b3.json",
+      "report_sha256": "26c0872b7fa2012c232cd87cedc6970b2835ceef32a5b78ba28e6b5ca2a290d4",
+      "write_check_prompt_sha256": "855e1aea91e8467cb27d0f91d526572c392dfa7664758184b5d9e99a091c8940",
+      "passed": 4,
+      "total": 4,
+      "misses": []
+    },
+    {
+      "run": "probe-amount-shipped-1",
+      "description": "Amount follow-ups on the shipped write-check prompt",
+      "report": "runs/submission-probe-amount-shipped-1.json",
+      "report_sha256": "fdfcb236f3aa842b346781cccc19d060aa09ad830d978b50c14c7839352c1690",
+      "write_check_prompt_sha256": "7d2ce4367ff0db4421861503ffc46674c1899da84bb941523fae6841915123e6",
+      "passed": 2,
+      "total": 2,
+      "misses": []
+    },
+    {
+      "run": "probe-amount-shipped-2",
+      "description": "Amount follow-ups on the shipped prompt, repeat",
+      "report": "runs/submission-probe-amount-shipped-2.json",
+      "report_sha256": "125f131ed07380340e08ec11bd8a2afaf3ef296ff83b59c3b2106d3a55bdc564",
+      "write_check_prompt_sha256": "7d2ce4367ff0db4421861503ffc46674c1899da84bb941523fae6841915123e6",
+      "passed": 2,
+      "total": 2,
+      "misses": []
+    },
+    {
+      "run": "probe-amount-shipped-3",
+      "description": "Amount follow-ups on the shipped prompt, repeat",
+      "report": "runs/submission-probe-amount-shipped-3.json",
+      "report_sha256": "caed375d90d59f0784404d5f0ac3c70765b5d1dea76515b558372c32e319c684",
+      "write_check_prompt_sha256": "7d2ce4367ff0db4421861503ffc46674c1899da84bb941523fae6841915123e6",
+      "passed": 2,
+      "total": 2,
+      "misses": []
+    },
+    {
+      "run": "probe-amount-shipped-4",
+      "description": "Amount follow-ups on the shipped prompt, repeat",
+      "report": "runs/submission-probe-amount-shipped-4.json",
+      "report_sha256": "a98c71c3b31ecbb4316d091abba25224d986e6691b0430642deea18c8575e0cd",
+      "write_check_prompt_sha256": "7d2ce4367ff0db4421861503ffc46674c1899da84bb941523fae6841915123e6",
+      "passed": 1,
+      "total": 2,
+      "misses": [
+        "follow-up amount mismatch"
+      ]
+    },
+    {
+      "run": "probe-final",
+      "description": "Write check alone, all 28 actions, shipped prompt",
+      "report": "runs/submission-probe-final.json",
+      "report_sha256": "781787df7bea9c8a4de618824e4ac532d01165e419c670eb521df849fc3d108e",
+      "write_check_prompt_sha256": "7d2ce4367ff0db4421861503ffc46674c1899da84bb941523fae6841915123e6",
+      "passed": 28,
+      "total": 28,
+      "misses": []
+    }
+  ],
+  "notes": [
+    "Each report is the raw runner or probe output; report_sha256 identifies its exact bytes.",
+    "time and risky shards ran before the help/identity prompt rule; the identity, demo-ambiguous-reworded and demo-final runs and public-2 ran on the final prompt.",
+    "The published-suite runner records checks only; P03's reply before the fix was captured by one extra direct request and is quoted in EVALS.md.",
+    "Billed cost is unknown; third-party Luna list prices ($0.10/M input, $0.50/M output) give an upper bound."
+  ]
+}

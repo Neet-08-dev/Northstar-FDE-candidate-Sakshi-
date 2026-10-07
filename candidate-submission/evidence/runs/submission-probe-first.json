@@ -1,0 +1,208 @@
+{
+  "model": "gpt-6-luna",
+  "prompt_sha256": "20c15906fe6d8733204ccbcd29f2cbe213c653976e8f730f86249fff7ede4515",
+  "passed": 27,
+  "total": 28,
+  "usage": {
+    "input_tokens": 25264,
+    "output_tokens": 2453
+  },
+  "results": [
+    {
+      "case": "invented equipment",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 3214
+    },
+    {
+      "case": "no time given",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 2018
+    },
+    {
+      "case": "earliest permitted",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 1722
+    },
+    {
+      "case": "site-local exact time",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 2408
+    },
+    {
+      "case": "wrong time",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1781
+    },
+    {
+      "case": "stated zone converted",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 3055
+    },
+    {
+      "case": "ticket only",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 2262
+    },
+    {
+      "case": "booking not allowed",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1807
+    },
+    {
+      "case": "send a technician",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 1710
+    },
+    {
+      "case": "credit as asked",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 1516
+    },
+    {
+      "case": "wrong amount",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1500
+    },
+    {
+      "case": "question only",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1336
+    },
+    {
+      "case": "described equipment credit",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 1803
+    },
+    {
+      "case": "described equipment visit",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 2858
+    },
+    {
+      "case": "other equipment",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 2056
+    },
+    {
+      "case": "injected approval",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1374
+    },
+    {
+      "case": "tomorrow from trusted clock",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 2373
+    },
+    {
+      "case": "tomorrow wrong day",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1930
+    },
+    {
+      "case": "credit by invoice only",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 1639
+    },
+    {
+      "case": "credit with grant id",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 2975
+    },
+    {
+      "case": "follow-up slot choice",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 1862
+    },
+    {
+      "case": "follow-up wrong slot",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 2127
+    },
+    {
+      "case": "follow-up yes to credit",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 1778
+    },
+    {
+      "case": "follow-up yes, wrong amount",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1571
+    },
+    {
+      "case": "follow-up amount answer",
+      "expected": true,
+      "verdict": false,
+      "ok": false,
+      "ms": 2644
+    },
+    {
+      "case": "follow-up amount mismatch",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 2331
+    },
+    {
+      "case": "follow-up yes to booking",
+      "expected": true,
+      "verdict": true,
+      "ok": true,
+      "ms": 2375
+    },
+    {
+      "case": "follow-up declines",
+      "expected": false,
+      "verdict": false,
+      "ok": true,
+      "ms": 1655
+    }
+  ]
+}
