@@ -1,5 +1,5 @@
 FROM python:3.12-slim
-ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 UV_CACHE_DIR=/tmp/uv-cache
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PYTHONFAULTHANDLER=1 UV_CACHE_DIR=/tmp/uv-cache
 WORKDIR /app
 RUN pip install --no-cache-dir uv==0.12.23
 COPY pyproject.toml uv.lock .python-version /app/

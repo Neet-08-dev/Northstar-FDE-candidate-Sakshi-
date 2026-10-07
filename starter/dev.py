@@ -18,7 +18,8 @@ def main():
             env = {**os.environ, "PORT": port}
             children.append(subprocess.Popen([sys.executable, "-m", module], env=env))
         print(
-            "Demo: http://localhost:8000 (each request uses a fresh synthetic session)", flush=True
+            "Demo: http://localhost:8000 (each conversation uses a fresh synthetic session)",
+            flush=True,
         )
         while all(child.poll() is None for child in children):
             try:

@@ -1,11 +1,15 @@
-name: Offline checks
+name: Lint and types
 on: [push, pull_request]
 jobs:
-  check:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           version: "0.12.23"
-      - run: make setup check
+      # Tests run once, in the provided contract workflow (checks.yml).
+      - run: make setup
+      - run: uv run --frozen ruff check .
+      - run: uv run --frozen ruff format --check .
+      - run: uv run --frozen mypy
