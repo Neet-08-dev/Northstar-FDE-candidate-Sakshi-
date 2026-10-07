@@ -37,6 +37,11 @@ def utc(value: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
+def display_time(value: str) -> str:
+    local = utc(value).astimezone(ZoneInfo("Asia/Kolkata"))
+    return f"{local.day} {local:%B %Y, %H:%M} IST (UTC+05:30)"
+
+
 def clarification(reason: str) -> Outcome:
     questions = {
         "identity": "Please confirm the ticket ID and site or asset for the service visit.",
@@ -226,7 +231,7 @@ class Actions:
                 ):
                     return Outcome(
                         "needs_clarification",
-                        f"Ticket {ticket['id']} already has a visit at {visit['starts_at']} (UTC). Please confirm whether you want operations to reschedule it.",
+                        f"Ticket {ticket['id']} already has a visit at {display_time(visit['starts_at'])}. Please confirm whether you want operations to reschedule it.",
                     )
                 return self._booked(ticket["id"], visit, existing=True)
             slots = (await b.call("list_slots", asset_id=asset["id"]))["slots"]
@@ -249,7 +254,7 @@ class Actions:
                 if not matching and candidates:
                     return Outcome(
                         "needs_clarification",
-                        f"The requested time is unavailable. Would {candidates[0]['starts_at']} (UTC) work instead? No new visit was booked.",
+                        f"The requested time is unavailable. Would {display_time(candidates[0]['starts_at'])} work instead? No new visit was booked.",
                     )
                 candidates = matching
             if not candidates:
@@ -297,5 +302,5 @@ class Actions:
         lead = "Already scheduled" if existing else "Booked"
         return Outcome(
             "completed",
-            f"{lead}: ticket {ticket_id}, visit {visit['id']}, technician {visit['technician_id']}, at {visit['starts_at']} (UTC) for one hour. Repair completion is not yet confirmed.",
+            f"{lead}: ticket {ticket_id}, visit {visit['id']}, technician {visit['technician_id']}, at {display_time(visit['starts_at'])} for one hour. Repair completion is not yet confirmed.",
         )

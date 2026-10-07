@@ -52,6 +52,20 @@ class SchedulingTests(unittest.TestCase):
             one = asyncio.run(process_async(payload, fixed))
             two = asyncio.run(process_async(payload, fixed))
             self.assertEqual((one["status"], two["status"]), ("completed", "completed"))
+            for response in (one, two):
+                self.assertIn("8 April 2030, 15:30 IST (UTC+05:30)", response["reply"])
+
+            async def different_time(*_):
+                return Decision(
+                    intent="schedule",
+                    ticket_id="T001",
+                    time_mode="exact",
+                    starts_at="2030-04-08T19:30:00+05:30",
+                )
+
+            conflict = asyncio.run(process_async(payload, different_time))
+            self.assertEqual(conflict["status"], "needs_clarification")
+            self.assertIn("8 April 2030, 15:30 IST (UTC+05:30)", conflict["reply"])
             state = request_json(
                 self.url + "/admin/sessions/" + session["session_id"] + "/finalize", {}, self.admin
             )
@@ -63,6 +77,76 @@ class SchedulingTests(unittest.TestCase):
                 token=self.admin,
                 method="DELETE",
             )
+
+    def test_ist_display_preserves_booking_instant(self):
+        cases = [
+            (
+                "2030-04-08T19:30:00+05:30",
+                {},
+                "completed",
+                "8 April 2030, 19:30",
+                "2030-04-08T14:00:00Z",
+            ),
+            ("2030-04-08T18:30:00+05:30", {}, "needs_clarification", "8 April 2030, 15:30", None),
+            (
+                "2030-04-09T01:30:00+05:30",
+                {
+                    "patches": [
+                        {
+                            "collection": "technicians",
+                            "id": "TECH001",
+                            "set": {"available_slots": ["2030-04-08T20:00:00Z"]},
+                        },
+                        {
+                            "collection": "sites",
+                            "id": "S001",
+                            "set": {"access_window": "00:00-23:59 UTC"},
+                        },
+                    ]
+                },
+                "completed",
+                "9 April 2030, 01:30",
+                "2030-04-08T20:00:00Z",
+            ),
+        ]
+        for requested, fixture, status, displayed, stored in cases:
+            with self.subTest(requested=requested):
+                session = request_json(self.url + "/admin/sessions", fixture, self.admin)
+
+                async def fixed(*_):
+                    return Decision(
+                        intent="schedule", ticket_id="T001", time_mode="exact", starts_at=requested
+                    )
+
+                try:
+                    out = asyncio.run(
+                        process_async(
+                            {
+                                "api_url": self.url,
+                                "session_token": session["session_token"],
+                                "run_id": "ist",
+                                "request": {"id": "ist", "subject": "Visit", "body": "Book T001."},
+                            },
+                            fixed,
+                        )
+                    )
+                    self.assertEqual(out["status"], status, out)
+                    self.assertIn(displayed + " IST (UTC+05:30)", out["reply"])
+                    state = request_json(
+                        self.url + "/admin/sessions/" + session["session_id"] + "/finalize",
+                        {},
+                        self.admin,
+                    )
+                    visits = state["state"]["visits"]
+                    self.assertEqual(
+                        [visit["starts_at"] for visit in visits], [stored] if stored else []
+                    )
+                finally:
+                    request_json(
+                        self.url + "/admin/sessions/" + session["session_id"],
+                        token=self.admin,
+                        method="DELETE",
+                    )
 
     def test_model_unavailable_creates_real_handoff(self):
         session = request_json(self.url + "/admin/sessions", {}, self.admin)

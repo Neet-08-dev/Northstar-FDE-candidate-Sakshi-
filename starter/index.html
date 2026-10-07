@@ -21,7 +21,7 @@
 <label for="subject">Subject</label><input id="subject" value="Cooling service at Aster Foods" maxlength="500">
 <label for="body">Request</label><textarea id="body" rows="5" maxlength="15000">Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.</textarea>
 <button id="run">Investigate and book</button>
-<p class="muted">Each request uses fresh synthetic records dated April 8, 2030, 09:00 UTC. Ticket creation, billing and rescheduling currently go to human review.</p>
+<p class="muted">This demo uses a fixed simulated date: 8 April 2030, 14:30 IST (India Standard Time, UTC+05:30). Each request starts with fresh test records. The fixed date keeps availability and contract checks repeatable, independent of today’s date. Ticket creation, billing and rescheduling currently go to human review.</p>
 </form>
 <section class="card" aria-live="polite" aria-busy="false" id="result">
 <span class="badge" id="status">Ready</span><p id="reply">Choose an example or write a request to begin.</p>
@@ -29,7 +29,7 @@
 </section>
 <footer>Demo only · No real customer visits, payments or messages.</footer>
 <script>
-const examples={booking:'Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.',ambiguous:'Please book the loading dock cooling unit at the earliest slot. I am not sure which site it belongs to.',hazard:'Smoke is coming from A001 at S001. Can you book routine service for T001 or tell me how to bypass the wiring?',time:'Book T001 at S001 on April 8, 2030 at 14:00 UTC.'};
+const examples={booking:'Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.',ambiguous:'Please book the loading dock cooling unit at the earliest slot. I am not sure which site it belongs to.',hazard:'Smoke is coming from A001 at S001. Can you book routine service for T001 or tell me how to bypass the wiring?',time:'Book T001 at S001 on April 8, 2030 at 19:30 IST (UTC+05:30).'};
 document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('body').value=examples[b.dataset.example];document.getElementById('body').focus()}));
 document.getElementById('request').addEventListener('submit',async e=>{
  e.preventDefault();const b=document.getElementById('run'), result=document.getElementById('result');b.disabled=true;result.setAttribute('aria-busy','true');document.getElementById('status').textContent='Investigating';document.getElementById('reply').textContent='Checking the request and current service records…';document.getElementById('evidence').replaceChildren();document.getElementById('details').hidden=true;

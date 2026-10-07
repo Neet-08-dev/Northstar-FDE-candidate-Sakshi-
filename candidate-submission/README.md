@@ -18,7 +18,7 @@ For the isolated Docker demo used in this review:
 AGENT_PORT=8010 MOCK_PORT=8011 docker compose -p northstar-scheduling up --build -d
 ```
 
-Open http://localhost:8010. Health endpoints: http://localhost:8010/health and http://localhost:8011/health. Stop with `docker compose -p northstar-scheduling down`. Each demo submission uses fresh synthetic state. The default example books T001 at 2030-04-08T10:00:00Z. Buttons also cover ambiguity, a safety hazard and an exact time. The request body, not this example's IDs, drives interpretation.
+Open http://localhost:8010. Health endpoints: http://localhost:8010/health and http://localhost:8011/health. Stop with `docker compose -p northstar-scheduling down`. Each demo submission uses fresh synthetic state. The demo clock is fixed at 8 April 2030, 14:30 IST for repeatable availability and contract checks. The default example books T001 at 15:30 IST that day. Replies display India Standard Time; backend timestamps remain UTC. Buttons also cover ambiguity, a safety hazard and an exact time. The request body, not this example's IDs, drives interpretation.
 
 Verification commands:
 

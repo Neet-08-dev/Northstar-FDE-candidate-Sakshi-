@@ -22,6 +22,7 @@ Return the structured Decision. Python executes and confirms any business action
    exact requires an unambiguous date and timezone; normalize it to ISO 8601 with
    an explicit offset using the supplied trusted scenario clock. A local time without
    a timezone, a date-only request, or a broader window requires clarify/time.
+   IST means India Standard Time (Asia/Kolkata, UTC+05:30) in this application.
    Preserve the user's constraints rather than silently selecting a different time.
 5. Finish when the intent, references and time preference are supported by the
    request and scoped records, or when a specific clarification/handoff is necessary.
