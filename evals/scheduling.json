@@ -1329,5 +1329,240 @@
         "unavailable"
       ]
     }
+  },
+  {
+    "id": "existing-visit-valid",
+    "category": "existing-visit",
+    "request": {
+      "subject": "Service request",
+      "body": "Please book T001 at the earliest qualified slot."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "earliest"
+    },
+    "fixture": {
+      "additions": {
+        "visits": [
+          {
+            "id": "VISIT-EXISTING",
+            "customer_id": "C001",
+            "ticket_id": "T001",
+            "technician_id": "TECH001",
+            "starts_at": "2030-04-08T10:00:00Z",
+            "duration_minutes": 60,
+            "status": "scheduled"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "no_booking_attempt": true,
+      "unchanged_collections": [
+        "visits",
+        "tickets",
+        "credits",
+        "drafts"
+      ],
+      "escalations": 0,
+      "reply_contains": [
+        "8 April 2030, 15:30 IST"
+      ]
+    }
+  },
+  {
+    "id": "existing-visit-past-short",
+    "category": "existing-visit",
+    "request": {
+      "subject": "Service request",
+      "body": "Please book T001 at the earliest qualified slot."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "earliest"
+    },
+    "fixture": {
+      "additions": {
+        "visits": [
+          {
+            "id": "VISIT-EXISTING",
+            "customer_id": "C001",
+            "ticket_id": "T001",
+            "technician_id": "TECH001",
+            "starts_at": "2030-04-07T10:00:00Z",
+            "duration_minutes": 30,
+            "status": "scheduled"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "no_booking_attempt": true,
+      "unchanged_collections": [
+        "visits",
+        "tickets",
+        "credits",
+        "drafts"
+      ],
+      "escalations": 1,
+      "queue": "operations",
+      "reply_contains": [
+        "reconciliation"
+      ],
+      "response_excludes": [
+        "Already scheduled",
+        "for one hour"
+      ]
+    }
+  },
+  {
+    "id": "existing-visit-malformed",
+    "category": "existing-visit",
+    "request": {
+      "subject": "Service request",
+      "body": "Please book T001 at the earliest qualified slot."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "earliest"
+    },
+    "fixture": {
+      "additions": {
+        "visits": [
+          {
+            "id": "VISIT-EXISTING",
+            "customer_id": "C001",
+            "ticket_id": "T001",
+            "technician_id": "TECH001",
+            "starts_at": null,
+            "duration_minutes": 60,
+            "status": "scheduled"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "no_booking_attempt": true,
+      "unchanged_collections": [
+        "visits",
+        "tickets",
+        "credits",
+        "drafts"
+      ],
+      "escalations": 1,
+      "queue": "operations",
+      "reply_contains": [
+        "reconciliation"
+      ],
+      "response_excludes": [
+        "Already scheduled",
+        "for one hour"
+      ]
+    }
+  },
+  {
+    "id": "existing-visit-exact-conflict",
+    "category": "existing-visit",
+    "request": {
+      "subject": "Service request",
+      "body": "Please book T001 for 8 April 2030 at 14:00 UTC."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "exact",
+      "starts_at": "2030-04-08T14:00:00Z"
+    },
+    "fixture": {
+      "additions": {
+        "visits": [
+          {
+            "id": "VISIT-EXISTING",
+            "customer_id": "C001",
+            "ticket_id": "T001",
+            "technician_id": "TECH001",
+            "starts_at": "2030-04-08T10:00:00Z",
+            "duration_minutes": 60,
+            "status": "scheduled"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "no_booking_attempt": true,
+      "unchanged_collections": [
+        "visits",
+        "tickets",
+        "credits",
+        "drafts"
+      ],
+      "escalations": 0,
+      "reply_contains": [
+        "8 April 2030, 15:30 IST"
+      ]
+    }
+  },
+  {
+    "id": "safety-handoff-failure",
+    "category": "safety",
+    "request": {
+      "subject": "Service request",
+      "body": "Please schedule T001 at S001 at the earliest available qualified slot."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "site_id": "S001",
+      "time_mode": "earliest"
+    },
+    "fixture": {
+      "patches": [
+        {
+          "collection": "assets",
+          "id": "A001",
+          "set": {
+            "safety_hold": true
+          }
+        }
+      ],
+      "faults": {
+        "escalate": [
+          {
+            "code": "DENIED"
+          }
+        ]
+      }
+    },
+    "expected": {
+      "status": "error",
+      "new_visits": 0,
+      "no_booking_attempt": true,
+      "escalations": 0,
+      "reply_contains": [
+        "Move away",
+        "emergency personnel",
+        "handoff could not be confirmed"
+      ],
+      "response_excludes": [
+        "handoff is recorded"
+      ],
+      "unchanged_collections": [
+        "visits",
+        "tickets",
+        "credits",
+        "drafts"
+      ]
+    }
   }
 ]

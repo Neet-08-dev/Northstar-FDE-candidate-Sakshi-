@@ -226,3 +226,248 @@ class EvaluationRegressionTests(unittest.TestCase):
                 await backend.close()
 
         asyncio.run(run())
+
+
+class RecoveryAndExistingVisitTests(unittest.TestCase):
+    """Real action/transport/world behavior, with cancellable HTTP delays."""
+
+    def run_world(
+        self,
+        *,
+        decision=None,
+        body="Book T001 at the earliest slot.",
+        patches=(),
+        visits=(),
+        delay_tool="",
+        after_commit=False,
+        faults=None,
+    ):
+        import time
+        from unittest.mock import patch
+
+        import httpx
+
+        from northstar.world import ToolError, World, load_data
+        from starter.backend import Backend
+
+        world = World(
+            load_data(),
+            {"role": "customer", "customer_ids": ["C001"], "verified": True},
+            "2030-04-08T09:00:00Z",
+            faults=faults,
+        )
+        for collection, record_id, values in patches:
+            next(row for row in world.data[collection] if row["id"] == record_id).update(values)
+        world.data["visits"].extend(visits)
+        requests = []
+        cancelled = []
+        original_client = httpx.AsyncClient
+
+        async def transport(request):
+            tool = request.url.path.rsplit("/", 1)[-1]
+            args = json.loads(request.content)["arguments"]
+            self.assertEqual(request.headers["authorization"], "Bearer scoped-test-token")
+            self.assertEqual(request.url.host, "scoped.test")
+            requests.append((tool, args))
+            delayed = tool == delay_tool and sum(t == tool for t, _ in requests) == 1
+            try:
+                if delayed and not after_commit:
+                    await asyncio.sleep(0.6)
+                result = world.call(tool, args)
+                if delayed and after_commit:
+                    await asyncio.sleep(0.6)
+                return httpx.Response(200, json={"result": result})
+            except asyncio.CancelledError:
+                cancelled.append(tool)
+                raise
+            except ToolError as exc:
+                return httpx.Response(400, json={"error": exc.payload()})
+
+        def backend_factory(url, token, deadline):
+            return Backend(url, token, time.monotonic() + 5.3 if delay_tool else deadline)
+
+        async def fixed(*_):
+            return decision or Decision(intent="schedule", ticket_id="T001", time_mode="earliest")
+
+        with (
+            patch(
+                "starter.backend.httpx.AsyncClient",
+                side_effect=lambda **kw: original_client(
+                    **kw, transport=httpx.MockTransport(transport)
+                ),
+            ),
+            patch("starter.orchestration.Backend", side_effect=backend_factory),
+        ):
+            out = asyncio.run(
+                process_async(
+                    {
+                        "api_url": "http://scoped.test",
+                        "session_token": "scoped-test-token",
+                        "run_id": "regression",
+                        "request": {"id": "regression", "subject": "Service", "body": body},
+                    },
+                    fixed,
+                )
+            )
+        return out, world, requests, cancelled
+
+    def test_safety_handoff_survives_actual_cancellation(self):
+        for source in ["request", "model", "asset", "ticket"]:
+            for after_commit in [False, True]:
+                with self.subTest(source=source, after_commit=after_commit):
+                    patches = []
+                    if source == "asset":
+                        patches = [("assets", "A001", {"safety_hold": True})]
+                    if source == "ticket":
+                        patches = [("tickets", "T001", {"severity": "S1"})]
+                    out, world, requests, cancelled = self.run_world(
+                        body="Smoke is coming from the unit."
+                        if source == "request"
+                        else "Book T001.",
+                        decision=Decision(intent="hazard") if source == "model" else None,
+                        patches=patches,
+                        delay_tool="escalate",
+                        after_commit=after_commit,
+                    )
+                    self.assertEqual(cancelled, ["escalate"])
+                    self.assertIn("Move away", out["reply"], out)
+                    self.assertIn("emergency personnel", out["reply"])
+                    self.assertEqual(out["status"], "escalated", out)
+                    self.assertEqual([r["queue"] for r in world.data["escalations"]], ["safety"])
+                    attempts = [args for tool, args in requests if tool == "escalate"]
+                    self.assertEqual(len(attempts), 2)
+                    self.assertEqual(attempts[0], attempts[1])
+                    self.assertFalse(
+                        any(
+                            tool
+                            in {
+                                "schedule_visit",
+                                "create_ticket",
+                                "update_ticket",
+                                "issue_credit",
+                                "draft_message",
+                                "request_approval",
+                            }
+                            for tool, _ in requests
+                        )
+                    )
+
+    @staticmethod
+    def visit(**changes):
+        return {
+            "id": "VISIT-EXISTING",
+            "customer_id": "C001",
+            "ticket_id": "T001",
+            "technician_id": "TECH001",
+            "starts_at": "2030-04-08T10:00:00Z",
+            "duration_minutes": 60,
+            "status": "scheduled",
+            **changes,
+        }
+
+    def test_invalid_existing_visits_require_reconciliation(self):
+        for values in [
+            {"starts_at": "2030-04-07T10:00:00Z", "duration_minutes": 30},
+            {"starts_at": "2030-04-08T09:00:00Z"},
+            {"duration_minutes": 30},
+            {"starts_at": "invalid"},
+            {"starts_at": None},
+            {"starts_at": "2030-04-08T10:00:00"},
+            {"duration_minutes": "60"},
+            {"technician_id": "UNKNOWN"},
+            {"technician_id": "TECH003"},
+            {"starts_at": "2030-04-08T23:00:00Z"},
+        ]:
+            with self.subTest(values=values):
+                out, world, requests, _ = self.run_world(visits=[self.visit(**values)])
+                self.assertEqual(out["status"], "escalated", out)
+                self.assertNotIn("Already scheduled", out["reply"])
+                self.assertNotIn("for one hour", out["reply"])
+                self.assertEqual(len(world.data["visits"]), 1)
+                self.assertEqual([r["queue"] for r in world.data["escalations"]], ["operations"])
+                self.assertFalse(any(t in {"schedule_visit", "list_slots"} for t, _ in requests))
+
+    def test_failed_safety_handoff_retains_guidance_without_claiming_success(self):
+        for delay_tool in ["", "escalate"]:
+            with self.subTest(delay_tool=delay_tool):
+                out, world, requests, cancelled = self.run_world(
+                    patches=[("assets", "A001", {"safety_hold": True})],
+                    delay_tool=delay_tool,
+                    faults={"escalate": [{"code": "DENIED"}]},
+                )
+                self.assertEqual(out["status"], "error", out)
+                self.assertIn("Move away", out["reply"])
+                self.assertIn("emergency personnel", out["reply"])
+                self.assertIn("handoff could not be confirmed", out["reply"])
+                self.assertNotIn("handoff is recorded", out["reply"])
+                self.assertEqual(world.data["escalations"], [])
+                self.assertFalse(any(t == "schedule_visit" for t, _ in requests))
+                self.assertEqual(cancelled, ["escalate"] if delay_tool else [])
+
+    def test_record_hazard_is_handled_before_further_reads(self):
+        for collection, record_id, fields, forbidden in [
+            ("tickets", "T001", {"severity": "S1"}, "assets"),
+            ("assets", "A001", {"safety_hold": True}, "sites"),
+        ]:
+            for intent in ["schedule", "compose"]:
+                with self.subTest(collection=collection, intent=intent):
+                    out, world, requests, _ = self.run_world(
+                        patches=[(collection, record_id, fields)],
+                        decision=Decision(
+                            intent=intent,
+                            ticket_id="T001",
+                            time_mode="earliest",
+                            message_purpose="ticket_update" if intent == "compose" else "none",
+                        ),
+                    )
+                    self.assertEqual(out["status"], "escalated", out)
+                    self.assertEqual(world.data["escalations"][0]["queue"], "safety")
+                    self.assertFalse(
+                        any(args.get("collection") == forbidden for _, args in requests)
+                    )
+
+    def test_existing_visit_conflicts_and_changed_eligibility(self):
+        from northstar.world import load_data
+
+        contract = next(c["id"] for c in load_data()["contracts"] if "S001" in c["site_ids"])
+        fixtures = [
+            ([], [self.visit(id="VISIT-DUPLICATE")]),
+            (
+                [],
+                [
+                    self.visit(
+                        id="VISIT-OVERLAP", ticket_id="T002", starts_at="2030-04-08T10:30:00Z"
+                    )
+                ],
+            ),
+            ([("technicians", "TECH001", {"active": False})], []),
+            ([("technicians", "TECH001", {"available_slots": []})], []),
+            ([("contracts", contract, {"ends_at": "2030-04-08"})], []),
+        ]
+        for index, (patches, extra) in enumerate(fixtures):
+            with self.subTest(index=index):
+                visit = self.visit(starts_at="2030-04-09T10:00:00Z") if index == 4 else self.visit()
+                out, world, requests, _ = self.run_world(patches=patches, visits=[visit, *extra])
+                self.assertEqual(out["status"], "escalated", out)
+                self.assertEqual(len(world.data["visits"]), 1 + len(extra))
+                self.assertFalse(any(t == "schedule_visit" for t, _ in requests))
+
+    def test_valid_existing_visit_and_exact_time_conflict(self):
+        for mode, requested, status in [
+            ("earliest", "", "completed"),
+            ("exact", "2030-04-08T15:30:00+05:30", "completed"),
+            ("exact", "2030-04-08T14:00:00Z", "needs_clarification"),
+        ]:
+            with self.subTest(mode=mode, requested=requested):
+                out, world, requests, _ = self.run_world(
+                    visits=[self.visit()],
+                    decision=Decision(
+                        intent="schedule", ticket_id="T001", time_mode=mode, starts_at=requested
+                    ),
+                )
+                self.assertEqual(out["status"], status, out)
+                self.assertIn("8 April 2030, 15:30 IST", out["reply"])
+                self.assertEqual(len(world.data["visits"]), 1)
+                self.assertFalse(
+                    any(t in {"schedule_visit", "list_slots", "escalate"} for t, _ in requests)
+                )
