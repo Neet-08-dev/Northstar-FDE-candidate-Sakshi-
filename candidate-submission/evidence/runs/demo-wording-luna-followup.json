@@ -1,0 +1,188 @@
+{
+  "model": "gpt-6-luna",
+  "html_sha256": "92adb522539e31bf50a5b0d80c9720c52bdeda0bc19c6f7baffda05cfcab1007",
+  "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
+  "results": [
+    {
+      "id": "demo-booking",
+      "category": "ordinary",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 4195,
+      "decision": {
+        "intent": "schedule",
+        "ticket_id": "T001",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "earliest",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "unclear",
+        "issue_summary": ""
+      },
+      "response": {
+        "status": "completed",
+        "summary": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S001"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 3049,
+          "output_tokens": 80,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1
+      }
+    }
+  ],
+  "passed": 1,
+  "total": 1
+}

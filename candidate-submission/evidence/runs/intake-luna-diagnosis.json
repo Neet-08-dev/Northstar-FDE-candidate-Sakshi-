@@ -1,0 +1,215 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "19f29c5ddecb24b864add0cb051bad9ea04f90befa74c0bb60d6377a69393023",
+  "mode": "live",
+  "model": "gpt-6-luna",
+  "passed": 1,
+  "total": 1,
+  "results": [
+    {
+      "id": "intake-partial",
+      "category": "intake",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 6608,
+      "decision": {
+        "intent": "intake",
+        "ticket_id": "",
+        "site_id": "S101",
+        "asset_id": "A101",
+        "time_mode": "exact",
+        "starts_at": "2030-04-08T13:00:00Z",
+        "clarification": "intent",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling stopped."
+      },
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. The requested time is unavailable. Would 8 April 2030, 15:30 IST (UTC+05:30) work instead? No new visit was booked.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. The requested time is unavailable. Would 8 April 2030, 15:30 IST (UTC+05:30) work instead? No new visit was booked.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4535,
+          "output_tokens": 263,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "trial": 1
+    }
+  ]
+}

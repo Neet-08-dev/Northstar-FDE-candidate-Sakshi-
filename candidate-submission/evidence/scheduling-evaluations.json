@@ -5,7 +5,7 @@
   "revision_note": "The prompt hash was captured by each runner. Reports did not capture a Git SHA; the implementation reference is contextual, not runner-attested provenance. Full runs predate the later IST prompt definition.",
   "runs": [
     {
-      "source_file": "luna-final.json",
+      "source_file": "runs/luna-final.json",
       "source_sha256": "eacccafe4c6409eb5df42e78afe7fbcee3787b7c57d6959729535687ed5762e7",
       "prompt_sha256": "f817254665fe238384f2a7cc7b3ef69b39dcf4f8af00c5453568b2d0831f20d3",
       "mode": "live",
@@ -1285,7 +1285,7 @@
       ]
     },
     {
-      "source_file": "sol-final.json",
+      "source_file": "runs/sol-final.json",
       "source_sha256": "caf071dcf2153cb47cdc854e9c238b46aeaee02b990ccc8fbe81fdf1757edeeb",
       "prompt_sha256": "f817254665fe238384f2a7cc7b3ef69b39dcf4f8af00c5453568b2d0831f20d3",
       "mode": "live",
@@ -2894,7 +2894,7 @@
       ]
     },
     {
-      "source_file": "sol-risky-repeats.json",
+      "source_file": "runs/sol-risky-repeats.json",
       "source_sha256": "d05bdd462d253022f0ff0f83a63b7ff3eb4090d9dec5b0db3cef086f5e95e95a",
       "prompt_sha256": "f817254665fe238384f2a7cc7b3ef69b39dcf4f8af00c5453568b2d0831f20d3",
       "mode": "live",
@@ -3336,5 +3336,6 @@
         }
       ]
     }
-  ]
+  ],
+  "report_reference_note": "Report paths are relative to this JSON file and resolve to committed reports. SHA-256 values identify the exact saved bytes. Reports preserve runner outputs, not full backend snapshots or tool arguments; historical state checks cannot be independently recomputed from these files."
 }
