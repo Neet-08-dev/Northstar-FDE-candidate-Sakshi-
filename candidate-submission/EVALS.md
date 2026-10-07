@@ -1,6 +1,54 @@
 # Evaluation report
 
-This report covers local intake verification followed by the preserved scheduling checkpoint evidence. Results from different prompts are kept separate.
+This report leads with current billing verification. Older intake and scheduling checkpoints follow as historical evidence; their unsupported-scope statements describe those earlier revisions.
+
+## Billing and approvals, 7 October 2026
+
+The reviewed implementation defaults to GPT-6.1 Sol. Final offline checks pass Ruff, formatting, focused mypy and all 29 test methods. The scenario test exercises 107 authored cases: 46 service cases and 61 billing cases. Nine billing cases also cross the real HTTP handler with controlled interpretation. Additional tests check exact integer-cent types, refreshed policy after interpretation, billing timeout recovery and rejection of unlinked escalation evidence. These offline checks make no provider calls.
+
+On the final prompt, Sol passed the complete 107/107 live HTTP suite, all nine repeated regression trials, and all eight published cases against the final Docker build. The complete suite includes 46 intake/scheduling regressions and 61 billing cases. There were no provider failures. Every financial success was checked against stored credit records and invoice balances; approval cases checked exact invoice/amount, pending state or grant consumption. Forbidden attempts are failures even if the backend refuses them.
+
+Billing coverage includes the $100 inclusive baseline limit, one cent above it, changed limits and mandatory approval; paid status, authoritative SLA breach and remaining balance; exact grants, expiry including offsets, pending, consumed, denied, wrong-issuer, wrong-invoice, wrong-amount and foreign grants; role and tenant restrictions; missing/invalid amounts and conflicting references; named equipment and ambiguous invoices; mixed requests, hazards and injected authority; credit/approval timeout-after-commit, persistent outage, failed handoff, external balance change and malformed records/policy. The scheduling prerequisite now checks the actual escalation ticket ID after an existing-ticket booking failure.
+
+The final prompt SHA-256 is `86a33e9b7865e7eb7c8b3c14090b1b6cd2e216c41af806dad8840cb6250348c8`. The evaluated implementation originally started at staging `e61a9510635d67be8bb2ce80924c1168bc099582`; the branch was subsequently rebased onto `4abf967` for report packaging without changing runtime code or the prompt. Final runtime hashes, every case result, reply, usage and selected audit excerpts are retained in [billing evidence](evidence/billing-evaluations.json). All 11 referenced billing source reports are committed in the [report archive](evidence/README.md#billing-and-approvals). The summary uses relative `report` links and preserves the original report hashes. New scratch output remains ignored under top-level `reports/`. Raw snapshots and credentials are not committed. State/audit assertions ran against each session before deletion; the extract alone cannot independently reconstruct all backend effects.
+
+| Run | Passed | Median | Maximum | Input / output tokens | Maximum backend attempts |
+| --- | --- | --- | --- | --- | --- |
+| billing-development | 4/5 | 4.194s | 16.101s | 22050 / 750 | 11 |
+| billing-identity-diagnosis | 1/2 | 14.120s | 17.049s | 24610 / 497 | 16 |
+| billing-identity-regression | 3/3 | 5.514s | 6.344s | 18270 / 372 | 16 |
+| billing-full-luna | 105/105 | 2.930s | 15.925s | 269027 / 10309 | 34 |
+| billing-full-luna-final | 105/106 | 2.087s | 9.222s | 251611 / 9600 | 34 |
+| billing-final-luna-regressions | 7/9 | 3.422s | 7.393s | 21325 / 965 | 16 |
+| billing-full-sol-final | 107/107 | 6.027s | 18.891s | 224652 / 7554 | 32 |
+| billing-final-sol-regressions | 9/9 | 6.452s | 9.301s | 19114 / 736 | 15 |
+
+Run names retain their original local filenames. In particular, `billing-full-luna-final` is an intermediate 105/106 result on an earlier prompt, not the final passing implementation. Different prompt versions must not be combined into one claimed pass rate. The final Sol suite and targeted Sol regressions overlapped for part of their duration, so latency is a local development observation rather than a controlled model comparison or production benchmark.
+
+Development failures are retained:
+
+- The initial HTTP sample passed 4/5. Named-equipment resolution found the correct asset but searched tickets by a label instead of an asset ID. Two diagnostic trials passed 1/2. Moving the relationship lookup into Python yielded three consecutive HTTP passes and a pass in each subsequent full suite.
+- A first full Luna run passed 105/105, but the published suite passed 6/8. A clarification omitted the expected site reference, and an outside-account credit request with no amount asked for an amount before checking access. The action now checks explicit record access first, and the prompt preserves the credit intent with a null amount.
+- A second full Luna run passed 105/106. A pasted approval ID caused an unnecessary amount question. The second published run passed 7/8, with an explicit S2 request unnecessarily asking for symptoms. Clarified instructions preserve the amount beside an identifier and supply a factual summary for an explicit severity.
+- On the final prompt, Luna repeats passed 7/9. The pasted-ID and explicit-severity cases each passed 3/3, but the outside-account missing-amount case passed 1/3. One failure asked for an amount; another made a generic operations handoff. No financial write occurred. Sol passed the same nine trials 9/9. This motivated the default change to Sol; it does not establish a general model ranking or eliminate possible interpretation failures.
+
+The published suites passed 6/8 on the first Luna build, 7/8 on the second Luna build and 8/8 on the final Sol build. All three reports, including replies and token usage, are in the evidence. Provider-completion checks passed for model-backed public trials. Published cases are examples, not held-out evaluation.
+
+There were 346 authored runner trials and 24 published-suite trials during this slice, plus two supplemental browser demo trials. Authored trials recorded 850,659 input and 30,783 output tokens. Public trials recorded 60,765 input and 2,468 output tokens. Two browser observations confirmed the $75 credit and pending $150 approval, but their exact usage was not retained. Deterministic safety/identity exits are included in trial counts and consume no model tokens. Billed dollar cost is unavailable; no unverified pricing estimate is substituted.
+
+The Docker build and both health endpoints passed on isolated ports 8020/8021. The two new UI buttons populate the exact authored credit requests and render the credit or approval receipt. The demo resets each session and cannot grant supervisor approval. Its browser checks supplement the independent backend-effect assertions.
+
+Reproduce current verification, explicitly invoking paid commands only when intended:
+
+```sh
+make check
+OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run --frozen python -m evals.run --http --interval 0 --out reports/current-sol-http.json
+OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run --frozen python -m evals.run --http --cases billing-foreign-missing-amount,billing-pasted-approval,intake-explicit-severity-outage --trials 3 --interval 0 --out reports/current-sol-regressions.json
+AGENT_PORT=8020 MOCK_PORT=8021 docker compose -p northstar-billing up --build -d
+docker compose -p northstar-billing run --rm public-evals
+```
+
+`--suite billing` selects the 61 billing cases; `--suite service` selects the 46 service cases. Offline interpretation is controlled and does not test language understanding. The complete final-prompt suite was run on Sol; a complete final-prompt Luna sweep was not run. Luna remains optional and has the retained failures above. General billing support, standalone approval-status queries, multi-workflow execution, persistent clarification, cross-session deduplication, real payments and held-out/production reliability remain outside the supported claims.
 
 ## Customer demo wording checks, 7 October 2026
 

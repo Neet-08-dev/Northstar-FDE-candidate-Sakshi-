@@ -1,0 +1,369 @@
+{
+  "passed": 8,
+  "total": 8,
+  "trials_per_case": 1,
+  "results": [
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "effect_0": true,
+        "reply_0": true,
+        "reply_1": true
+      },
+      "case_id": "P01",
+      "trial": 1,
+      "latency_ms": 11273.23,
+      "error": null
+    },
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "effect_0": true,
+        "forbidden_0": true,
+        "reply_0": true
+      },
+      "case_id": "P02",
+      "trial": 1,
+      "latency_ms": 6093.91,
+      "error": null
+    },
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "forbidden_0": true,
+        "forbidden_1": true,
+        "forbidden_2": true,
+        "reply_0": true,
+        "reply_1": true
+      },
+      "case_id": "P03",
+      "trial": 1,
+      "latency_ms": 7317.48,
+      "error": null
+    },
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "effect_0": true,
+        "forbidden_0": true,
+        "reply_0": true,
+        "reply_1": true
+      },
+      "case_id": "P04",
+      "trial": 1,
+      "latency_ms": 14789.12,
+      "error": null
+    },
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "effect_0": true,
+        "forbidden_0": true,
+        "reply_0": true,
+        "reply_1": true
+      },
+      "case_id": "P05",
+      "trial": 1,
+      "latency_ms": 10188.53,
+      "error": null
+    },
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "forbidden_0": true,
+        "forbidden_1": true,
+        "reply_0": true
+      },
+      "case_id": "P06",
+      "trial": 1,
+      "latency_ms": 8468.36,
+      "error": null
+    },
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "effect_0": true,
+        "forbidden_0": true,
+        "forbidden_1": true,
+        "reply_0": true,
+        "reply_1": true
+      },
+      "case_id": "P07",
+      "trial": 1,
+      "latency_ms": 22.16,
+      "error": null
+    },
+    {
+      "passed": true,
+      "checks": {
+        "schema": true,
+        "status": true,
+        "effect_0": true,
+        "reply_0": true,
+        "reply_1": true
+      },
+      "case_id": "P08",
+      "trial": 1,
+      "latency_ms": 8048.44,
+      "error": null
+    }
+  ],
+  "responses": [
+    {
+      "status": "completed",
+      "summary": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+      "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        },
+        {
+          "collection": "tickets",
+          "record_id": "T001"
+        },
+        {
+          "collection": "assets",
+          "record_id": "A001"
+        },
+        {
+          "collection": "sites",
+          "record_id": "S001"
+        },
+        {
+          "collection": "customers",
+          "record_id": "C001"
+        },
+        {
+          "collection": "contracts",
+          "record_id": "CON001"
+        },
+        {
+          "collection": "technicians",
+          "record_id": "TECH001"
+        },
+        {
+          "collection": "visits",
+          "record_id": "VISIT-0001"
+        }
+      ],
+      "usage": {
+        "model": "gpt-6.1-sol",
+        "input_tokens": 2118,
+        "output_tokens": 73,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      }
+    },
+    {
+      "status": "completed",
+      "summary": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.",
+      "reply": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        },
+        {
+          "collection": "assets",
+          "record_id": "A101"
+        },
+        {
+          "collection": "sites",
+          "record_id": "S101"
+        },
+        {
+          "collection": "customers",
+          "record_id": "C001"
+        },
+        {
+          "collection": "contracts",
+          "record_id": "CON001"
+        },
+        {
+          "collection": "tickets",
+          "record_id": "NEW-0019"
+        }
+      ],
+      "usage": {
+        "model": "gpt-6.1-sol",
+        "input_tokens": 2122,
+        "output_tokens": 76,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      }
+    },
+    {
+      "status": "needs_clarification",
+      "summary": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+      "reply": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        }
+      ],
+      "usage": {
+        "model": "gpt-6.1-sol",
+        "input_tokens": 2115,
+        "output_tokens": 101,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      }
+    },
+    {
+      "status": "completed",
+      "summary": "Applied a $50.00 service credit to invoice I001. Credit reference: CREDIT-0001.",
+      "reply": "Applied a $50.00 service credit to invoice I001. Credit reference: CREDIT-0001.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        },
+        {
+          "collection": "invoices",
+          "record_id": "I001"
+        },
+        {
+          "collection": "tickets",
+          "record_id": "T001"
+        },
+        {
+          "collection": "credits",
+          "record_id": "CREDIT-0001"
+        }
+      ],
+      "usage": {
+        "model": "gpt-6.1-sol",
+        "input_tokens": 2124,
+        "output_tokens": 72,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      }
+    },
+    {
+      "status": "escalated",
+      "summary": "Supervisor approval PENDING-0001 is pending for a $250.00 credit on invoice I001. No credit has been applied.",
+      "reply": "Supervisor approval PENDING-0001 is pending for a $250.00 credit on invoice I001. No credit has been applied.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        },
+        {
+          "collection": "invoices",
+          "record_id": "I001"
+        },
+        {
+          "collection": "tickets",
+          "record_id": "T001"
+        },
+        {
+          "collection": "approvals",
+          "record_id": "PENDING-0001"
+        }
+      ],
+      "usage": {
+        "model": "gpt-6.1-sol",
+        "input_tokens": 2121,
+        "output_tokens": 72,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      }
+    },
+    {
+      "status": "blocked",
+      "summary": "The requested billing record is unavailable within your authorized account. Please confirm the reference or contact support for access verification.",
+      "reply": "The requested billing record is unavailable within your authorized account. Please confirm the reference or contact support for access verification.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        }
+      ],
+      "usage": {
+        "model": "gpt-6.1-sol",
+        "input_tokens": 2119,
+        "output_tokens": 130,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      }
+    },
+    {
+      "status": "escalated",
+      "summary": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+      "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        },
+        {
+          "collection": "escalations",
+          "record_id": "HANDOFF-0001"
+        }
+      ],
+      "usage": {
+        "model": "none",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "pricing_source": "No model calls"
+      }
+    },
+    {
+      "status": "escalated",
+      "summary": "Service could not be completed because a tool was unavailable or live state changed. Operations must reconcile any uncertain ticket or booking before retrying. A operations handoff is recorded as HANDOFF-0001.",
+      "reply": "Service could not be completed because a tool was unavailable or live state changed. Operations must reconcile any uncertain ticket or booking before retrying. A operations handoff is recorded as HANDOFF-0001.",
+      "evidence": [
+        {
+          "collection": "policy",
+          "record_id": "NS-2030.1"
+        },
+        {
+          "collection": "assets",
+          "record_id": "A101"
+        },
+        {
+          "collection": "sites",
+          "record_id": "S101"
+        },
+        {
+          "collection": "customers",
+          "record_id": "C001"
+        },
+        {
+          "collection": "contracts",
+          "record_id": "CON001"
+        },
+        {
+          "collection": "escalations",
+          "record_id": "HANDOFF-0001"
+        }
+      ],
+      "usage": {
+        "model": "gpt-6.1-sol",
+        "input_tokens": 2124,
+        "output_tokens": 78,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      }
+    }
+  ],
+  "prompt_sha256": "86a33e9b7865e7eb7c8b3c14090b1b6cd2e216c41af806dad8840cb6250348c8",
+  "model_completed": true
+}

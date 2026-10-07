@@ -8,6 +8,7 @@ import os
 import threading
 import time
 import uuid
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
@@ -16,9 +17,11 @@ from dotenv import load_dotenv
 from northstar.api import APIServer
 from northstar.http import request_json
 from starter.actions import Decision
+from starter.agent import Handler
 from starter.orchestration import interpret, process_async
 
 CASES = Path(__file__).with_name("scheduling.json")
+BILLING_CASES = Path(__file__).with_name("billing.json")
 
 
 def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
@@ -40,8 +43,6 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
         "no_other_business_writes": not any(
             e["tool"]
             in {
-                "issue_credit",
-                "request_approval",
                 "update_ticket",
                 "draft_message",
             }
@@ -50,6 +51,10 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
         "response_shape": bool(response["summary"] and response["reply"])
         and isinstance(response["usage"], dict),
         "attempt_budget": len(audit) <= 48,
+        "credit_attempts": sum(e["tool"] == "issue_credit" for e in audit)
+        == expected.get("credit_attempts", 0),
+        "approval_attempts": sum(e["tool"] == "request_approval" for e in audit)
+        == expected.get("approval_attempts", 0),
     }
     if expected["new_visits"]:
         checks["booking_details"] = bool(new_visits) and all(
@@ -97,6 +102,13 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
         checks["real_handoff"] = any(
             r["queue"] == expected["queue"] for r in snapshot["state"]["escalations"]
         )
+    if "escalation_ticket_id" in expected:
+        checks["handoff_linkage"] = bool(snapshot["state"]["escalations"]) and all(
+            row["ticket_id"] == expected["escalation_ticket_id"]
+            for row in snapshot["state"]["escalations"]
+        )
+    if case.get("workflow") == "billing":
+        checks.update(check_billing(expected, response, snapshot))
     if (
         case["category"]
         in {"authorization", "safety", "policy", "identity", "ambiguity", "injection", "scope"}
@@ -106,7 +118,7 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
     if case["id"] == "timeout-after-commit":
         attempts = [e["arguments"] for e in audit if e["tool"] == "schedule_visit"]
         checks["exact_replay"] = len(attempts) == 2 and attempts[0] == attempts[1]
-    if case["id"] == "unverified":
+    if case["id"] == "unverified" or expected.get("no_customer_reads"):
         checks["no_customer_reads"] = not any(
             e["tool"] in {"search_records", "get_record"} for e in audit
         )
@@ -127,7 +139,67 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
     return checks
 
 
-async def run_case(case: dict, api_url: str, admin_token: str, offline: bool = True) -> dict:
+def check_billing(expected: dict, response: dict, snapshot: dict) -> dict[str, bool]:
+    before, after = snapshot["initial"], snapshot["state"]
+    old_credits = {row["id"] for row in before["credits"]}
+    credits = [row for row in after["credits"] if row["id"] not in old_credits]
+    old_approvals = {row["id"] for row in before["approvals"]}
+    approvals = [row for row in after["approvals"] if row["id"] not in old_approvals]
+    invoice_id = expected.get("invoice_id", "I001")
+    amount = expected.get("credit_cents", 0)
+    checks = {
+        "credit_count": len(credits) == int(amount > 0),
+        "credit_details": all(
+            row["invoice_id"] == invoice_id
+            and row["amount_cents"] == amount
+            and row["customer_id"] == "C001"
+            and row.get("approval_id", "") == expected.get("used_approval", "")
+            for row in credits
+        ),
+        "approval_count": len(approvals) == expected.get("new_approvals", 0),
+        "approval_details": all(
+            row["invoice_id"] == invoice_id
+            and row["amount_cents"] == expected.get("approval_cents")
+            and row["status"] == "pending"
+            and row["issuer_role"] is None
+            and row["customer_id"] == "C001"
+            for row in approvals
+        ),
+        "no_service_writes": not any(
+            e["tool"] in {"schedule_visit", "create_ticket", "update_ticket", "draft_message"}
+            for e in snapshot["audit"]
+        ),
+    }
+    expected_balances = {row["id"]: row["credited_cents"] for row in before["invoices"]}
+    expected_balances[invoice_id] = expected.get(
+        "final_credited_cents", expected_balances.get(invoice_id, 0) + amount
+    )
+    checks["ledger_balances"] = all(
+        row["credited_cents"] == expected_balances[row["id"]] for row in after["invoices"]
+    )
+    checks["approval_consumption"] = all(
+        next(a for a in after["approvals"] if a["id"] == row["id"])["status"]
+        == ("consumed" if row["id"] == expected.get("used_approval") else row["status"])
+        for row in before["approvals"]
+    )
+    checks["billing_evidence"] = all(
+        {"collection": collection, "record_id": row["id"]} in response["evidence"]
+        and row["id"] in response["reply"]
+        for collection, rows in [("credits", credits), ("approvals", approvals)]
+        for row in rows
+    )
+    if expected.get("pending_id"):
+        checks["pending_reference"] = (
+            expected["pending_id"] in response["reply"]
+            and {"collection": "approvals", "record_id": expected["pending_id"]}
+            in response["evidence"]
+        )
+    return checks
+
+
+async def run_case(
+    case: dict, api_url: str, admin_token: str, offline: bool = True, process_url: str = ""
+) -> dict:
     run_id = str(uuid.uuid4())
     session = request_json(
         api_url + "/admin/sessions", {**case["fixture"], "request_id": run_id}, admin_token
@@ -148,7 +220,11 @@ async def run_case(case: dict, api_url: str, admin_token: str, offline: bool = T
 
     started = time.monotonic()
     try:
-        response = await process_async(payload, interpreter=interpretation)
+        response = (
+            await asyncio.to_thread(request_json, process_url + "/process", payload, timeout=65)
+            if process_url
+            else await process_async(payload, interpreter=interpretation)
+        )
         snapshot = request_json(
             api_url + "/admin/sessions/" + session["session_id"] + "/finalize", {}, admin_token
         )
@@ -170,6 +246,9 @@ async def run_case(case: dict, api_url: str, admin_token: str, offline: bool = T
                     "tool": e["tool"],
                     "committed": e.get("committed", False),
                     "code": e.get("error", {}).get("code"),
+                    "lookup": e["arguments"]
+                    if e["tool"] in {"search_records", "get_record"}
+                    else None,
                 }
                 for e in snapshot["audit"]
             ],
@@ -187,17 +266,27 @@ def model_completed(response: dict) -> bool:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--offline", action="store_true")
+    parser.add_argument(
+        "--http", action="store_true", help="Run live through the real /process HTTP handler"
+    )
+    parser.add_argument("--suite", choices=["all", "service", "billing"], default="all")
     parser.add_argument("--interval", type=float, default=10, help="Seconds between paid cases")
     parser.add_argument("--trials", type=int, default=1)
     parser.add_argument("--cases", help="Comma-separated authored case IDs")
     parser.add_argument("--out", default="reports/scheduling.json")
     args = parser.parse_args()
+    if args.http and args.offline:
+        parser.error("--http requires live interpretation")
     if not 1 <= args.trials <= 5:
         parser.error("trials must be between 1 and 5")
     load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
     if not args.offline and not os.environ.get("OPENAI_API_KEY"):
         parser.error("Configure OPENAI_API_KEY in local .env for paid live evaluations")
-    cases = json.loads(CASES.read_text())
+    cases = []
+    if args.suite in {"all", "service"}:
+        cases.extend(json.loads(CASES.read_text()))
+    if args.suite in {"all", "billing"}:
+        cases.extend(json.loads(BILLING_CASES.read_text()))
     if args.cases:
         selected = set(args.cases.split(","))
         if not selected <= {c["id"] for c in cases}:
@@ -207,6 +296,11 @@ def main():
     server = APIServer(("127.0.0.1", 0), admin_token)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
+    candidate = ThreadingHTTPServer(("127.0.0.1", 0), Handler) if args.http else None
+    candidate_thread = None
+    if candidate:
+        candidate_thread = threading.Thread(target=candidate.serve_forever, daemon=True)
+        candidate_thread.start()
     prompt = Path(__file__).resolve().parents[1] / "starter/prompts/assistant.md"
     prompt_sha256 = hashlib.sha256(prompt.read_bytes()).hexdigest()
     rows = []
@@ -220,6 +314,7 @@ def main():
                         "http://127.0.0.1:" + str(server.server_port),
                         admin_token,
                         args.offline,
+                        "http://127.0.0.1:" + str(candidate.server_port) if candidate else "",
                     )
                 )
                 row["trial"] = trial + 1
@@ -251,7 +346,8 @@ def main():
             "incomplete": stopped,
             "prompt_sha256": prompt_sha256,
             "mode": "offline-controlled-interpretation" if args.offline else "live",
-            "model": None if args.offline else os.environ.get("OPENAI_MODEL", "gpt-6-luna"),
+            "model": None if args.offline else os.environ.get("OPENAI_MODEL", "gpt-6.1-sol"),
+            "entrypoint": "http-process" if args.http else "process_async",
             "passed": sum(r["passed"] for r in rows),
             "total": len(rows),
             "results": rows,
@@ -262,6 +358,10 @@ def main():
         print(f"{report['passed']}/{report['total']}; report: {out}", flush=True)
         return 0 if all(r["passed"] for r in rows) else 1
     finally:
+        if candidate:
+            candidate.shutdown()
+            candidate.server_close()
+            candidate_thread.join()
         server.shutdown()
         server.server_close()
         thread.join()

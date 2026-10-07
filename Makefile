@@ -4,7 +4,7 @@ UV ?= $(shell command -v uv 2>/dev/null || echo .tools/uv/bin/uv)
 help:
 	@echo 'setup: locked dependencies | check: offline lint/types/tests | dev: local demo'
 	@echo 'eval-offline: authored deterministic scenarios | eval-live: paid model scenarios'
-	@echo 'public-evals: full public suite (later workflows remain unsupported)'
+	@echo 'public-evals: published scenarios against running local services'
 setup:
 	sh scripts/setup.sh
 check:

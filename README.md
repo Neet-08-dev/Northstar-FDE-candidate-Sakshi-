@@ -4,11 +4,11 @@ Build an AI operations assistant for a fictional commercial field-services busin
 
 AI coding and building tools are explicitly permitted and encouraged: Codex, Claude Code, Cursor, Copilot, Gemini CLI or any other tools. Choose any runtime model, provider, framework or deterministic components. No model key is required to start the scaffold.
 
-## Implemented scheduling slice
+## Implemented service workflows
 
-The assistant now uses Python + OpenAI Agents SDK to book visits for existing tickets, with deterministic policy/authority checks, clarification and real safety/operations handoffs. See [local setup and demo](candidate-submission/README.md) and [evaluation results](candidate-submission/EVALS.md). Ticket creation and billing are not yet implemented.
+The assistant uses Python and the OpenAI Agents SDK for ticket intake, technician bookings and service credits. Python checks current policy, identity, eligibility and supervisor approvals before financial writes. Ambiguous requests ask for clarification; failures create recorded human handoffs when possible. See [local setup and demo](candidate-submission/README.md) and [evaluation results](candidate-submission/EVALS.md).
 
-Use `make setup` and `make dev` for local development. Configure `OPENAI_API_KEY` in ignored `.env`; development defaults to GPT-6 Luna. Offline checks: `make check`. Live evaluations are explicitly invoked and consume API credit.
+Use `make setup` and `make dev` for local development. Configure `OPENAI_API_KEY` in ignored `.env`; the default model is GPT-6.1 Sol. Luna remains an optional development override, with observed interpretation failures recorded in the evaluation report. Offline checks: `make check`. Live evaluations are explicitly invoked and consume API credit.
 
 ## Get your assessment workspace
 
@@ -25,7 +25,7 @@ docker compose up --build -d
 docker compose run --rm public-evals
 ```
 
-In PowerShell use `Copy-Item .env.example .env`. Open http://localhost:8000 for the starter demo. API health: http://localhost:8001/health. The full public suite includes workflows beyond the scheduling slice; those remain unsupported. `docker compose down` stops the services. The mock starts fresh whenever it restarts; each evaluation additionally gets its own isolated session.
+In PowerShell use `Copy-Item .env.example .env`. Open http://localhost:8000 for the starter demo. API health: http://localhost:8001/health. The public suite covers eight published examples; see the submission's supported scope and recorded results for coverage limits. `docker compose down` stops the services. The mock starts fresh whenever it restarts; each evaluation additionally gets its own isolated session.
 
 ## Start without Docker
 Python 3.12 or later; run `make setup` to install the locked SDK dependencies, then activate `.venv` (`. .venv/bin/activate`). From this repository root, use three terminals:

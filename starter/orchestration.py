@@ -25,7 +25,7 @@ Interpreter = Callable[[Record, Backend, Record, Record, Record], Awaitable[Deci
 async def interpret(
     payload: Record, backend: Backend, context: Record, policy: Record, usage: Record
 ) -> Decision:
-    model_name = os.environ.get("OPENAI_MODEL", "gpt-6-luna")
+    model_name = os.environ.get("OPENAI_MODEL", "gpt-6.1-sol")
     usage.update(
         model=model_name,
         input_tokens=None,
@@ -43,11 +43,15 @@ async def interpret(
         "status",
         "required_skill",
         "timezone",
+        "ticket_id",
+        "currency",
     }
 
     @function_tool(failure_error_function=None)
-    async def inspect_records(collection: Literal["tickets", "sites", "assets"], query: str) -> str:
-        """Find scoped records to resolve an ambiguous ticket, site or equipment description.
+    async def inspect_records(
+        collection: Literal["tickets", "sites", "assets", "invoices"], query: str
+    ) -> str:
+        """Find scoped records to resolve an ambiguous invoice, ticket, site or equipment.
 
         Args:
             collection: Kind of record to inspect.
@@ -185,8 +189,8 @@ async def process_async(payload: Record, interpreter: Interpreter | None = None)
             log.warning(json.dumps({"event": "provider_limits", "limits": limits}))
         if actions:
             outcome = await actions.handoff(
-                "operations",
-                "The request could not be completed because processing was unavailable. Operations must reconcile any uncertain action.",
+                actions.recovery_queue,
+                "The request could not be completed because processing was unavailable. A human must reconcile any uncertain action before retrying.",
             )
     finally:
         await backend.close()
