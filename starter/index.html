@@ -9,9 +9,11 @@
 </head>
 <body>
 <div class="eyebrow">Northstar field services</div>
-<h1>Book the right technician.</h1>
-<p>Schedule a visit for an existing ticket. The assistant checks service coverage, equipment safety and technician availability before confirming a booking.</p>
+<h1>Record the issue. Arrange service.</h1>
+<p>Record a service issue or request a technician. The assistant reuses open tickets and checks coverage, safety and availability before confirming a visit.</p>
 <div class="samples" aria-label="Example requests">
+<button type="button" data-example="intake">Record an issue</button>
+<button type="button" data-example="intakeBooking">Request service</button>
 <button type="button" data-example="booking">Book a visit</button>
 <button type="button" data-example="ambiguous">Unclear equipment</button>
 <button type="button" data-example="hazard">Safety concern</button>
@@ -20,8 +22,8 @@
 <form id="request" class="card">
 <label for="subject">Subject</label><input id="subject" value="Cooling service at Aster Foods" maxlength="500">
 <label for="body">Request</label><textarea id="body" rows="5" maxlength="15000">Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.</textarea>
-<button id="run">Investigate and book</button>
-<p class="muted">This demo uses a fixed simulated date: 8 April 2030, 14:30 IST (India Standard Time, UTC+05:30). Each request starts with fresh test records. The fixed date keeps availability and contract checks repeatable, independent of today’s date. Ticket creation, billing and rescheduling currently go to human review.</p>
+<button id="run">Process request</button>
+<p class="muted">This demo uses a fixed simulated date: 8 April 2030, 14:30 IST (India Standard Time, UTC+05:30). Each request starts with fresh test records. The fixed date keeps availability and contract checks repeatable, independent of today’s date. Billing, cancellation and rescheduling go to human review. A recorded ticket remains open if booking needs clarification or cannot finish.</p>
 </form>
 <section class="card" aria-live="polite" aria-busy="false" id="result">
 <span class="badge" id="status">Ready</span><p id="reply">Choose an example or write a request to begin.</p>
@@ -29,7 +31,7 @@
 </section>
 <footer>Demo only · No real customer visits, payments or messages.</footer>
 <script>
-const examples={booking:'Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.',ambiguous:'Please book the loading dock cooling unit at the earliest slot. I am not sure which site it belongs to.',hazard:'Smoke is coming from A001 at S001. Can you book routine service for T001 or tell me how to bypass the wiring?',time:'Book T001 at S001 on April 8, 2030 at 19:30 IST (UTC+05:30).'};
+const examples={intake:'The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please record a ticket only; do not book a visit.',intakeBooking:'Please send a technician for routine nonurgent maintenance of A101 at S101 at the earliest qualified slot.',booking:'Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.',ambiguous:'Please book the loading dock cooling unit at the earliest slot. I am not sure which site it belongs to.',hazard:'Smoke is coming from A001 at S001. Can you book routine service for T001 or tell me how to bypass the wiring?',time:'Book T001 at S001 on April 8, 2030 at 19:30 IST (UTC+05:30).'};
 document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('body').value=examples[b.dataset.example];document.getElementById('body').focus()}));
 document.getElementById('request').addEventListener('submit',async e=>{
  e.preventDefault();const b=document.getElementById('run'), result=document.getElementById('result');b.disabled=true;result.setAttribute('aria-busy','true');document.getElementById('status').textContent='Investigating';document.getElementById('reply').textContent='Checking the request and current service records…';document.getElementById('evidence').replaceChildren();document.getElementById('details').hidden=true;

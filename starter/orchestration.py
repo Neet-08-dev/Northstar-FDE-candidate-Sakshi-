@@ -63,7 +63,7 @@ async def interpret(
 
     async with AsyncOpenAI(max_retries=0, timeout=20) as client:
         agent = Agent(
-            name="Northstar scheduling interpreter",
+            name="Northstar service interpreter",
             instructions=Path(__file__).with_name("prompts").joinpath("assistant.md").read_text(),
             model=OpenAIResponsesModel(model_name, client),
             model_settings=ModelSettings(

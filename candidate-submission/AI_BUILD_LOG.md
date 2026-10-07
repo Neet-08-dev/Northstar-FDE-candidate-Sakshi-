@@ -36,4 +36,18 @@ The work remained with one coding agent; there was no subagent delegation to sto
 
 All reported evaluations use authored development cases. They do not establish held-out performance, production throughput or general language reliability. The full Luna/Sol runs used the prompt before the IST definition; later checks had narrower scope. [EVALS.md](EVALS.md) records those revisions and limits. Future workflow implementation and a final submission-wide validation remain outstanding.
 
+## Local intake implementation, 7 October 2026
+
+The user approved ticket-only intake and intake followed by booking, permission to create a necessary ticket for an unambiguous technician request, and retention of confirmed tickets when booking cannot finish. They requested local implementation and verification before any new draft PR. At the user's request, the verified intake changes are committed locally and remain unpushed on `codex/scheduling-workflow`; PR #1 was not updated for intake. The concurrent documentation correction at `13c2154` was preserved.
+
+Codebase Design kept the existing three runtime modules. Private service checks are shared inside Actions, while scheduling retains its slot and technician rules. Backend transport required no changes. Writing for Agents guided the intake and time instructions. No subagents or code-review workflow were used.
+
+The verification budget was ten new/adapted behavior cases, reusing the existing scenario runner rather than creating another set of helper tests. Final offline verification passes all 24 test methods and 45 scenarios. The first type check caught a missing optional-record annotation; it was corrected before execution tests.
+
+A consequential live failure occurred in Luna's partial-completion case: the request supplied an exact IST time, but the assistant recorded the ticket and asked for time again. The grader rejected the reply because it omitted the real available alternative. The original report did not capture the interpreted Decision, so its exact erroneous field could not be established. Diagnosing Bugs guided a targeted rerun and decision capture; that rerun passed, confirming intermittency. The prompt now explicitly preserves exact times for intake with booking. Three Luna regression trials passed, followed by the final-prompt Sol sample at 10/10 and four further Sol repeats at 4/4. All runs, including the initial failure, are retained in EVALS.md and the intake evidence.
+
+The runner used 28 live trials, four more than planned for the observed failure. No full 45-case model suite was run. The Docker demo was rebuilt for the final prompt and both services passed health checks. The UI includes ticket-only and combined intake examples. No billing settings or credentials were changed.
+
+A final Luna HTTP demo smoke resolved the named annex equipment without IDs and created the correct ticket without booking. This was one additional live request beyond the 28 runner trials. Its response and checks are saved in the intake evidence.
+
 The original Contract checks CI workflow still ran bare Python after SDK dependencies were introduced. Both push and pull-request jobs failed while importing pydantic and dotenv; the newer Offline checks workflow passed. A clean copy of commit `13c2154` reproduced both import errors. The local workflow fix installs the locked environment and runs unittest through uv. All 24 test methods and `docker compose config --quiet` passed in that clean copy. This prevents existing developer environments from hiding missing CI setup; verification uses a clean checkout rather than adding a test that merely inspects workflow text.
