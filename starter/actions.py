@@ -391,7 +391,7 @@ class Actions:
         try:
             if decision.intent == "clarify":
                 if decision.clarification == "identity":
-                    return await self._ticket_options(clarification("identity").reply)
+                    return await self._identity_options()
                 return clarification(decision.clarification, decision)
             if decision.intent == "status":
                 return await self.answer_status(decision)
@@ -702,8 +702,8 @@ class Actions:
             f"{percent}% of invoice {invoice_id}'s {dollars(total)} total is {dollars(amount)}. Would you like me to {step} to invoice {invoice_id}? No credit or approval request was created.",
         )
 
-    async def _ticket_options(self, question: str, ask_time: bool = False) -> Outcome:
-        """Ask which ticket, offering the requester's own open tickets as verified options."""
+    async def _ticket_lines(self) -> list[str]:
+        """The requester's own open tickets, with equipment and site names, as options."""
         b = self.backend
         customers = self.context["actor"]["customer_ids"]
         tickets = sorted(
@@ -714,18 +714,42 @@ class Actions:
             ),
             key=lambda t: t["id"],
         )
-        if tickets:
-            assets = {a["id"]: a for a in await b.search("assets")}
-            sites = {s["id"]: s for s in await b.search("sites")}
-            lines = []
-            for t in b.cite("tickets", tickets[:3]):
-                asset, site = assets.get(t["asset_id"]), sites.get(t["site_id"])
-                where = (
-                    describe(asset, site)
-                    if asset and site
-                    else f"equipment {t['asset_id']} at site {t['site_id']}"
-                )
-                lines.append(f"- {t['id']}: {where}, {t['status'].replace('_', ' ')}")
+        if not tickets:
+            return []
+        assets = {a["id"]: a for a in await b.search("assets")}
+        sites = {s["id"]: s for s in await b.search("sites")}
+        lines = []
+        for t in b.cite("tickets", tickets[:3]):
+            asset, site = assets.get(t["asset_id"]), sites.get(t["site_id"])
+            where = (
+                describe(asset, site)
+                if asset and site
+                else f"equipment {t['asset_id']} at site {t['site_id']}"
+            )
+            lines.append(f"- {t['id']}: {where}, {t['status'].replace('_', ' ')}")
+        return lines
+
+    async def _equipment_lines(self) -> list[str]:
+        """The requester's own active equipment, with site names, as options."""
+        customers = self.context["actor"]["customer_ids"]
+        assets = sorted(
+            (
+                a
+                for a in await self.backend.search("assets")
+                if a.get("customer_id") in customers and a.get("status") == "active"
+            ),
+            key=lambda a: a["id"],
+        )
+        if not assets:
+            return []
+        sites = {s["id"]: s for s in await self.backend.search("sites")}
+        shown = self.backend.cite("assets", [a for a in assets[:3] if a["site_id"] in sites])
+        return [f"- {describe(a, sites[a['site_id']])}" for a in shown]
+
+    async def _ticket_options(self, question: str, ask_time: bool = False) -> Outcome:
+        """Ask which ticket, offering the requester's own open tickets as verified options."""
+        lines = await self._ticket_lines()
+        if lines:
             text = (
                 f"{question} Your open tickets:\n"
                 + "\n".join(lines)
@@ -739,24 +763,27 @@ class Actions:
 
     async def _equipment_options(self, question: str, ask_time: bool = False) -> Outcome:
         """Ask which equipment, offering the requester's own active assets as verified options."""
-        customers = self.context["actor"]["customer_ids"]
-        assets = sorted(
-            (
-                a
-                for a in await self.backend.search("assets")
-                if a.get("customer_id") in customers and a.get("status") == "active"
-            ),
-            key=lambda a: a["id"],
-        )
-        if not assets:
+        lines = await self._equipment_lines()
+        if not lines:
             return clarification("identity")
-        sites = {s["id"]: s for s in await self.backend.search("sites")}
-        shown = self.backend.cite("assets", [a for a in assets[:3] if a["site_id"] in sites])
-        lines = [f"- {describe(a, sites[a['site_id']])}" for a in shown]
         text = f"{question} Your equipment:\n" + "\n".join(lines) + "\n\nReply with the equipment."
         if ask_time:
             text += " Also tell me when: the earliest available slot, or a date and time."
         return Outcome("needs_clarification", text)
+
+    async def _identity_options(self) -> Outcome:
+        """Ask which record a description meant, offering open tickets and active equipment."""
+        tickets, equipment = await self._ticket_lines(), await self._equipment_lines()
+        if not tickets and not equipment:
+            return clarification("identity")
+        text = clarification("identity").reply
+        if tickets:
+            text += " Your open tickets:\n" + "\n".join(tickets)
+        if equipment:
+            text += ("\n\nYour equipment:\n" if tickets else " Your equipment:\n") + "\n".join(
+                equipment
+            )
+        return Outcome("needs_clarification", text + "\n\nReply with the ticket or the equipment.")
 
     async def answer_status(self, decision: Decision) -> Outcome:
         """Answer a ticket or visit question from verified records; never writes."""

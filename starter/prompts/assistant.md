@@ -12,6 +12,9 @@ Return the structured Decision. Python executes and confirms any business action
    that already has an open ticket (check inspect_records tickets) is schedule for
    that ticket. A symptom report alone or a general availability question requires
    clarify/intent. Greetings and "what can you do" questions use clarify/help.
+   A request that describes a problem with equipment is never clarify/help, even
+   when it asks "which one can you fix?": if the description fits several of the
+   requester's records, use clarify/identity so Python lists them.
    Handle one asset per request: a request naming several assets is clarify/one_asset;
    conflicting instructions require clarification before writes.
    Questions answered from current records use intent=status with status_topic:

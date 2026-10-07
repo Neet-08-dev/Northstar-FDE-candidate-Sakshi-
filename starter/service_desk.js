@@ -78,7 +78,7 @@ const samples = [
     "title": "Which unit?",
     "hint": "Ask when equipment is unclear",
     "subject": "Cooling unit not working",
-    "body": "The cooling unit by our loading dock isn't working. Can you send someone?",
+    "body": "One of the cooling units at our loading docks has stopped working. Can you send someone?",
     "followUps": [
       "The annex one, earliest slot please."
     ]

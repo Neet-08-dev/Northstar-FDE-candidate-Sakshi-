@@ -244,6 +244,39 @@
     }
   },
   {
+    "id": "reply-identity-options",
+    "category": "replies",
+    "request": {
+      "subject": "Which loading dock?",
+      "body": "The loading dock cooling unit is broken. Which one can you fix?"
+    },
+    "decision": {
+      "intent": "clarify",
+      "clarification": "identity"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "Which ticket, or which equipment and site, do you mean?",
+        "- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open",
+        "Your equipment:",
+        "- Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)"
+      ],
+      "response_excludes": [
+        "I can help with"
+      ],
+      "forbidden_tools": [
+        "schedule_visit",
+        "create_ticket",
+        "issue_credit",
+        "escalate"
+      ]
+    }
+  },
+  {
     "id": "reply-ticket-and-time-options",
     "category": "replies",
     "request": {

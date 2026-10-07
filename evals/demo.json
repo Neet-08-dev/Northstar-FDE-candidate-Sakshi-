@@ -345,13 +345,13 @@
     "category": "ambiguity",
     "request": {
       "subject": "Cooling unit not working",
-      "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
+      "body": "One of the cooling units at our loading docks has stopped working. Can you send someone?"
     },
     "decision": {
       "intent": "intake",
       "intake_mode": "record_and_schedule",
       "issue_category": "interruption",
-      "issue_summary": "Cooling unit by the loading dock is not working.",
+      "issue_summary": "A cooling unit at a loading dock has stopped working.",
       "time_mode": "earliest"
     },
     "fixture": {},
