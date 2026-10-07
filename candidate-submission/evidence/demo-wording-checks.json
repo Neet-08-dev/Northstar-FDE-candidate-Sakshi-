@@ -1,0 +1,622 @@
+{
+  "scope": "Customer wording only; unchanged runtime prompt. One passing trial for each final message, not a repeated reliability estimate. Earlier drafts and failures are retained.",
+  "html_sha256": "92adb522539e31bf50a5b0d80c9720c52bdeda0bc19c6f7baffda05cfcab1007",
+  "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
+  "offline": "make check: lint, formatting, mypy and 24 test methods including 45 scenarios passed.",
+  "browser": "All six example buttons populated the expected subject and message; rebuilt Docker services healthy.",
+  "final_examples": {
+    "intakeBooking": {
+      "request": {
+        "subject": "Maintenance for the annex cooling unit",
+        "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
+      },
+      "passed": true,
+      "report": "reports/demo-wording-luna-initial.json"
+    },
+    "ambiguous": {
+      "request": {
+        "subject": "Cooling unit not working",
+        "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
+      },
+      "passed": true,
+      "report": "reports/demo-wording-luna-initial.json"
+    },
+    "hazard": {
+      "request": {
+        "subject": "Smoke from the cooling unit",
+        "body": "There's smoke coming from the cooling unit at our main loading dock. What should we do?"
+      },
+      "passed": true,
+      "report": "reports/demo-wording-luna-initial.json"
+    },
+    "intake": {
+      "request": {
+        "subject": "Cooling problem at the annex",
+        "body": "The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please log the problem. We'll arrange a visit later."
+      },
+      "passed": true,
+      "report": "reports/demo-wording-luna-revised.json"
+    },
+    "time": {
+      "request": {
+        "subject": "Visit at 7:30 pm",
+        "body": "We already have a ticket for HVAC unit 01 at Aster Foods Loading Dock. Could a technician come today at 7:30 pm IST?"
+      },
+      "passed": true,
+      "report": "reports/demo-wording-luna-revised.json"
+    },
+    "booking": {
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
+      },
+      "passed": true,
+      "report": "reports/demo-wording-luna-followup.json"
+    }
+  },
+  "attempts": [
+    {
+      "id": "demo-intake",
+      "request": {
+        "subject": "Cooling problem at the annex",
+        "body": "The cooling unit at our Aster Foods annex has stopped cooling. Please log the problem. We'll arrange a visit later."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 0,
+        "new_tickets": 1,
+        "create_attempts": 1,
+        "ticket_asset_id": "A101",
+        "ticket_site_id": "S101",
+        "severity": "S2",
+        "no_booking_attempt": true
+      },
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": false,
+        "create_attempts": false,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "ticket_details": false,
+        "ticket_evidence": false,
+        "reply_details": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "S101",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling unit has stopped cooling."
+      },
+      "latency_ms": 8908,
+      "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 4664,
+        "output_tokens": 117,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-initial.json",
+      "backend_attempts": 4
+    },
+    {
+      "id": "demo-intakeBooking",
+      "request": {
+        "subject": "Maintenance for the annex cooling unit",
+        "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1,
+        "new_tickets": 1,
+        "create_attempts": 1,
+        "ticket_asset_id": "A101",
+        "ticket_site_id": "S101",
+        "severity": "S3",
+        "no_booking_attempt": false
+      },
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "intake",
+        "ticket_id": "",
+        "site_id": "S101",
+        "asset_id": "A101",
+        "time_mode": "earliest",
+        "starts_at": "",
+        "clarification": "issue",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "maintenance",
+        "issue_summary": "Routine maintenance requested for the cooling unit."
+      },
+      "latency_ms": 9690,
+      "reply": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 6331,
+        "output_tokens": 276,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-initial.json",
+      "backend_attempts": 30
+    },
+    {
+      "id": "demo-booking",
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "We already reported the cooling problem at Aster Foods' main loading dock. Please arrange a technician for the next available time."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1
+      },
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling problem"
+      },
+      "latency_ms": 8698,
+      "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 4581,
+        "output_tokens": 111,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-initial.json",
+      "backend_attempts": 4
+    },
+    {
+      "id": "demo-ambiguous",
+      "request": {
+        "subject": "Cooling unit not working",
+        "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
+      },
+      "expected": {
+        "status": "needs_clarification",
+        "new_visits": 0
+      },
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "reply_details": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling unit not working"
+      },
+      "latency_ms": 9869,
+      "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 6357,
+        "output_tokens": 263,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-initial.json",
+      "backend_attempts": 5
+    },
+    {
+      "id": "demo-hazard",
+      "request": {
+        "subject": "Smoke from the cooling unit",
+        "body": "There's smoke coming from the cooling unit at our main loading dock. What should we do?"
+      },
+      "expected": {
+        "status": "escalated",
+        "new_visits": 0,
+        "queue": "safety"
+      },
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "reply_details": true,
+        "real_handoff": true,
+        "no_booking_attempt": true,
+        "safety_reply": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {},
+      "latency_ms": 21,
+      "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+      "usage": {
+        "model": "none",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "pricing_source": "No model calls"
+      },
+      "report": "reports/demo-wording-luna-initial.json",
+      "backend_attempts": 3
+    },
+    {
+      "id": "demo-time",
+      "request": {
+        "subject": "Visit at 7:30 pm",
+        "body": "We already have a ticket for the cooling problem at our main loading dock. Could a technician come today at 7:30 pm IST?"
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1,
+        "starts_at": "2030-04-08T14:00:00Z"
+      },
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "exact",
+        "starts_at": "2030-04-08T19:30:00+05:30",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "unclear",
+        "issue_summary": ""
+      },
+      "latency_ms": 8943,
+      "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 6281,
+        "output_tokens": 254,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-initial.json",
+      "backend_attempts": 5
+    },
+    {
+      "id": "demo-intake",
+      "request": {
+        "subject": "Cooling problem at the annex",
+        "body": "The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please log the problem. We'll arrange a visit later."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 0,
+        "new_tickets": 1,
+        "create_attempts": 1,
+        "ticket_asset_id": "A101",
+        "ticket_site_id": "S101",
+        "severity": "S2",
+        "no_booking_attempt": true
+      },
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "intake",
+        "ticket_id": "",
+        "site_id": "S101",
+        "asset_id": "A101",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "time",
+        "intake_mode": "record_only",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling unit has stopped cooling"
+      },
+      "latency_ms": 5940,
+      "reply": "Created ticket NEW-0019 for asset A101 at site S101. No new visit was booked.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 4725,
+        "output_tokens": 117,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-revised.json",
+      "backend_attempts": 14
+    },
+    {
+      "id": "demo-booking",
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "We already reported the problem with HVAC unit 01 at Aster Foods Loading Dock. Please arrange a technician for the next available time."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1
+      },
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "S001",
+        "asset_id": "A001",
+        "time_mode": "earliest",
+        "starts_at": "",
+        "clarification": "issue",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "unclear",
+        "issue_summary": "Cooling problem"
+      },
+      "latency_ms": 10470,
+      "reply": "Please describe whether equipment has stopped working or needs nonurgent maintenance.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 6456,
+        "output_tokens": 279,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-revised.json",
+      "backend_attempts": 5
+    },
+    {
+      "id": "demo-time",
+      "request": {
+        "subject": "Visit at 7:30 pm",
+        "body": "We already have a ticket for HVAC unit 01 at Aster Foods Loading Dock. Could a technician come today at 7:30 pm IST?"
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1,
+        "starts_at": "2030-04-08T14:00:00Z"
+      },
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "schedule",
+        "ticket_id": "T001",
+        "site_id": "S001",
+        "asset_id": "A001",
+        "time_mode": "exact",
+        "starts_at": "2030-04-08T19:30:00+05:30",
+        "clarification": "time",
+        "intake_mode": "record_only",
+        "issue_category": "unclear",
+        "issue_summary": ""
+      },
+      "latency_ms": 9603,
+      "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 19:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 8197,
+        "output_tokens": 305,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-revised.json",
+      "backend_attempts": 21
+    },
+    {
+      "id": "demo-booking",
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "We have an open ticket for HVAC unit 01 at Aster Foods Loading Dock because it stopped cooling. Please arrange a technician for the next available time."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1
+      },
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "S001",
+        "asset_id": "A001",
+        "time_mode": "earliest",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "interruption",
+        "issue_summary": "HVAC unit stopped cooling."
+      },
+      "latency_ms": 10302,
+      "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 8295,
+        "output_tokens": 330,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-booking.json",
+      "backend_attempts": 6
+    },
+    {
+      "id": "demo-booking",
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1
+      },
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "decision": {
+        "intent": "schedule",
+        "ticket_id": "T001",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "earliest",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "unclear",
+        "issue_summary": ""
+      },
+      "latency_ms": 4195,
+      "reply": "Booked: ticket T001, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+      "usage": {
+        "model": "gpt-6-luna",
+        "input_tokens": 3049,
+        "output_tokens": 80,
+        "cost_usd": null,
+        "pricing_source": "unknown"
+      },
+      "report": "reports/demo-wording-luna-followup.json",
+      "backend_attempts": 18
+    }
+  ]
+}

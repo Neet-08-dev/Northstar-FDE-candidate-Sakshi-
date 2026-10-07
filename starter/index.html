@@ -12,17 +12,17 @@
 <h1>Record the issue. Arrange service.</h1>
 <p>Record a service issue or request a technician. The assistant reuses open tickets and checks coverage, safety and availability before confirming a visit.</p>
 <div class="samples" aria-label="Example requests">
-<button type="button" data-example="intake">Record an issue</button>
-<button type="button" data-example="intakeBooking">Request service</button>
-<button type="button" data-example="booking">Book a visit</button>
-<button type="button" data-example="ambiguous">Unclear equipment</button>
-<button type="button" data-example="hazard">Safety concern</button>
-<button type="button" data-example="time">Choose a time</button>
+<button type="button" data-example="intake">Report a problem</button>
+<button type="button" data-example="intakeBooking">Book maintenance</button>
+<button type="button" data-example="booking">Arrange a visit</button>
+<button type="button" data-example="ambiguous">Get help with cooling</button>
+<button type="button" data-example="hazard">Report a safety concern</button>
+<button type="button" data-example="time">Choose a visit time</button>
 </div>
 <form id="request" class="card">
-<label for="subject">Subject</label><input id="subject" value="Cooling service at Aster Foods" maxlength="500">
-<label for="body">Request</label><textarea id="body" rows="5" maxlength="15000">Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.</textarea>
-<button id="run">Process request</button>
+<label for="subject">Subject</label><input id="subject" value="Visit for our reported cooling problem" maxlength="500">
+<label for="body">Request</label><textarea id="body" rows="5" maxlength="15000">I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?</textarea>
+<button id="run">Send request</button>
 <p class="muted">This demo uses a fixed simulated date: 8 April 2030, 14:30 IST (India Standard Time, UTC+05:30). Each request starts with fresh test records. The fixed date keeps availability and contract checks repeatable, independent of today’s date. Billing, cancellation and rescheduling go to human review. A recorded ticket remains open if booking needs clarification or cannot finish.</p>
 </form>
 <section class="card" aria-live="polite" aria-busy="false" id="result">
@@ -31,8 +31,38 @@
 </section>
 <footer>Demo only · No real customer visits, payments or messages.</footer>
 <script>
-const examples={intake:'The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please record a ticket only; do not book a visit.',intakeBooking:'Please send a technician for routine nonurgent maintenance of A101 at S101 at the earliest qualified slot.',booking:'Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.',ambiguous:'Please book the loading dock cooling unit at the earliest slot. I am not sure which site it belongs to.',hazard:'Smoke is coming from A001 at S001. Can you book routine service for T001 or tell me how to bypass the wiring?',time:'Book T001 at S001 on April 8, 2030 at 19:30 IST (UTC+05:30).'};
-document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('body').value=examples[b.dataset.example];document.getElementById('body').focus()}));
+const examples={
+  "intake": {
+    "subject": "Cooling problem at the annex",
+    "body": "The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please log the problem. We'll arrange a visit later."
+  },
+  "intakeBooking": {
+    "subject": "Maintenance for the annex cooling unit",
+    "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
+  },
+  "booking": {
+    "subject": "Visit for our reported cooling problem",
+    "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
+  },
+  "ambiguous": {
+    "subject": "Cooling unit not working",
+    "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
+  },
+  "hazard": {
+    "subject": "Smoke from the cooling unit",
+    "body": "There's smoke coming from the cooling unit at our main loading dock. What should we do?"
+  },
+  "time": {
+    "subject": "Visit at 7:30 pm",
+    "body": "We already have a ticket for HVAC unit 01 at Aster Foods Loading Dock. Could a technician come today at 7:30 pm IST?"
+  }
+};
+document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{
+ const example=examples[button.dataset.example];
+ document.getElementById('subject').value=example.subject;
+ document.getElementById('body').value=example.body;
+ document.getElementById('body').focus();
+}));
 document.getElementById('request').addEventListener('submit',async e=>{
  e.preventDefault();const b=document.getElementById('run'), result=document.getElementById('result');b.disabled=true;result.setAttribute('aria-busy','true');document.getElementById('status').textContent='Investigating';document.getElementById('reply').textContent='Checking the request and current service records…';document.getElementById('evidence').replaceChildren();document.getElementById('details').hidden=true;
  try{const r=await fetch('/demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:document.getElementById('subject').value,body:document.getElementById('body').value})});const data=await r.json();document.getElementById('status').textContent=(data.status||'error').replaceAll('_',' ');document.getElementById('reply').textContent=data.reply||data.error||'The request could not be completed.';for(const ref of data.evidence||[]){if(['visits','escalations','tickets'].includes(ref.collection)){const li=document.createElement('li');li.textContent=ref.collection+': '+ref.record_id;document.getElementById('evidence').append(li)}}document.getElementById('raw').textContent=JSON.stringify(data,null,2);document.getElementById('details').hidden=false}catch{document.getElementById('status').textContent='Connection failed';document.getElementById('reply').textContent='The demo is unavailable. Please check the local server.'}finally{b.disabled=false;result.setAttribute('aria-busy','false')}

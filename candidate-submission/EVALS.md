@@ -2,6 +2,14 @@
 
 This report covers local intake verification followed by the preserved scheduling checkpoint evidence. Results from different prompts are kept separate.
 
+## Customer demo wording checks, 7 October 2026
+
+The six customer-facing examples in `starter/index.html` were checked using their exact subject/body pairs and the existing independent state/audit grader. Each final message passed one targeted trial: ticket-only creation, maintenance plus booking, existing-ticket booking, equipment clarification without writes, immediate safety handoff without business writes, and an existing-ticket visit at 19:30 IST on the trusted scenario date. Five final messages used Luna; the smoke example took the deterministic safety path without a model call. These are supplemental checks, not six new cases in the 45-case suite.
+
+Earlier drafts produced five failed trials across three wording iterations. Broad descriptions such as "main loading dock" led to identity clarification; one follow-up also asked for an issue category. The final messages use actual customer-facing equipment/site names where needed, and the general existing-ticket follow-up includes ticket T001 as a normal customer reference. The runtime prompt and actions were not changed. This does not establish reliable arbitrary name resolution; that limitation remains visible in the retained failures.
+
+There were eleven scenario trials total, including one deterministic safety trial. Final wording was verified through targeted reruns of changed examples, not a single fresh six-case sweep. Exact requests, expectations, replies, selected decisions, usage and all draft outcomes are in [demo wording evidence](evidence/demo-wording-checks.json). Full reports are under `reports/demo-wording-luna-*.json` locally. `make check` passed all 24 test methods and 45 scenarios, plus lint, formatting and mypy. Browser checks confirmed all six buttons populate both fields, and the rebuilt Docker services passed health checks. No additional Sol evaluation was run for this copy-only change.
+
 ## Local intake verification, 7 October 2026
 
 The local intake change on top of `13c2154` adds ten intake behavior cases: one replaces the formerly unsupported creation case and nine are new. The current suite therefore has 45 scenarios. No new test methods or runtime modules were added. Final `make check` passes Ruff, formatting, focused mypy and all 24 test methods, including all 45 state/audit scenarios.
