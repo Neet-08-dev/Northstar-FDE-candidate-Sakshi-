@@ -46,11 +46,12 @@ class DemoExamplesTests(unittest.TestCase):
                 script = response.read().decode()
             samples = json.loads(script.split("const samples =", 1)[1].split(";", 1)[0])
             examples = {s["id"]: {k: s[k] for k in ["subject", "body"]} for s in samples}
-            cases = [c for c in load_cases("demo") if c["example_id"] in examples]
+            cases = load_cases("demo")
             self.assertEqual(set(examples), {c["example_id"] for c in cases})
-            self.assertEqual(len(cases), 10)
+            self.assertEqual(len(cases), 16)
             self.assertEqual(
-                {s["group"] for s in samples}, {"Visits", "Credits", "Safety", "Messages"}
+                {s["group"] for s in samples},
+                {"Visits", "Tickets", "Credits", "Safety", "Messages"},
             )
             self.assertIn("Send request", html)
             self.assertNotIn("Preview response", html)

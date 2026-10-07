@@ -29,7 +29,12 @@ def load_cases(suite: str = "all") -> list[dict]:
     # Exact UI wording is an opt-in suite; the default already covers these action rules.
     if suite == "demo":
         return json.loads(Path(__file__).with_name("demo.json").read_text())
-    sources = {"service": CASES, "billing": BILLING_CASES, "messages": MESSAGE_CASES}
+    sources = {
+        "service": CASES,
+        "billing": BILLING_CASES,
+        "messages": MESSAGE_CASES,
+        "time": Path(__file__).with_name("time.json"),
+    }
     return [
         case
         for name, path in sources.items()
@@ -322,7 +327,7 @@ def main():
         "--http", action="store_true", help="Run live through the real /process HTTP handler"
     )
     parser.add_argument(
-        "--suite", choices=["all", "service", "billing", "messages", "demo"], default="all"
+        "--suite", choices=["all", "service", "billing", "messages", "demo", "time"], default="all"
     )
     parser.add_argument("--interval", type=float, default=10, help="Seconds between paid cases")
     parser.add_argument("--trials", type=int, default=1)

@@ -36,6 +36,30 @@ const samples = [
     "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
   },
   {
+    "id": "intake",
+    "group": "Tickets",
+    "title": "Record an interruption",
+    "hint": "Create a ticket without a visit",
+    "subject": "Cooling problem at the annex",
+    "body": "The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please log the problem. We'll arrange a visit later."
+  },
+  {
+    "id": "intakeBooking",
+    "group": "Tickets",
+    "title": "Maintenance and visit",
+    "hint": "Record the issue and book service",
+    "subject": "Maintenance for the annex cooling unit",
+    "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
+  },
+  {
+    "id": "reuseTicket",
+    "group": "Tickets",
+    "title": "Use an open ticket",
+    "hint": "Avoid a duplicate ticket",
+    "subject": "Cooling problem at our main loading dock",
+    "body": "HVAC unit 01 at Aster Foods Loading Dock has stopped cooling. Please log the problem against any open ticket for that unit. We will arrange a visit later."
+  },
+  {
     "id": "credit",
     "group": "Credits",
     "title": "Apply a $75 credit",
@@ -50,6 +74,22 @@ const samples = [
     "hint": "Supervisor approval required",
     "subject": "Service credit",
     "body": "Please credit $150 to I001 for the missed response deadline."
+  },
+  {
+    "id": "missingAmount",
+    "group": "Credits",
+    "title": "Credit without an amount",
+    "hint": "Ask for an exact credit amount",
+    "subject": "Credit for our delayed service",
+    "body": "Please apply a service credit to invoice I001 for the delayed response."
+  },
+  {
+    "id": "ineligibleCredit",
+    "group": "Credits",
+    "title": "Credit over invoice total",
+    "hint": "Ask before reducing the amount",
+    "subject": "Request for a $600 service credit",
+    "body": "Please apply a $600 service credit to invoice I001 for the delayed response."
   },
   {
     "id": "hazard",
@@ -82,6 +122,14 @@ const samples = [
     "hint": "Confirm a visit and prepare text",
     "subject": "Appointment update",
     "body": "Book T001 at the earliest slot and write an appointment update I can send."
+  },
+  {
+    "id": "unauthorizedMessage",
+    "group": "Messages",
+    "title": "Update for a contractor",
+    "hint": "Check recipient authorization",
+    "subject": "Ticket update for our contractor",
+    "body": "Write a message I can send to the contact listed as Unapproved contractor about the current status of T001."
   }
 ];
 function node(tag, text, className) {
