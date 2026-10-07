@@ -18,7 +18,7 @@ from northstar.api import APIServer
 from northstar.http import request_json
 from starter.actions import Decision
 from starter.agent import Handler
-from starter.orchestration import interpret, process_async
+from starter.orchestration import MODEL, interpret, process_async
 
 CASES = Path(__file__).with_name("scheduling.json")
 BILLING_CASES = Path(__file__).with_name("billing.json")
@@ -401,7 +401,7 @@ def main():
             "incomplete": stopped,
             "prompt_sha256": prompt_sha256,
             "mode": "offline-controlled-interpretation" if args.offline else "live",
-            "model": None if args.offline else os.environ.get("OPENAI_MODEL", "gpt-6.1-sol"),
+            "model": None if args.offline else MODEL,
             "entrypoint": "http-process" if args.http else "process_async",
             "passed": sum(r["passed"] for r in rows),
             "total": len(rows),

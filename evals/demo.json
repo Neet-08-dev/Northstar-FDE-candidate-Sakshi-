@@ -231,7 +231,15 @@
       "ticket_id": "T001",
       "site_id": "S001",
       "time_mode": "exact",
-      "requested_time": "8 april 7:30 PM"
+      "requested_time": {
+        "relative_day": "none",
+        "year": null,
+        "month": 4,
+        "day": 8,
+        "hour": 19,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
     },
     "fixture": {},
     "expected": {
@@ -272,7 +280,15 @@
       "ticket_id": "T001",
       "site_id": "S001",
       "time_mode": "exact",
-      "requested_time": "8 april 5:30 PM"
+      "requested_time": {
+        "relative_day": "none",
+        "year": null,
+        "month": 4,
+        "day": 8,
+        "hour": 17,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
     },
     "fixture": {},
     "expected": {

@@ -8,7 +8,7 @@ AI coding and building tools are explicitly permitted and encouraged: Codex, Cla
 
 The assistant uses Python and the OpenAI Agents SDK for ticket intake, technician bookings and service credits. Python checks current policy, identity, eligibility and supervisor approvals before financial writes. Ambiguous requests ask for clarification; failures create recorded human handoffs when possible. See [local setup and demo](candidate-submission/README.md) and [evaluation results](candidate-submission/EVALS.md).
 
-Use `make setup` and `make dev` for local development. Configure `OPENAI_API_KEY` in ignored `.env`; the default model is GPT-6.1 Sol. Luna remains an optional development override, with observed interpretation failures recorded in the evaluation report. Offline checks: `make check`. Live evaluations are explicitly invoked and consume API credit.
+Use `make setup` and `make dev` for local development. Configure `OPENAI_API_KEY` in ignored `.env`. The assistant uses GPT-6.1 Sol only; earlier Luna interpretation failures remain recorded in the evaluation report. Offline checks: `make check`. Live evaluations are explicitly invoked and consume API credit.
 
 ## Get your assessment workspace
 

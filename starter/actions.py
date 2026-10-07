@@ -9,10 +9,28 @@ from typing import Literal
 from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.json_schema import SkipJsonSchema
 
 from .backend import Backend, BackendError, Record
 
 SAFETY_REPLY = "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance."
+# Used when no model safety screen completed, so a hazard cannot be ruled out.
+SAFETY_FALLBACK = (
+    "If anyone is in danger, move away from the hazard and contact site emergency personnel."
+)
+
+
+class RequestedTime(BaseModel):
+    """Calendar fields the model read from the request; Python resolves the instant."""
+
+    model_config = ConfigDict(extra="forbid")
+    relative_day: Literal["none", "today", "tomorrow"]
+    year: int | None = Field(strict=True)
+    month: int | None = Field(strict=True)
+    day: int | None = Field(strict=True)
+    hour: int = Field(strict=True)
+    minute: int = Field(strict=True)
+    utc_offset_minutes: int | None = Field(strict=True)
 
 
 class Decision(BaseModel):
@@ -22,8 +40,9 @@ class Decision(BaseModel):
     site_id: str = Field(default="", max_length=100)
     asset_id: str = Field(default="", max_length=100)
     time_mode: Literal["earliest", "exact", "unclear"] = "unclear"
-    starts_at: str = Field(default="", max_length=80)
-    requested_time: str = Field(default="", max_length=160)
+    requested_time: RequestedTime | None = None
+    # Resolved by Python from requested_time; never part of the model's output schema.
+    starts_at: SkipJsonSchema[str] = Field(default="", max_length=80)
     clarification: Literal[
         "identity",
         "time",
@@ -48,9 +67,21 @@ class Decision(BaseModel):
 
 
 @dataclass(frozen=True)
+class Message:
+    subject: str
+    body: str
+    contact_id: str = ""
+
+    def text(self) -> str:
+        return f"Subject: {self.subject}\n\n{self.body}"
+
+
+@dataclass(frozen=True)
 class Outcome:
     status: str
     reply: str
+    # A prepared message is always the final block of reply.
+    message: Message | None = None
 
 
 def operation_key(request_id: str, tool: str, arguments: Record) -> str:
@@ -196,7 +227,9 @@ class Actions:
             )
             if self.confirmed_reply in message.reply:
                 return message
-            return Outcome(message.status, self.confirmed_reply + "\n\n" + message.reply)
+            return Outcome(
+                message.status, self.confirmed_reply + "\n\n" + message.reply, message.message
+            )
         except BackendError as exc:
             if exc.code in {"RECORD_UNAVAILABLE", "FORBIDDEN", "UNVERIFIED"}:
                 return Outcome(
@@ -520,12 +553,14 @@ class Actions:
         elif status != "resolved":
             body += " Repair completion is not yet confirmed."
         recipient = f" For registered contact {decision.contact_id}." if decision.contact_id else ""
+        message = Message(subject, body, decision.contact_id)
         return Outcome(
             "completed",
             "Here is a message you can copy and send."
             + recipient
             + " It has not been sent or saved as a draft.\n\n"
-            + f"Subject: {subject}\n\n{body}",
+            + message.text(),
+            message,
         )
 
     @staticmethod

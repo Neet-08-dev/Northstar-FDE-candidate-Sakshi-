@@ -1,0 +1,747 @@
+{
+  "change": "Model-first interpretation: model safety screen, structured time, full-scope lookup, structured demo message",
+  "model": "gpt-6.1-sol",
+  "final_prompt_sha256": {
+    "assistant.md": "974f91fcec4d534cba2b4c39793c7c34b73a7b58073ff281dace5fe3b9035396",
+    "safety.md": "2430b90f7b0699da81df87947486730c26522c788f09f71ea26f837b3da42ba8"
+  },
+  "offline": {
+    "passed": 169,
+    "total": 169
+  },
+  "live_runs": [
+    {
+      "run": "live-smoke",
+      "report": "runs/model-first-live-smoke.json",
+      "prompt": "v1",
+      "description": "Live smoke: natural time and safety",
+      "report_sha256": "747810207cd3b61e0d76e73d0d29c1ffe5ae9aa5f8d92f7f561031cea8cb9eb0",
+      "entrypoint": "process_async",
+      "passed": 12,
+      "total": 12,
+      "input_tokens": 22802,
+      "output_tokens": 844,
+      "failures": [],
+      "cases": [
+        "billing-safety",
+        "explicit-hazard",
+        "indirect-hazard",
+        "message-live-safety-policy",
+        "message-safety",
+        "natural-time-ambiguous",
+        "natural-time-contradictory",
+        "natural-time-default",
+        "natural-time-rollover",
+        "natural-time-tomorrow",
+        "natural-time-utc",
+        "unverified"
+      ]
+    },
+    {
+      "run": "live-all-http",
+      "report": "runs/model-first-live-all-http.json",
+      "prompt": "v1",
+      "description": "Full authored suite; stopped by provider APIConnectionError at case 120",
+      "report_sha256": "f3208edccbcc003c0baad3a86f480f5f686706199512f8bfb6bb6a7693f8e667",
+      "entrypoint": "http-process",
+      "passed": 119,
+      "total": 120,
+      "input_tokens": 398438,
+      "output_tokens": 11969,
+      "failures": [
+        {
+          "id": "message-named",
+          "failed_checks": [
+            "handoff_count",
+            "message_content",
+            "message_evidence",
+            "message_not_sent_or_stored",
+            "model_completed",
+            "reply_details",
+            "status"
+          ],
+          "status": "escalated",
+          "provider_error": "APIConnectionError"
+        }
+      ],
+      "cases": [
+        "ambiguous-equipment",
+        "ambiguous-time",
+        "availability-question",
+        "billing-above-limit",
+        "billing-always-approval",
+        "billing-ambiguous-invoice",
+        "billing-approval-expiry-offset",
+        "billing-approval-outage",
+        "billing-approval-timeout",
+        "billing-balance",
+        "billing-balance-race",
+        "billing-cents",
+        "billing-conflicting-site",
+        "billing-conflicting-ticket",
+        "billing-consumed",
+        "billing-credit-outage",
+        "billing-credit-timeout",
+        "billing-currency",
+        "billing-decimal",
+        "billing-denied",
+        "billing-dispatcher",
+        "billing-eligibility-question",
+        "billing-exact-balance",
+        "billing-expired",
+        "billing-expires-now",
+        "billing-finance",
+        "billing-foreign-grant",
+        "billing-foreign-invoice",
+        "billing-foreign-missing-amount",
+        "billing-foreign-ticket",
+        "billing-fractional-cent",
+        "billing-grant-no-breach",
+        "billing-grant-unpaid",
+        "billing-handoff-outage",
+        "billing-higher-limit",
+        "billing-ledger-currency",
+        "billing-limit",
+        "billing-lower-limit",
+        "billing-malformed-ledger",
+        "billing-malformed-policy",
+        "billing-maximum",
+        "billing-missing-amount",
+        "billing-missing-invoice",
+        "billing-mixed",
+        "billing-mixed-message",
+        "billing-named-equipment",
+        "billing-negative",
+        "billing-no-breach",
+        "billing-one-cent-above",
+        "billing-ordinary",
+        "billing-pasted-approval",
+        "billing-pending-reuse",
+        "billing-percentage",
+        "billing-safety",
+        "billing-stale-email",
+        "billing-supervisor",
+        "billing-ticket-only",
+        "billing-unpaid",
+        "billing-unverified",
+        "billing-valid-grant",
+        "billing-viewer",
+        "billing-wrong-amount",
+        "billing-wrong-invoice",
+        "billing-wrong-issuer",
+        "billing-zero-balance",
+        "changed-duration",
+        "conflicting-live-records",
+        "contradictory-asset",
+        "contradictory-site",
+        "cross-tenant",
+        "earliest",
+        "existing-visit-exact-conflict",
+        "existing-visit-malformed",
+        "existing-visit-past-short",
+        "existing-visit-valid",
+        "expired-coverage",
+        "explicit-hazard",
+        "explicit-time",
+        "finance-role",
+        "handoff-outage",
+        "hold-during-conflict",
+        "inactive-account",
+        "inactive-coverage",
+        "indirect-hazard",
+        "injected-authority",
+        "injected-notes",
+        "intake-and-book",
+        "intake-conditional",
+        "intake-duplicate-race",
+        "intake-explicit-severity-outage",
+        "intake-partial",
+        "intake-recovery-failure",
+        "intake-reuse",
+        "intake-safety",
+        "intake-ticket-only",
+        "intake-timeout-replay",
+        "intake-unauthorized",
+        "message-finance",
+        "message-named",
+        "message-resolved",
+        "message-ticket",
+        "message-unverified",
+        "message-unverified-resolution",
+        "message-viewer",
+        "no-slots",
+        "offset-time",
+        "outside-access-hours",
+        "paraphrase",
+        "persistent-outage",
+        "requested-time-unavailable",
+        "resolved-ticket",
+        "retired-asset",
+        "safety-handoff-failure",
+        "safety-hold",
+        "self-granted-role",
+        "slot-conflict",
+        "temporary-fault",
+        "timeout-after-commit",
+        "unverified",
+        "wrong-coverage-skill"
+      ]
+    },
+    {
+      "run": "live-rest-http",
+      "report": "runs/model-first-live-rest-http.json",
+      "prompt": "v1",
+      "description": "Resumed skipped cases; stopped after 30 to fix prompt",
+      "report_sha256": "c4502bacc40183358e9e37ca2544459ecf2931d419c274a5860eaf23326054e1",
+      "entrypoint": "http-process",
+      "passed": 28,
+      "total": 30,
+      "input_tokens": 101521,
+      "output_tokens": 2956,
+      "failures": [
+        {
+          "id": "message-ambiguous-recipient",
+          "failed_checks": [
+            "no_customer_reads"
+          ],
+          "status": "needs_clarification",
+          "provider_error": null
+        },
+        {
+          "id": "message-missing-reference",
+          "failed_checks": [
+            "no_message",
+            "status"
+          ],
+          "status": "completed",
+          "provider_error": null
+        }
+      ],
+      "cases": [
+        "message-ambiguous-recipient",
+        "message-appointment",
+        "message-conflicting-visits",
+        "message-foreign-contact",
+        "message-foreign-ticket",
+        "message-injection",
+        "message-live-safety-policy",
+        "message-missing-purpose",
+        "message-missing-reference",
+        "message-missing-ticket",
+        "message-named",
+        "message-no-appointment",
+        "message-other-account-contact",
+        "message-read-failure",
+        "message-read-retry",
+        "message-record-conflict",
+        "message-safety",
+        "message-safety-hold",
+        "message-site-contradiction",
+        "message-unauthorized-contact",
+        "message-unsupported-billing",
+        "message-unsupported-commitment",
+        "message-unsupported-send",
+        "message-unsupported-store",
+        "message-visit-bad-duration",
+        "message-visit-bad-time",
+        "message-visit-cancelled",
+        "message-visit-past",
+        "message-visit-wrong-account",
+        "message-wrong-site"
+      ]
+    },
+    {
+      "run": "live-demo-http",
+      "report": "runs/model-first-live-demo-http.json",
+      "prompt": "v1",
+      "description": "All sixteen demo examples",
+      "report_sha256": "f9ee46e387d7cc1f6d2abd89c419fd90cd4c79f6afbdced9f62efbd5329fc443",
+      "entrypoint": "http-process",
+      "passed": 16,
+      "total": 16,
+      "input_tokens": 89807,
+      "output_tokens": 1896,
+      "failures": [],
+      "cases": [
+        "demo-ambiguous",
+        "demo-approval",
+        "demo-booking",
+        "demo-bookingMessage",
+        "demo-credit",
+        "demo-hazard",
+        "demo-ineligibleCredit",
+        "demo-intake",
+        "demo-intakeBooking",
+        "demo-message",
+        "demo-missingAmount",
+        "demo-namedMessage",
+        "demo-reuseTicket",
+        "demo-time",
+        "demo-unauthorizedMessage",
+        "demo-unavailableTime"
+      ]
+    },
+    {
+      "run": "live-lookup-fix",
+      "report": "runs/model-first-live-lookup-fix.json",
+      "prompt": "v2",
+      "description": "Identity and recipient prompt fix, three trials",
+      "report_sha256": "ff4697fcf6ad28e4ac0fd6f5177141ae3391e457d4c0867246c5968cec43a7b4",
+      "entrypoint": "http-process",
+      "passed": 21,
+      "total": 24,
+      "input_tokens": 133730,
+      "output_tokens": 2793,
+      "failures": [
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "create_attempts",
+            "forbidden_attempts",
+            "no_customer_reads",
+            "no_message",
+            "status",
+            "ticket_count",
+            "unchanged_records"
+          ],
+          "status": "completed",
+          "provider_error": null
+        },
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "create_attempts",
+            "forbidden_attempts",
+            "no_customer_reads",
+            "no_message",
+            "status",
+            "ticket_count",
+            "unchanged_records"
+          ],
+          "status": "completed",
+          "provider_error": null
+        },
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "create_attempts",
+            "forbidden_attempts",
+            "no_customer_reads",
+            "no_message",
+            "status",
+            "ticket_count",
+            "unchanged_records"
+          ],
+          "status": "completed",
+          "provider_error": null
+        }
+      ],
+      "cases": [
+        "ambiguous-equipment",
+        "billing-named-equipment",
+        "message-ambiguous-recipient",
+        "message-book-ambiguous",
+        "message-book-named",
+        "message-intake-no-booking-permission",
+        "message-missing-reference",
+        "message-named"
+      ]
+    },
+    {
+      "run": "live-purpose-fix",
+      "report": "runs/model-first-live-purpose-fix.json",
+      "prompt": "v3",
+      "description": "Message purpose fix, three trials",
+      "report_sha256": "cb63eee646f8eed7d3626af502850d46fd148bffc21fd5eeea4267c3789920ba",
+      "entrypoint": "http-process",
+      "passed": 12,
+      "total": 15,
+      "input_tokens": 63443,
+      "output_tokens": 1632,
+      "failures": [
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "no_customer_reads"
+          ],
+          "status": "needs_clarification",
+          "provider_error": null
+        },
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "no_customer_reads"
+          ],
+          "status": "needs_clarification",
+          "provider_error": null
+        },
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "no_customer_reads"
+          ],
+          "status": "needs_clarification",
+          "provider_error": null
+        }
+      ],
+      "cases": [
+        "message-ambiguous-recipient",
+        "message-intake-book",
+        "message-intake-no-booking-permission",
+        "message-intake-ticket",
+        "message-missing-reference"
+      ]
+    },
+    {
+      "run": "live-purpose-fix2",
+      "report": "runs/model-first-live-purpose-fix2.json",
+      "prompt": "v4",
+      "description": "Contradictory intake/message clarification, three trials",
+      "report_sha256": "fe7b814345167145786ff04c5821a314c521e52811c869f25adac724c196fb57",
+      "entrypoint": "http-process",
+      "passed": 9,
+      "total": 9,
+      "input_tokens": 32242,
+      "output_tokens": 966,
+      "failures": [],
+      "cases": [
+        "message-intake-book",
+        "message-intake-no-booking-permission",
+        "message-intake-ticket"
+      ]
+    },
+    {
+      "run": "live-purpose-fix3",
+      "report": "runs/model-first-live-purpose-fix3.json",
+      "prompt": "v5",
+      "description": "Generic update wording, three trials",
+      "report_sha256": "7c28bd1540e10675854eb0455abc743ace4b7607faf5ff9405fa69b027d0f732",
+      "entrypoint": "http-process",
+      "passed": 24,
+      "total": 24,
+      "input_tokens": 86200,
+      "output_tokens": 2473,
+      "failures": [],
+      "cases": [
+        "message-appointment",
+        "message-book-replay",
+        "message-injection",
+        "message-intake-no-booking-permission",
+        "message-intake-ticket",
+        "message-missing-purpose",
+        "message-missing-reference",
+        "message-safety-hold"
+      ]
+    },
+    {
+      "run": "final-authored",
+      "report": "runs/model-first-final-authored.json",
+      "prompt": "v5",
+      "description": "Every authored case lacking a passing result on the message rules, one trial",
+      "report_sha256": "0e47e15e53d23613b651c2d0d7c17c864086ee3dec60e1cd025c191cd13d1138",
+      "entrypoint": "http-process",
+      "passed": 40,
+      "total": 41,
+      "input_tokens": 137646,
+      "output_tokens": 4018,
+      "failures": [
+        {
+          "id": "message-untrusted-prose",
+          "failed_checks": [
+            "handoff_count",
+            "message_content",
+            "message_evidence",
+            "message_not_sent_or_stored",
+            "status"
+          ],
+          "status": "escalated",
+          "provider_error": null
+        }
+      ],
+      "cases": [
+        "message-ambiguous-recipient",
+        "message-book-ambiguous",
+        "message-book-failed",
+        "message-book-generic",
+        "message-book-named",
+        "message-book-unauthorized",
+        "message-conditional",
+        "message-conflicting-visits",
+        "message-finance",
+        "message-finance-cannot-book",
+        "message-foreign-contact",
+        "message-foreign-ticket",
+        "message-live-safety-policy",
+        "message-malformed-site-list",
+        "message-missing-ticket",
+        "message-named",
+        "message-no-appointment",
+        "message-other-account-contact",
+        "message-read-failure",
+        "message-read-retry",
+        "message-record-conflict",
+        "message-resolved",
+        "message-safety",
+        "message-site-contradiction",
+        "message-ticket",
+        "message-unauthorized-contact",
+        "message-unsupported-billing",
+        "message-unsupported-commitment",
+        "message-unsupported-send",
+        "message-unsupported-store",
+        "message-untrusted-prose",
+        "message-unverified",
+        "message-unverified-resolution",
+        "message-viewer",
+        "message-visit-bad-duration",
+        "message-visit-bad-time",
+        "message-visit-cancelled",
+        "message-visit-past",
+        "message-visit-wrong-account",
+        "message-wrong-site",
+        "schedule-failure-ticket-link"
+      ]
+    },
+    {
+      "run": "final-demo",
+      "report": "runs/model-first-final-demo.json",
+      "prompt": "v5",
+      "description": "Demo examples without record IDs, one trial",
+      "report_sha256": "457d51386e2ce449a4f72030cf0492f395ae0895e870ace4344ac4f5e6877c17",
+      "entrypoint": "http-process",
+      "passed": 5,
+      "total": 5,
+      "input_tokens": 45856,
+      "output_tokens": 660,
+      "failures": [],
+      "cases": [
+        "demo-ambiguous",
+        "demo-hazard",
+        "demo-intake",
+        "demo-intakeBooking",
+        "demo-reuseTicket"
+      ]
+    },
+    {
+      "run": "live-injection-fix",
+      "report": "runs/model-first-live-injection-fix.json",
+      "prompt": "v6-final",
+      "description": "Injected-instruction message fix, three trials",
+      "report_sha256": "c73460245e4656959ae86b68630ab74f06bdc718a80c69384c22a77cbc077dcf",
+      "entrypoint": "http-process",
+      "passed": 15,
+      "total": 15,
+      "input_tokens": 54852,
+      "output_tokens": 1526,
+      "failures": [],
+      "cases": [
+        "message-injection",
+        "message-unsupported-billing",
+        "message-unsupported-commitment",
+        "message-unsupported-send",
+        "message-untrusted-prose"
+      ]
+    },
+    {
+      "run": "final-all-http",
+      "report": "runs/model-first-final-all-http.json",
+      "prompt": "v5",
+      "description": "Restarted full suite; stopped by provider credit exhaustion",
+      "report_sha256": "a732229a14148968aa4b856d70523139ac05da391bc309d0516bdccf68f9e057",
+      "entrypoint": "http-process",
+      "passed": 1,
+      "total": 2,
+      "input_tokens": 3598,
+      "output_tokens": 103,
+      "failures": [
+        {
+          "id": "paraphrase",
+          "failed_checks": [
+            "booking_details",
+            "model_completed",
+            "status",
+            "visit_count"
+          ],
+          "status": "escalated",
+          "provider_error": "RateLimitError"
+        }
+      ],
+      "cases": [
+        "earliest",
+        "paraphrase"
+      ]
+    },
+    {
+      "run": "final-demo-http",
+      "report": "runs/model-first-final-demo-http.json",
+      "prompt": "v5",
+      "description": "Restarted demo suite; stopped by provider credit exhaustion",
+      "report_sha256": "1204d6d1899035ab04fa65b9befec1b3beb5b640213f6476f219f484835ff3a4",
+      "entrypoint": "http-process",
+      "passed": 0,
+      "total": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "failures": [
+        {
+          "id": "demo-credit",
+          "failed_checks": [
+            "credit_attempts",
+            "credit_count",
+            "forbidden_attempts",
+            "handoff_count",
+            "ledger_balances",
+            "model_completed",
+            "reply_details",
+            "status",
+            "unchanged_records"
+          ],
+          "status": "escalated",
+          "provider_error": "RateLimitError"
+        }
+      ],
+      "cases": [
+        "demo-credit"
+      ]
+    }
+  ],
+  "staging_baseline_runs": [
+    {
+      "run": "baseline",
+      "report": "runs/model-first-baseline.json",
+      "prompt": "staging",
+      "description": "Unchanged staging 8af2471: missing reference and named recipient",
+      "report_sha256": "14637eac07cf549b3a5ab03071e90ed27a54413c0c9476fa4774403b5f52cf1b",
+      "entrypoint": "http-process",
+      "passed": 0,
+      "total": 6,
+      "input_tokens": 33613,
+      "output_tokens": 669,
+      "failures": [
+        {
+          "id": "message-ambiguous-recipient",
+          "failed_checks": [
+            "no_customer_reads"
+          ],
+          "status": "needs_clarification",
+          "provider_error": null
+        },
+        {
+          "id": "message-ambiguous-recipient",
+          "failed_checks": [
+            "no_customer_reads"
+          ],
+          "status": "needs_clarification",
+          "provider_error": null
+        },
+        {
+          "id": "message-ambiguous-recipient",
+          "failed_checks": [
+            "no_customer_reads"
+          ],
+          "status": "needs_clarification",
+          "provider_error": null
+        },
+        {
+          "id": "message-missing-reference",
+          "failed_checks": [
+            "no_message",
+            "status"
+          ],
+          "status": "completed",
+          "provider_error": null
+        },
+        {
+          "id": "message-missing-reference",
+          "failed_checks": [
+            "no_message",
+            "status"
+          ],
+          "status": "completed",
+          "provider_error": null
+        },
+        {
+          "id": "message-missing-reference",
+          "failed_checks": [
+            "no_message",
+            "status"
+          ],
+          "status": "completed",
+          "provider_error": null
+        }
+      ],
+      "cases": [
+        "message-ambiguous-recipient",
+        "message-missing-reference"
+      ]
+    },
+    {
+      "run": "baseline-intake-msg",
+      "report": "runs/model-first-baseline-intake-msg.json",
+      "prompt": "staging",
+      "description": "Unchanged staging 8af2471: ticket-only intake with appointment message",
+      "report_sha256": "5dc3f1d44a505b814944e13f962c1f36034ce3a1a6429567616aad9aee4b9541",
+      "entrypoint": "http-process",
+      "passed": 0,
+      "total": 3,
+      "input_tokens": 17045,
+      "output_tokens": 482,
+      "failures": [
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "create_attempts",
+            "forbidden_attempts",
+            "no_customer_reads",
+            "no_message",
+            "status",
+            "ticket_count",
+            "unchanged_records"
+          ],
+          "status": "completed",
+          "provider_error": null
+        },
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "create_attempts",
+            "forbidden_attempts",
+            "no_customer_reads",
+            "no_message",
+            "status",
+            "ticket_count",
+            "unchanged_records"
+          ],
+          "status": "completed",
+          "provider_error": null
+        },
+        {
+          "id": "message-intake-no-booking-permission",
+          "failed_checks": [
+            "create_attempts",
+            "forbidden_attempts",
+            "no_customer_reads",
+            "no_message",
+            "status",
+            "ticket_count",
+            "unchanged_records"
+          ],
+          "status": "completed",
+          "provider_error": null
+        }
+      ],
+      "cases": [
+        "message-intake-no-booking-permission"
+      ]
+    }
+  ],
+  "totals": {
+    "live_input_tokens": 1220793,
+    "live_output_tokens": 32987
+  },
+  "notes": [
+    "A restarted full run on prompt v4 passed 144/145 (failure: message-safety-hold, fixed in v5); its report was deleted on restart and is not included.",
+    "Five direct /demo requests and one provider-limit probe are not included in token totals.",
+    "Billed cost is unknown. Unverified third-party list prices ($2/M input, $10/M output) give an uncached upper bound only."
+  ]
+}

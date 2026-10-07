@@ -172,6 +172,10 @@ class SchedulingTests(unittest.TestCase):
             self.assertEqual(out["status"], "escalated")
             self.assertEqual(len(state["state"]["visits"]), 0)
             self.assertEqual(len(state["state"]["escalations"]), 1)
+            # No model screen completed, so the reply and handoff cover a possible hazard.
+            self.assertTrue(out["reply"].startswith("If anyone is in danger, move away"))
+            self.assertIn("review it for hazards", state["state"]["escalations"][0]["reason"])
+            self.assertEqual(state["state"]["escalations"][0]["queue"], "operations")
         finally:
             request_json(
                 self.url + "/admin/sessions/" + session["session_id"],
@@ -311,8 +315,18 @@ class RecoveryAndExistingVisitTests(unittest.TestCase):
             )
         return out, world, requests, cancelled
 
+    def test_request_wording_never_overrides_the_model_safety_decision(self):
+        # Formerly a keyword match on "smoke" forced a safety handoff here.
+        out, world, requests, _ = self.run_world(
+            body="There is no smoke, just a noisy fan. Book T001 at the earliest slot."
+        )
+        self.assertEqual(out["status"], "completed", out)
+        self.assertEqual(world.data["escalations"], [])
+        self.assertEqual(sum(tool == "schedule_visit" for tool, _ in requests), 1)
+
     def test_safety_handoff_survives_actual_cancellation(self):
-        for source in ["request", "model", "asset", "ticket"]:
+        # Request-text hazards reach actions only as the model's hazard decision.
+        for source in ["model", "asset", "ticket"]:
             for after_commit in [False, True]:
                 with self.subTest(source=source, after_commit=after_commit):
                     patches = []
@@ -322,7 +336,7 @@ class RecoveryAndExistingVisitTests(unittest.TestCase):
                         patches = [("tickets", "T001", {"severity": "S1"})]
                     out, world, requests, cancelled = self.run_world(
                         body="Smoke is coming from the unit."
-                        if source == "request"
+                        if source == "model"
                         else "Book T001.",
                         decision=Decision(intent="hazard") if source == "model" else None,
                         patches=patches,

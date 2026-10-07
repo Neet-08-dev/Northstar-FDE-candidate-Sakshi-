@@ -566,28 +566,17 @@ function render(result, asCustomer) {
     head.append(
       node("span", `As ${asCustomer.name} · ${asCustomer.id}`, "as-customer"),
     );
-  let text = result.reply;
-  let message = null;
-  // Extract only the action layer's bounded copyable-message envelope. The rest
-  // remains the actual reply. Subject/body are removed here to avoid duplication.
-  const marker = "Here is a message you can copy and send.";
-  const markerIndex = text.indexOf(marker);
-  if (
-    markerIndex >= 0 &&
-    text
-      .slice(markerIndex)
-      .includes("It has not been sent or saved as a draft.")
-  ) {
-    const match = text
-      .slice(markerIndex)
-      .match(/\n\nSubject: ([^\n]+)\n\n([\s\S]+)$/);
-    if (match) {
-      message = { subject: match[1], body: match[2], recipient: "" };
-      text =
-        text.slice(0, markerIndex) +
-        text.slice(markerIndex, markerIndex + match.index);
-    }
-  }
+  // The server returns any prepared message as structured fields, with the
+  // reply text that precedes it, so the reply prose is never parsed here.
+  const message =
+    result.message &&
+    typeof result.message === "object" &&
+    ["subject", "body", "preface"].every(
+      (key) => typeof result.message[key] === "string",
+    )
+      ? result.message
+      : null;
+  const text = message ? message.preface : result.reply;
   $("result").replaceChildren(head, markdown(text));
   if (message) $("result").append(messagePreview(message));
 }

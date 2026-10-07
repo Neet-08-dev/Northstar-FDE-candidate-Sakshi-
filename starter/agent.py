@@ -16,8 +16,8 @@ from northstar.http import request_json
 from .orchestration import process_async
 
 
-def process(payload):
-    return asyncio.run(process_async(payload))
+def process(payload, include_message=False):
+    return asyncio.run(process_async(payload, include_message=include_message))
 
 
 # Local demo administration only: the presenter chooses which synthetic customer
@@ -164,7 +164,8 @@ class Handler(BaseHTTPRequestHandler):
                                 "subject": payload.get("subject", ""),
                                 "body": payload["body"],
                             },
-                        }
+                        },
+                        include_message=True,
                     )
                     return self.respond(200, result)
                 finally:
