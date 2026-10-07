@@ -18,9 +18,9 @@
       "escalations": 0,
       "reply_contains": [
         "HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)",
-        "- 8 April 2030, 3:30 PM IST",
-        "- 8 April 2030, 7:30 PM IST",
-        "- 9 April 2030, 3:30 PM IST",
+        "- 8 April 2030, 10:00 AM UTC",
+        "- 8 April 2030, 2:00 PM UTC",
+        "- 9 April 2030, 10:00 AM UTC",
         "No visit has been booked."
       ],
       "forbidden_tools": [
@@ -30,11 +30,11 @@
     }
   },
   {
-    "id": "reply-time-tomorrow-afternoon",
+    "id": "reply-time-tomorrow-morning",
     "category": "replies",
     "request": {
       "subject": "Visit",
-      "body": "Book T001 tomorrow afternoon."
+      "body": "Book T001 tomorrow morning."
     },
     "decision": {
       "intent": "schedule",
@@ -46,7 +46,7 @@
         "year": null,
         "month": null,
         "day": null,
-        "part_of_day": "afternoon"
+        "part_of_day": "morning"
       }
     },
     "fixture": {},
@@ -56,11 +56,11 @@
       "escalations": 0,
       "reply_contains": [
         "match your preference",
-        "- 9 April 2030, 3:30 PM IST"
+        "- 9 April 2030, 10:00 AM UTC"
       ],
       "response_excludes": [
-        "8 April 2030, 3:30 PM",
-        "8 April 2030, 7:30 PM"
+        "8 April 2030, 10:00 AM",
+        "8 April 2030, 2:00 PM"
       ],
       "forbidden_tools": [
         "schedule_visit"
@@ -93,8 +93,8 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "- 8 April 2030, 3:30 PM IST",
-        "- 8 April 2030, 7:30 PM IST"
+        "- 8 April 2030, 10:00 AM UTC",
+        "- 8 April 2030, 2:00 PM UTC"
       ],
       "response_excludes": [
         "9 April 2030"
@@ -131,7 +131,7 @@
       "escalations": 0,
       "reply_contains": [
         "match your preference",
-        "- 9 April 2030, 3:30 PM IST"
+        "- 9 April 2030, 10:00 AM UTC"
       ],
       "response_excludes": [
         "8 April 2030"
@@ -168,7 +168,7 @@
       "escalations": 0,
       "reply_contains": [
         "no open slots matching that preference",
-        "- 8 April 2030, 3:30 PM IST"
+        "- 8 April 2030, 10:00 AM UTC"
       ],
       "forbidden_tools": [
         "schedule_visit"
@@ -202,10 +202,10 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "8 April 2030, 5:30 PM IST (UTC+05:30) is not available for ticket T001",
-        "- 8 April 2030, 3:30 PM IST",
-        "- 8 April 2030, 7:30 PM IST",
-        "- 9 April 2030, 3:30 PM IST",
+        "8 April 2030, 5:30 PM UTC is not available for ticket T001",
+        "- 8 April 2030, 10:00 AM UTC",
+        "- 8 April 2030, 2:00 PM UTC",
+        "- 9 April 2030, 10:00 AM UTC",
         "No new visit was booked."
       ],
       "forbidden_tools": [
@@ -341,7 +341,7 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "The next one-hour visit is booked for 8 April 2030, 3:30 PM IST (UTC+05:30) with technician TECH001 (visit VISIT-EXISTING)."
+        "The next one-hour visit is booked for 8 April 2030, 10:00 AM UTC with technician TECH001 (visit VISIT-EXISTING)."
       ],
       "unchanged_collections": [
         "tickets",
@@ -683,7 +683,7 @@
       {
         "subject": "Visit",
         "body": "Please book a technician for T001.",
-        "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? The next open one-hour slots are:\n- 8 April 2030, 3:30 PM IST (UTC+05:30)\n- 8 April 2030, 7:30 PM IST (UTC+05:30)\n- 9 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked."
+        "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? The next open one-hour slots are:\n- 8 April 2030, 10:00 AM UTC\n- 8 April 2030, 2:00 PM UTC\n- 9 April 2030, 10:00 AM UTC\n\nReply with the slot you want, or ask for the earliest. No visit has been booked."
       }
     ],
     "request": {
@@ -699,9 +699,9 @@
         "year": 2030,
         "month": 4,
         "day": 8,
-        "hour": 19,
-        "minute": 30,
-        "utc_offset_minutes": 330
+        "hour": 14,
+        "minute": 0,
+        "utc_offset_minutes": 0
       }
     },
     "fixture": {},
@@ -712,7 +712,7 @@
       "escalations": 0,
       "reply_contains": [
         "Booked: ticket T001",
-        "8 April 2030, 7:30 PM IST"
+        "8 April 2030, 2:00 PM UTC"
       ]
     }
   },
@@ -821,7 +821,7 @@
       {
         "subject": "Visit",
         "body": "Please book a technician for T001.",
-        "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? The next open one-hour slots are:\n- 8 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked."
+        "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? The next open one-hour slots are:\n- 8 April 2030, 10:00 AM UTC\n\nReply with the slot you want, or ask for the earliest. No visit has been booked."
       }
     ],
     "request": {

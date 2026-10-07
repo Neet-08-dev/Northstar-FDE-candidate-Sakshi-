@@ -15,9 +15,9 @@ const samples = [
     "id": "time",
     "group": "Visits",
     "title": "Choose a visit time",
-    "hint": "Try a natural date in IST",
+    "hint": "Try a natural date",
     "subject": "Visit on 8 April",
-    "body": "Book T001 on 8 april 7:30 PM."
+    "body": "Book T001 on 8 april 2 PM."
   },
   {
     "id": "unavailableTime",

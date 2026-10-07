@@ -53,7 +53,7 @@ class SchedulingTests(unittest.TestCase):
             two = asyncio.run(process_async(payload, fixed))
             self.assertEqual((one["status"], two["status"]), ("completed", "completed"))
             for response in (one, two):
-                self.assertIn("8 April 2030, 3:30 PM IST (UTC+05:30)", response["reply"])
+                self.assertIn("8 April 2030, 10:00 AM UTC", response["reply"])
 
             async def different_time(*_):
                 return Decision(
@@ -65,7 +65,7 @@ class SchedulingTests(unittest.TestCase):
 
             conflict = asyncio.run(process_async(payload, different_time))
             self.assertEqual(conflict["status"], "needs_clarification")
-            self.assertIn("8 April 2030, 3:30 PM IST (UTC+05:30)", conflict["reply"])
+            self.assertIn("8 April 2030, 10:00 AM UTC", conflict["reply"])
             state = request_json(
                 self.url + "/admin/sessions/" + session["session_id"] + "/finalize", {}, self.admin
             )
@@ -78,16 +78,33 @@ class SchedulingTests(unittest.TestCase):
                 method="DELETE",
             )
 
-    def test_ist_display_preserves_booking_instant(self):
+    def test_site_zone_display_preserves_booking_instant(self):
         cases = [
             (
                 "2030-04-08T19:30:00+05:30",
                 {},
                 "completed",
-                "8 April 2030, 7:30 PM",
+                "8 April 2030, 2:00 PM UTC",
                 "2030-04-08T14:00:00Z",
             ),
-            ("2030-04-08T18:30:00+05:30", {}, "needs_clarification", "8 April 2030, 3:30 PM", None),
+            (
+                "2030-04-08T19:30:00+05:30",
+                {
+                    "patches": [
+                        {"collection": "sites", "id": "S001", "set": {"timezone": "Asia/Kolkata"}}
+                    ]
+                },
+                "completed",
+                "8 April 2030, 7:30 PM IST (14:00 UTC)",
+                "2030-04-08T14:00:00Z",
+            ),
+            (
+                "2030-04-08T18:30:00+05:30",
+                {},
+                "needs_clarification",
+                "8 April 2030, 10:00 AM UTC",
+                None,
+            ),
             (
                 "2030-04-09T01:30:00+05:30",
                 {
@@ -105,7 +122,7 @@ class SchedulingTests(unittest.TestCase):
                     ]
                 },
                 "completed",
-                "9 April 2030, 1:30 AM",
+                "8 April 2030, 8:00 PM UTC",
                 "2030-04-08T20:00:00Z",
             ),
         ]
@@ -131,7 +148,7 @@ class SchedulingTests(unittest.TestCase):
                         )
                     )
                     self.assertEqual(out["status"], status, out)
-                    self.assertIn(displayed + " IST (UTC+05:30)", out["reply"])
+                    self.assertIn(displayed, out["reply"])
                     state = request_json(
                         self.url + "/admin/sessions/" + session["session_id"] + "/finalize",
                         {},
@@ -480,7 +497,7 @@ class RecoveryAndExistingVisitTests(unittest.TestCase):
                     ),
                 )
                 self.assertEqual(out["status"], status, out)
-                self.assertIn("8 April 2030, 3:30 PM IST", out["reply"])
+                self.assertIn("8 April 2030, 10:00 AM UTC", out["reply"])
                 self.assertEqual(len(world.data["visits"]), 1)
                 self.assertFalse(
                     any(t in {"schedule_visit", "list_slots", "escalate"} for t, _ in requests)

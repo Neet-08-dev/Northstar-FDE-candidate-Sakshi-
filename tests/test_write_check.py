@@ -30,8 +30,11 @@ class WriteCheckTests(unittest.TestCase):
         session = request_json(self.url + "/admin/sessions", {}, self.admin)
         actions = []
 
-        async def checker(_payload, _usage, action, _facts):
+        self.facts = []
+
+        async def checker(_payload, _usage, action, facts):
             actions.append(action)
+            self.facts.append(facts)
             if isinstance(verdict, Exception):
                 raise verdict
             return verdict
@@ -114,7 +117,22 @@ class WriteCheckTests(unittest.TestCase):
         )
         self.assertEqual(writes, ["schedule_visit"])
         self.assertIn("book a one-hour technician visit for ticket T001", actions[0])
-        self.assertIn("at the earliest open slot, 8 April 2030, 3:30 PM IST", actions[0])
+        self.assertIn("at the earliest open slot, 8 April 2030, 10:00 AM UTC", actions[0])
+
+    def test_checker_listings_are_facts_not_evidence(self):
+        out, _, writes, state = self.run_request(
+            Decision(intent="schedule", ticket_id="T001", time_mode="earliest"), True
+        )
+        self.assertEqual(writes, ["schedule_visit"])
+        self.assertEqual(self.facts[0]["site_timezones"], {"S001": "UTC", "S101": "UTC"})
+        self.assertIn("Annex cooling unit (A101)", str(self.facts[0]["account_equipment"]))
+        cited = {(e["collection"], e["record_id"]) for e in out["evidence"]}
+        visit = state["state"]["visits"][0]["id"]
+        for ref in [("tickets", "T001"), ("assets", "A001"), ("sites", "S001"), ("visits", visit)]:
+            self.assertIn(ref, cited)
+        # Records listed only for the checker or for discovery are not evidence.
+        self.assertNotIn(("assets", "A101"), cited)
+        self.assertNotIn(("sites", "S101"), cited)
 
     def test_reads_options_and_handoffs_are_never_gated(self):
         for decision in [

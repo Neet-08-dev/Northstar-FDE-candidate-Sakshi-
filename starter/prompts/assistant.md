@@ -64,7 +64,7 @@ Return the structured Decision. Python executes and confirms any business action
    - hour (0-23) and minute: convert 12-hour times, so 7:30 PM is hour 19.
    - utc_offset_minutes: only when the user stated a timezone or offset: IST or
      UTC+05:30 is 330, UTC/GMT/Z is 0, UTC-03:00 is -180. Otherwise null, which
-     means IST (India Standard Time, UTC+05:30).
+     means the site's own recorded timezone; Python applies it.
    Understand any wording, such as "April 8th at half past seven in the evening".
    Use time_mode=unclear when the date or
    time is not one exact instant: no time given, a 12-hour time without AM/PM that

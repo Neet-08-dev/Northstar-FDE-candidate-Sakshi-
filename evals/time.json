@@ -4,7 +4,7 @@
     "category": "natural-time",
     "request": {
       "subject": "Service visit",
-      "body": "Book T001 on 8 april 7:30 PM."
+      "body": "Book T001 on 8 april 2 PM."
     },
     "decision": {
       "intent": "schedule",
@@ -15,8 +15,8 @@
         "year": null,
         "month": 4,
         "day": 8,
-        "hour": 19,
-        "minute": 30,
+        "hour": 14,
+        "minute": 0,
         "utc_offset_minutes": null
       }
     },
@@ -26,7 +26,7 @@
       "new_visits": 1,
       "escalations": 0,
       "reply_contains": [
-        "7:30 PM IST"
+        "8 April 2030, 2:00 PM UTC"
       ],
       "unchanged_collections": [
         "approvals",
@@ -74,7 +74,7 @@
       "new_visits": 1,
       "escalations": 0,
       "reply_contains": [
-        "7:30 PM IST"
+        "8 April 2030, 2:00 PM UTC"
       ],
       "unchanged_collections": [
         "approvals",
@@ -100,7 +100,7 @@
     "category": "natural-time",
     "request": {
       "subject": "Service visit",
-      "body": "Book T001 on tomorrow at 3:30 PM."
+      "body": "Book T001 on tomorrow at 10 AM."
     },
     "decision": {
       "intent": "schedule",
@@ -111,8 +111,8 @@
         "year": null,
         "month": null,
         "day": null,
-        "hour": 15,
-        "minute": 30,
+        "hour": 10,
+        "minute": 0,
         "utc_offset_minutes": null
       }
     },
@@ -122,7 +122,7 @@
       "new_visits": 1,
       "escalations": 0,
       "reply_contains": [
-        "9 April 2030, 3:30 PM IST"
+        "9 April 2030, 10:00 AM UTC"
       ],
       "unchanged_collections": [
         "approvals",
@@ -168,6 +168,13 @@
       "now": "2030-12-31T20:00:00Z",
       "patches": [
         {
+          "collection": "sites",
+          "id": "S001",
+          "set": {
+            "timezone": "Asia/Kolkata"
+          }
+        },
+        {
           "collection": "contracts",
           "id": "CON001",
           "set": {
@@ -190,7 +197,7 @@
       "new_visits": 1,
       "escalations": 0,
       "reply_contains": [
-        "1 January 2031, 7:30 PM IST"
+        "1 January 2031, 7:30 PM IST (14:00 UTC)"
       ],
       "unchanged_collections": [
         "approvals",
@@ -216,7 +223,7 @@
     "category": "natural-time",
     "request": {
       "subject": "Service visit",
-      "body": "Book T001 on 8 april 7:30."
+      "body": "Book T001 on 8 april 2:00."
     },
     "decision": {
       "intent": "schedule",

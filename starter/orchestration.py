@@ -5,7 +5,6 @@ import json
 import logging
 import time
 from collections.abc import Awaitable, Callable
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import urlsplit
@@ -15,7 +14,14 @@ from openai import AsyncOpenAI
 from openai.types.shared import Reasoning
 from pydantic import BaseModel, ConfigDict
 
-from .actions import SAFETY_FALLBACK, Actions, Decision, Outcome, RequestedTime, utc
+from .actions import (
+    SAFETY_FALLBACK,
+    Actions,
+    Decision,
+    Outcome,
+    resolve_time,
+    utc,
+)
 from .backend import Backend, Record
 
 log = logging.getLogger("northstar.agent")
@@ -30,47 +36,16 @@ class SafetyScreen(BaseModel):
     hazard: bool
 
 
-def resolve_requested_time(requested: RequestedTime, now: str) -> str:
-    """Resolve model-read calendar fields using only the request-scoped clock.
-
-    The model decides what the user meant; this only does calendar arithmetic.
-    An omitted year means the current calendar year in the requested zone, even
-    when that date has passed. Availability checks decide whether it is bookable.
-    """
-    offset = 330 if requested.utc_offset_minutes is None else requested.utc_offset_minutes
-    if not -720 <= offset <= 840:
-        raise ValueError("Invalid UTC offset")
-    zone = timezone(timedelta(minutes=offset))
-    scoped_now = utc(now).astimezone(zone)
-    if requested.relative_day != "none":
-        if any(v is not None for v in [requested.year, requested.month, requested.day]):
-            raise ValueError("Relative day conflicts with a calendar date")
-        day = scoped_now.date() + timedelta(days=int(requested.relative_day == "tomorrow"))
-    else:
-        if requested.month is None or requested.day is None:
-            raise ValueError("One calendar date required")
-        day = datetime(requested.year or scoped_now.year, requested.month, requested.day).date()
-    return (
-        datetime.combine(day, datetime.min.time(), zone)
-        .replace(hour=requested.hour, minute=requested.minute)
-        .astimezone(timezone.utc)
-        .isoformat()
-        .replace("+00:00", "Z")
-    )
-
-
 def normalize_time(decision: Decision, context: Record) -> Decision:
-    if decision.requested_time is None:
-        return decision
-    try:
-        if decision.time_mode != "exact":
-            raise ValueError("Conflicting time modes")
-        resolved = resolve_requested_time(decision.requested_time, context["now"])
-        if decision.starts_at and utc(decision.starts_at) != utc(resolved):
-            raise ValueError("Conflicting instants")
-        return decision.model_copy(update={"starts_at": resolved})
-    except (ValueError, TypeError, OverflowError):
-        return decision.model_copy(update={"time_mode": "unclear", "starts_at": ""})
+    """Check the model's time fields before any action; the site's zone applies later."""
+    resolved = resolve_time(decision, context["now"])
+    if decision.starts_at and resolved.starts_at:
+        try:
+            if utc(decision.starts_at) != utc(resolved.starts_at):
+                raise ValueError("Conflicting instants")
+        except (ValueError, TypeError):
+            return decision.model_copy(update={"time_mode": "unclear", "starts_at": ""})
+    return resolved
 
 
 # Luna is cheap enough to reason harder by default; reasoning tokens count toward

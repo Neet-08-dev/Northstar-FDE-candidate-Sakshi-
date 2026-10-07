@@ -224,7 +224,7 @@
     "category": "time",
     "request": {
       "subject": "Visit on 8 April",
-      "body": "Book T001 on 8 april 7:30 PM."
+      "body": "Book T001 on 8 april 2 PM."
     },
     "decision": {
       "intent": "schedule",
@@ -236,8 +236,8 @@
         "year": null,
         "month": 4,
         "day": 8,
-        "hour": 19,
-        "minute": 30,
+        "hour": 14,
+        "minute": 0,
         "utc_offset_minutes": null
       }
     },
@@ -297,7 +297,7 @@
       "escalations": 0,
       "reply_contains": [
         "is not available for ticket T001",
-        "8 April 2030, 3:30 PM IST",
+        "8 April 2030, 10:00 AM UTC",
         "No new visit was booked."
       ],
       "unchanged_collections": [
@@ -688,7 +688,7 @@
       "no_message": false,
       "message_contains": [
         "VISIT-0001",
-        "3:30 PM IST"
+        "10:00 AM UTC"
       ],
       "reply_contains": [
         "Booked: ticket T001"
