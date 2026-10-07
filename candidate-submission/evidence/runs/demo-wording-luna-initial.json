@@ -1,0 +1,683 @@
+{
+  "model": "gpt-6-luna",
+  "html_sha256": "946687ab686ec15b3c201188f6a01da78945ff56cab818301bfd684a826f65f4",
+  "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
+  "results": [
+    {
+      "id": "demo-intake",
+      "category": "intake",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": false,
+        "create_attempts": false,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "ticket_details": false,
+        "ticket_evidence": false,
+        "reply_details": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 8908,
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "S101",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling unit has stopped cooling."
+      },
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4664,
+          "output_tokens": 117,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Cooling problem at the annex",
+        "body": "The cooling unit at our Aster Foods annex has stopped cooling. Please log the problem. We'll arrange a visit later."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 0,
+        "new_tickets": 1,
+        "create_attempts": 1,
+        "ticket_asset_id": "A101",
+        "ticket_site_id": "S101",
+        "severity": "S2",
+        "no_booking_attempt": true
+      }
+    },
+    {
+      "id": "demo-intakeBooking",
+      "category": "intake",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": true,
+        "booking_evidence": true,
+        "ticket_details": true,
+        "ticket_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 9690,
+      "decision": {
+        "intent": "intake",
+        "ticket_id": "",
+        "site_id": "S101",
+        "asset_id": "A101",
+        "time_mode": "earliest",
+        "starts_at": "",
+        "clarification": "issue",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "maintenance",
+        "issue_summary": "Routine maintenance requested for the cooling unit."
+      },
+      "response": {
+        "status": "completed",
+        "summary": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "reply": "Created ticket NEW-0019 for asset A101 at site S101. Booked: ticket NEW-0019, visit VISIT-0001, technician TECH001, at 8 April 2030, 15:30 IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          },
+          {
+            "collection": "customers",
+            "record_id": "C001"
+          },
+          {
+            "collection": "contracts",
+            "record_id": "CON001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "NEW-0019"
+          },
+          {
+            "collection": "technicians",
+            "record_id": "TECH001"
+          },
+          {
+            "collection": "visits",
+            "record_id": "VISIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 6331,
+          "output_tokens": 276,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "create_ticket",
+          "committed": true,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "list_slots",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "schedule_visit",
+          "committed": true,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Maintenance for the annex cooling unit",
+        "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1,
+        "new_tickets": 1,
+        "create_attempts": 1,
+        "ticket_asset_id": "A101",
+        "ticket_site_id": "S101",
+        "severity": "S3",
+        "no_booking_attempt": false
+      }
+    },
+    {
+      "id": "demo-booking",
+      "category": "ordinary",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 8698,
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling problem"
+      },
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 4581,
+          "output_tokens": 111,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "We already reported the cooling problem at Aster Foods' main loading dock. Please arrange a technician for the next available time."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1
+      }
+    },
+    {
+      "id": "demo-ambiguous",
+      "category": "ambiguity",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "reply_details": true,
+        "no_booking_attempt": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 9869,
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "unclear",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_and_schedule",
+        "issue_category": "interruption",
+        "issue_summary": "Cooling unit not working"
+      },
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S001"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S101"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A101"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 6357,
+          "output_tokens": 263,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Cooling unit not working",
+        "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
+      },
+      "expected": {
+        "status": "needs_clarification",
+        "new_visits": 0
+      }
+    },
+    {
+      "id": "demo-hazard",
+      "category": "safety",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "reply_details": true,
+        "real_handoff": true,
+        "no_booking_attempt": true,
+        "safety_reply": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 21,
+      "decision": {},
+      "response": {
+        "status": "escalated",
+        "summary": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "escalations",
+            "record_id": "HANDOFF-0001"
+          }
+        ],
+        "usage": {
+          "model": "none",
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "cost_usd": 0,
+          "pricing_source": "No model calls"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "escalate",
+          "committed": true,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Smoke from the cooling unit",
+        "body": "There's smoke coming from the cooling unit at our main loading dock. What should we do?"
+      },
+      "expected": {
+        "status": "escalated",
+        "new_visits": 0,
+        "queue": "safety"
+      }
+    },
+    {
+      "id": "demo-time",
+      "category": "time",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 8943,
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "",
+        "asset_id": "",
+        "time_mode": "exact",
+        "starts_at": "2030-04-08T19:30:00+05:30",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "unclear",
+        "issue_summary": ""
+      },
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 6281,
+          "output_tokens": 254,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Visit at 7:30 pm",
+        "body": "We already have a ticket for the cooling problem at our main loading dock. Could a technician come today at 7:30 pm IST?"
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1,
+        "starts_at": "2030-04-08T14:00:00Z"
+      }
+    }
+  ],
+  "passed": 3,
+  "total": 6
+}

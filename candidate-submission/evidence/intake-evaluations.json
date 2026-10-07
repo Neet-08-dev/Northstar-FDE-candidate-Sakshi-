@@ -2,7 +2,7 @@
   "scope": "Local intake slice on top of 13c2154; verified before local commit. Development cases, not held-out evidence.",
   "runs": [
     {
-      "report": "reports/intake-luna.json",
+      "report": "runs/intake-luna.json",
       "report_sha256": "6870489f709513215b4fdf56c4b8bb836c43902b4310603f01ea2c7ecea2b2b1",
       "model": "gpt-6-luna",
       "prompt_sha256": "19f29c5ddecb24b864add0cb051bad9ea04f90befa74c0bb60d6377a69393023",
@@ -257,7 +257,7 @@
       ]
     },
     {
-      "report": "reports/intake-luna-diagnosis.json",
+      "report": "runs/intake-luna-diagnosis.json",
       "report_sha256": "08b22e1907bdf8c058b46b41f442367ab36a2537065aa05af1afd7158a5f1d15",
       "model": "gpt-6-luna",
       "prompt_sha256": "19f29c5ddecb24b864add0cb051bad9ea04f90befa74c0bb60d6377a69393023",
@@ -305,7 +305,7 @@
       ]
     },
     {
-      "report": "reports/intake-luna-time-regression.json",
+      "report": "runs/intake-luna-time-regression.json",
       "report_sha256": "fd004310faad68ab383e7233be8dc119c28a232b6d224cdf411f48b04bfa4dba",
       "model": "gpt-6-luna",
       "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
@@ -425,7 +425,7 @@
       ]
     },
     {
-      "report": "reports/intake-sol.json",
+      "report": "runs/intake-sol.json",
       "report_sha256": "34e7e8c659f2fa843f3be669de565ae713a4653c478da418c9def7a9483fd331",
       "model": "gpt-6.1-sol",
       "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
@@ -790,7 +790,7 @@
       ]
     },
     {
-      "report": "reports/intake-sol-repeats.json",
+      "report": "runs/intake-sol-repeats.json",
       "report_sha256": "1923489ee5d7df5b270ccec4d35755da71027d4bf32c29f75f481330133dfbb6",
       "model": "gpt-6.1-sol",
       "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
@@ -999,5 +999,6 @@
     "latency_ms": 7859,
     "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
     "scope": "Docker HTTP demo smoke; response checks only, no retained backend snapshot"
-  }
+  },
+  "report_reference_note": "Report paths are relative to this JSON file and resolve to committed reports. SHA-256 values identify the exact saved bytes. Reports preserve runner outputs, not full backend snapshots or tool arguments; historical state checks cannot be independently recomputed from these files."
 }

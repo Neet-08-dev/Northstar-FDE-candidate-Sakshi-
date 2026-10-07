@@ -11,7 +11,8 @@
         "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
       },
       "passed": true,
-      "report": "reports/demo-wording-luna-initial.json"
+      "report": "runs/demo-wording-luna-initial.json",
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     "ambiguous": {
       "request": {
@@ -19,7 +20,8 @@
         "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
       },
       "passed": true,
-      "report": "reports/demo-wording-luna-initial.json"
+      "report": "runs/demo-wording-luna-initial.json",
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     "hazard": {
       "request": {
@@ -27,7 +29,8 @@
         "body": "There's smoke coming from the cooling unit at our main loading dock. What should we do?"
       },
       "passed": true,
-      "report": "reports/demo-wording-luna-initial.json"
+      "report": "runs/demo-wording-luna-initial.json",
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     "intake": {
       "request": {
@@ -35,7 +38,8 @@
         "body": "The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please log the problem. We'll arrange a visit later."
       },
       "passed": true,
-      "report": "reports/demo-wording-luna-revised.json"
+      "report": "runs/demo-wording-luna-revised.json",
+      "report_sha256": "f1bb07da40579a96bf02538375c0d2a260d82e1f3dae07dca5a8bc61f001e85e"
     },
     "time": {
       "request": {
@@ -43,7 +47,8 @@
         "body": "We already have a ticket for HVAC unit 01 at Aster Foods Loading Dock. Could a technician come today at 7:30 pm IST?"
       },
       "passed": true,
-      "report": "reports/demo-wording-luna-revised.json"
+      "report": "runs/demo-wording-luna-revised.json",
+      "report_sha256": "f1bb07da40579a96bf02538375c0d2a260d82e1f3dae07dca5a8bc61f001e85e"
     },
     "booking": {
       "request": {
@@ -51,7 +56,8 @@
         "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
       },
       "passed": true,
-      "report": "reports/demo-wording-luna-followup.json"
+      "report": "runs/demo-wording-luna-followup.json",
+      "report_sha256": "576950a23b34012c7640fc2b29627449f71f6077766d8f7c0e36077d2c9006ba"
     }
   },
   "attempts": [
@@ -109,8 +115,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-initial.json",
-      "backend_attempts": 4
+      "report": "runs/demo-wording-luna-initial.json",
+      "backend_attempts": 4,
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     {
       "id": "demo-intakeBooking",
@@ -167,8 +174,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-initial.json",
-      "backend_attempts": 30
+      "report": "runs/demo-wording-luna-initial.json",
+      "backend_attempts": 30,
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     {
       "id": "demo-booking",
@@ -217,8 +225,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-initial.json",
-      "backend_attempts": 4
+      "report": "runs/demo-wording-luna-initial.json",
+      "backend_attempts": 4,
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     {
       "id": "demo-ambiguous",
@@ -266,8 +275,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-initial.json",
-      "backend_attempts": 5
+      "report": "runs/demo-wording-luna-initial.json",
+      "backend_attempts": 5,
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     {
       "id": "demo-hazard",
@@ -306,8 +316,9 @@
         "cost_usd": 0,
         "pricing_source": "No model calls"
       },
-      "report": "reports/demo-wording-luna-initial.json",
-      "backend_attempts": 3
+      "report": "runs/demo-wording-luna-initial.json",
+      "backend_attempts": 3,
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     {
       "id": "demo-time",
@@ -357,8 +368,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-initial.json",
-      "backend_attempts": 5
+      "report": "runs/demo-wording-luna-initial.json",
+      "backend_attempts": 5,
+      "report_sha256": "4593b86a28339f966de4375509bca7e22dd9080eafd762cc74c3adc96b788480"
     },
     {
       "id": "demo-intake",
@@ -414,8 +426,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-revised.json",
-      "backend_attempts": 14
+      "report": "runs/demo-wording-luna-revised.json",
+      "backend_attempts": 14,
+      "report_sha256": "f1bb07da40579a96bf02538375c0d2a260d82e1f3dae07dca5a8bc61f001e85e"
     },
     {
       "id": "demo-booking",
@@ -464,8 +477,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-revised.json",
-      "backend_attempts": 5
+      "report": "runs/demo-wording-luna-revised.json",
+      "backend_attempts": 5,
+      "report_sha256": "f1bb07da40579a96bf02538375c0d2a260d82e1f3dae07dca5a8bc61f001e85e"
     },
     {
       "id": "demo-time",
@@ -515,8 +529,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-revised.json",
-      "backend_attempts": 21
+      "report": "runs/demo-wording-luna-revised.json",
+      "backend_attempts": 21,
+      "report_sha256": "f1bb07da40579a96bf02538375c0d2a260d82e1f3dae07dca5a8bc61f001e85e"
     },
     {
       "id": "demo-booking",
@@ -565,8 +580,9 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-booking.json",
-      "backend_attempts": 6
+      "report": "runs/demo-wording-luna-booking.json",
+      "backend_attempts": 6,
+      "report_sha256": "3498401f6e25817b280bf7a3963457e89d4c08755dbba59cc58d2d190118e176"
     },
     {
       "id": "demo-booking",
@@ -615,8 +631,10 @@
         "cost_usd": null,
         "pricing_source": "unknown"
       },
-      "report": "reports/demo-wording-luna-followup.json",
-      "backend_attempts": 18
+      "report": "runs/demo-wording-luna-followup.json",
+      "backend_attempts": 18,
+      "report_sha256": "576950a23b34012c7640fc2b29627449f71f6077766d8f7c0e36077d2c9006ba"
     }
-  ]
+  ],
+  "report_reference_note": "Report paths are relative to this JSON file and resolve to committed reports. SHA-256 values identify the exact saved bytes. Reports preserve runner outputs, not full backend snapshots or tool arguments; historical state checks cannot be independently recomputed from these files."
 }

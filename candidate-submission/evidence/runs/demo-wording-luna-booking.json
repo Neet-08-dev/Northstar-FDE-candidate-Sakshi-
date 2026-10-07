@@ -1,0 +1,108 @@
+{
+  "model": "gpt-6-luna",
+  "html_sha256": "8ce375924b98b3a353a5294018264c833c95ef0a862c3caa7d6f9ad4f8698f90",
+  "prompt_sha256": "e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6",
+  "results": [
+    {
+      "id": "demo-booking",
+      "category": "ordinary",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": false,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "booking_details": false,
+        "booking_evidence": true,
+        "reply_details": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 10302,
+      "decision": {
+        "intent": "clarify",
+        "ticket_id": "",
+        "site_id": "S001",
+        "asset_id": "A001",
+        "time_mode": "earliest",
+        "starts_at": "",
+        "clarification": "identity",
+        "intake_mode": "record_only",
+        "issue_category": "interruption",
+        "issue_summary": "HVAC unit stopped cooling."
+      },
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please confirm the ticket ID, or the site and asset needing service.",
+        "reply": "Please confirm the ticket ID, or the site and asset needing service.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 8295,
+          "output_tokens": 330,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "request": {
+        "subject": "Visit for our reported cooling problem",
+        "body": "We have an open ticket for HVAC unit 01 at Aster Foods Loading Dock because it stopped cooling. Please arrange a technician for the next available time."
+      },
+      "expected": {
+        "status": "completed",
+        "new_visits": 1
+      }
+    }
+  ],
+  "passed": 0,
+  "total": 1
+}
