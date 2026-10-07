@@ -20,6 +20,8 @@ One-digit times without AM/PM, short numeric dates, weekday phrases, broad windo
 
 The finalized A UI has an example rail, composer and response, with mobile stacking. Example selection only fills the form and clears the old response. Submission calls the real `/demo` route; each demo gets fresh scoped synthetic records. Loading and HTTP/invalid-response failures never substitute a simulated success. Static assets have an exact route allowlist and a content security policy. Markdown creates text nodes and allows only HTTP(S) links; response data never enters `innerHTML`. A constant copy-icon SVG is the only HTML assignment. The action layer's existing message envelope becomes one subject/body preview with plain-text copy controls. Messages are neither sent nor stored. The public `/process` response contract is unchanged.
 
+A header customer picker lets the presenter run the demo as any synthetic customer. Identity is local demo administration, not request content: `/demo` validates a known `customer_id` against an admin-snapshot catalog and creates the session with that actor, so the agent still learns who the customer is only from the injected session. Unknown, empty or list-valued IDs are rejected before any session exists. The `/process` path is untouched.
+
 Questions for a real customer remain open:
 
 - How do customers identify equipment, and which site labels or serial numbers are familiar to them?
