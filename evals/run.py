@@ -22,6 +22,17 @@ from starter.orchestration import interpret, process_async
 
 CASES = Path(__file__).with_name("scheduling.json")
 BILLING_CASES = Path(__file__).with_name("billing.json")
+MESSAGE_CASES = Path(__file__).with_name("messages.json")
+
+
+def load_cases(suite: str = "all") -> list[dict]:
+    sources = {"service": CASES, "billing": BILLING_CASES, "messages": MESSAGE_CASES}
+    return [
+        case
+        for name, path in sources.items()
+        if suite in {"all", name}
+        for case in json.loads(path.read_text())
+    ]
 
 
 def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
@@ -86,6 +97,44 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
     checks["reply_details"] = all(
         value in response["reply"] for value in expected.get("reply_contains", [])
     )
+    checks["no_disclosure"] = all(
+        value not in json.dumps(response) for value in expected.get("response_excludes", [])
+    )
+    if "message_contains" in expected:
+        message = response["reply"].partition("Subject: ")[2]
+        checks["message_content"] = bool(message) and all(
+            text in message for text in expected["message_contains"]
+        )
+        checks["message_evidence"] = all(
+            ref in response["evidence"] for ref in expected.get("message_evidence", [])
+        )
+        checks["message_not_sent_or_stored"] = (
+            "not been sent or saved as a draft" in response["reply"]
+        )
+    elif expected.get("no_message", True):
+        checks["no_message"] = "Subject: " not in response["reply"]
+    if expected.get("unchanged_collections"):
+        checks["unchanged_records"] = all(
+            snapshot["initial"].get(c, []) == snapshot["state"].get(c, [])
+            for c in expected["unchanged_collections"]
+        )
+    checks["forbidden_attempts"] = not any(
+        e["tool"] in expected.get("forbidden_tools", []) for e in audit
+    )
+    checks["forbidden_reads"] = not any(
+        e["tool"] == "get_record"
+        and e["arguments"].get("record_id") in expected.get("forbidden_reads", [])
+        for e in audit
+    )
+    if expected.get("no_customer_reads"):
+        checks["no_customer_reads"] = not any(
+            e["tool"] in {"search_records", "get_record"} for e in audit
+        )
+    if "handoff_ticket_id" in expected:
+        checks["handoff_linkage"] = bool(snapshot["state"]["escalations"]) and all(
+            e.get("ticket_id") == expected["handoff_ticket_id"]
+            for e in snapshot["state"]["escalations"]
+        )
     if "escalations" in expected:
         checks["handoff_count"] = len(snapshot["state"]["escalations"]) == expected["escalations"]
     if expected.get("no_booking_attempt"):
@@ -269,7 +318,7 @@ def main():
     parser.add_argument(
         "--http", action="store_true", help="Run live through the real /process HTTP handler"
     )
-    parser.add_argument("--suite", choices=["all", "service", "billing"], default="all")
+    parser.add_argument("--suite", choices=["all", "service", "billing", "messages"], default="all")
     parser.add_argument("--interval", type=float, default=10, help="Seconds between paid cases")
     parser.add_argument("--trials", type=int, default=1)
     parser.add_argument("--cases", help="Comma-separated authored case IDs")
@@ -282,11 +331,7 @@ def main():
     load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
     if not args.offline and not os.environ.get("OPENAI_API_KEY"):
         parser.error("Configure OPENAI_API_KEY in local .env for paid live evaluations")
-    cases = []
-    if args.suite in {"all", "service"}:
-        cases.extend(json.loads(CASES.read_text()))
-    if args.suite in {"all", "billing"}:
-        cases.extend(json.loads(BILLING_CASES.read_text()))
+    cases = load_cases(args.suite)
     if args.cases:
         selected = set(args.cases.split(","))
         if not selected <= {c["id"] for c in cases}:

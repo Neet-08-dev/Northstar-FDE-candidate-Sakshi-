@@ -49,6 +49,21 @@ docker compose -p northstar-billing run --rm public-evals
 ```
 
 `--suite billing` selects the 61 billing cases; `--suite service` selects the 46 service cases. Offline interpretation is controlled and does not test language understanding. The complete final-prompt suite was run on Sol; a complete final-prompt Luna sweep was not run. Luna remains optional and has the retained failures above. General billing support, standalone approval-status queries, multi-workflow execution, persistent clarification, cross-session deduplication, real payments and held-out/production reliability remain outside the supported claims.
+## Copyable-message verification, 7 October 2026
+
+This slice starts from staging `e61a9510635d67be8bb2ce80924c1168bc099582`, including merged PR #2. Final `make check` passes Ruff, formatting, mypy and all 29 test methods. `make eval-offline` passes 95/95 scenarios: the previous 45 plus 50 new message and handoff-linkage cases in `evals/messages.json`. The runner loads both case files. The separate report was run to retain evaluation evidence, not as a claim of additional model trials.
+
+The new cases cover generic and authorized named recipients, account/site mismatch, unauthorized contacts, unverified identity, finance/viewer roles, missing and contradictory records, verified resolution, confirmed/missing/conflicting/past/cancelled appointments, malformed records, injection, unsupported delivery/storage/billing, current safety policy, combined intake and booking, exact replay, and tool failure. Independent checks examine actual backend state and attempted tools. Successful standalone messages leave business collections unchanged. No case may call `draft_message`; unsafe cases must avoid create/booking attempts. Handoff assertions inspect the stored ticket linkage. Existing scenarios also assert no unsolicited message body.
+
+Additional integration tests exercise the actual HTTP `/process` handler with controlled interpretation. Repeating a combined request creates one visit and no draft. Tests revoke contact authorization or make reads fail after a real booking, then check that the receipt survives and no message body appears. They also exercise failed recovery and outer orchestration timeout. A grader regression proves that an attempted draft write or a handoff linked to the wrong ticket cannot pass. HTTP checks confirm that the two new UI examples exactly match evaluated requests; no browser execution was performed.
+
+A targeted adversarial case initially failed: a contact's malformed `site_ids` string passed Python's membership test. The action now requires a list before testing site membership. The failed trial and passing regression are both retained in [message evidence](evidence/message-evaluations.json). A separate initial test expectation used null for an unlinked escalation; the backend stores an empty string. That fixture expectation was corrected without weakening linked-handoff checks.
+
+The final prompt SHA-256 is `7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62`. Source hashes, all 50 new results and the 45 previous-case check results are in the evidence. New-case median latency was 23.0 ms and maximum latency 341 ms. The full run used at most 43 backend attempts per request. These are local synthetic timings with controlled interpretation, not model or production latency. Model calls, model tokens and model spend for this slice were zero.
+
+No live model trial was authorized or performed. Offline cases supply the Decision, so they do not establish that the model correctly recognizes drafting, sending, recipient ambiguity, commitments or combined requests. The current prompt has not been evaluated with Luna or Sol. Earlier full live runs and targeted intake/demo runs below remain associated with their own prompts. No Docker rebuild, full public-suite success, held-out evaluation or production reliability is claimed for this slice.
+
+Reproduce with `make check` and, when a saved JSON report is useful, `make eval-offline`. `--cases` accepts IDs from either authored file. Live evaluation remains a separately authorized action. Stored drafts, draft retrieval, sending, billing messages, arbitrary wording customization and persistent conversations remain unsupported.
 
 ## Customer demo wording checks, 7 October 2026
 

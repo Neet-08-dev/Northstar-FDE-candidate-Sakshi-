@@ -4,7 +4,7 @@ import threading
 import unittest
 import uuid
 
-from evals.run import BILLING_CASES, CASES, run_case
+from evals.run import CASES, load_cases, run_case
 from northstar.api import APIServer
 from northstar.http import request_json
 from starter.actions import Decision
@@ -27,7 +27,7 @@ class SchedulingTests(unittest.TestCase):
         cls.thread.join()
 
     def test_authored_scenarios(self):
-        for case in json.loads(CASES.read_text()) + json.loads(BILLING_CASES.read_text()):
+        for case in load_cases():
             with self.subTest(case=case["id"]):
                 result = asyncio.run(run_case(case, self.url, self.admin))
                 self.assertTrue(result["passed"], result)

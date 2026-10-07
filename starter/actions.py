@@ -17,14 +17,23 @@ SAFETY_REPLY = "Move away from the hazard and contact site emergency personnel. 
 
 class Decision(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    intent: Literal["schedule", "intake", "credit", "clarify", "hazard", "unsupported"]
+    intent: Literal["schedule", "intake", "credit", "compose", "clarify", "hazard", "unsupported"]
     ticket_id: str = Field(default="", max_length=100)
     site_id: str = Field(default="", max_length=100)
     asset_id: str = Field(default="", max_length=100)
     time_mode: Literal["earliest", "exact", "unclear"] = "unclear"
     starts_at: str = Field(default="", max_length=80)
     clarification: Literal[
-        "identity", "time", "intent", "issue", "conditional", "invoice", "amount", "mixed"
+        "identity",
+        "time",
+        "intent",
+        "issue",
+        "conditional",
+        "invoice",
+        "amount",
+        "mixed",
+        "message",
+        "recipient",
     ] = "identity"
     intake_mode: Literal["record_only", "record_and_schedule"] = "record_only"
     issue_category: Literal["interruption", "maintenance", "unclear"] = "unclear"
@@ -32,6 +41,9 @@ class Decision(BaseModel):
     invoice_id: str = Field(default="", max_length=100)
     amount_cents: int | None = Field(default=None, strict=True)
     currency: Literal["USD", "unsupported"] = "USD"
+    message_purpose: Literal["none", "appointment_update", "ticket_update"] = "none"
+    recipient_mode: Literal["generic", "named"] = "generic"
+    contact_id: str = Field(default="", max_length=100)
 
 
 @dataclass(frozen=True)
@@ -68,9 +80,11 @@ def clarification(reason: str) -> Outcome:
         "mixed": "Would you like me to handle the credit request or the service request first? No action has been taken.",
         "identity": "Please confirm the ticket ID, or the site and asset needing service.",
         "issue": "Please describe whether equipment has stopped working or needs nonurgent maintenance.",
-        "conditional": "Creating a ticket and booking a visit are separate actions. May I retain the ticket if booking cannot be completed?",
+        "conditional": "Recording a ticket, booking a visit and preparing a message are separate steps. May I retain completed service actions if a later step cannot finish?",
         "time": "Please confirm the date, time and timezone, or authorize the earliest available qualified slot.",
         "intent": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
+        "message": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
+        "recipient": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
     }
     return Outcome("needs_clarification", questions[reason])
 
@@ -82,6 +96,7 @@ class Actions:
         self.intake_receipt = ""
         self.intake_ticket_id = ""
         self.verified_ticket_id = ""
+        self.confirmed_reply = ""
         self.recovery_queue = "operations"
 
     async def handoff(self, queue: str, reason: str, ticket_id: str = "") -> Outcome:
@@ -89,7 +104,9 @@ class Actions:
         args = {"queue": queue, "reason": reason}
         if ticket_id:
             args["ticket_id"] = ticket_id
-        prefix = (SAFETY_REPLY + " " if queue == "safety" else "") + self.intake_receipt
+        prefix = (SAFETY_REPLY + " " if queue == "safety" else "") + (
+            self.confirmed_reply + " " if self.confirmed_reply else self.intake_receipt
+        )
         try:
             row = await self.backend.call(
                 "escalate",
@@ -105,7 +122,7 @@ class Actions:
             return Outcome(
                 "error",
                 prefix
-                + "The requested work could not be confirmed, and the human handoff could not be confirmed. Please contact operations directly.",
+                + "The remaining work could not be confirmed, and the human handoff could not be confirmed. Please contact operations directly.",
             )
 
     async def handle(self, decision: Decision) -> Outcome:
@@ -122,40 +139,66 @@ class Actions:
         if decision.intent == "unsupported":
             return await self.handoff(
                 "operations",
-                "This assistant records service tickets, books visits and handles service credits. This request needs human review.",
+                "This assistant records service tickets, books visits and handles service credits and prepares copyable service messages. This request needs human review.",
             )
         if decision.intent == "credit":
             self.recovery_queue = "billing"
             return await self.credit_service(decision)
-        if self.context["actor"].get("role") not in {"customer", "dispatcher", "supervisor"}:
+        roles = {"customer", "dispatcher", "supervisor"}
+        if decision.intent == "compose":
+            roles.add("finance")
+        if self.context["actor"].get("role") not in roles:
             return Outcome(
                 "blocked",
-                "Your current role is not authorized to create tickets or schedule service.",
+                "Your current role is not authorized for this requested workflow.",
             )
         try:
+            if decision.intent == "compose" and decision.message_purpose == "none":
+                return clarification("message")
+            if decision.message_purpose != "none":
+                if decision.recipient_mode == "named" and not decision.contact_id:
+                    return clarification("recipient")
+                if (
+                    decision.intent == "intake"
+                    and decision.intake_mode == "record_only"
+                    and decision.message_purpose == "appointment_update"
+                ):
+                    return clarification("message")
+            if decision.intent == "compose":
+                return await self.compose_message(decision)
             if decision.intent == "intake":
-                return await self.intake_service(decision)
-            time_question = self._time_question(decision)
-            if not decision.ticket_id:
-                return clarification("identity")
-            if time_question:
-                return time_question
-            return await self.schedule_service(decision)
+                outcome = await self.intake_service(decision)
+            else:
+                time_question = self._time_question(decision)
+                if not decision.ticket_id:
+                    return clarification("identity")
+                if time_question:
+                    return time_question
+                outcome = await self.schedule_service(decision)
+            if outcome.status != "completed" or decision.message_purpose == "none":
+                return outcome
+            self.confirmed_reply = outcome.reply
+            message = await self.compose_message(
+                decision.model_copy(update={"ticket_id": self.verified_ticket_id})
+            )
+            if self.confirmed_reply in message.reply:
+                return message
+            return Outcome(message.status, self.confirmed_reply + "\n\n" + message.reply)
         except BackendError as exc:
             if exc.code in {"RECORD_UNAVAILABLE", "FORBIDDEN", "UNVERIFIED"}:
                 return Outcome(
                     "blocked",
-                    self.intake_receipt
+                    (self.confirmed_reply + " " if self.confirmed_reply else self.intake_receipt)
                     + "The requested record is unavailable within your authorized account. Please confirm the reference or contact operations for access verification.",
                 )
             return await self.handoff(
                 "operations",
-                "Service could not be completed because a tool was unavailable or live state changed. Operations must reconcile any uncertain ticket or booking before retrying.",
+                "The remaining request could not be completed because a tool was unavailable or live state changed. Operations must reconcile any uncertain action before retrying.",
             )
         except (KeyError, ValueError, TypeError):
             return await self.handoff(
                 "operations",
-                "Current service records or policy need reconciliation before a booking can be confirmed.",
+                "Current service records or policy need reconciliation before the remaining request can be completed.",
             )
 
     async def credit_service(self, decision: Decision) -> Outcome:
@@ -353,6 +396,112 @@ class Actions:
             f"Applied a {dollars(amount)} service credit to invoice {invoice_id}. Credit reference: {credit['id']}.",
         )
 
+    async def _message_recipient(self, decision: Decision, site: Record) -> Outcome | None:
+        if decision.recipient_mode == "generic" and not decision.contact_id:
+            return None
+        if not decision.contact_id:
+            return clarification("recipient")
+        contact = await self.backend.record("contacts", decision.contact_id)
+        if (
+            contact.get("authorized") is not True
+            or contact["customer_id"] != site["customer_id"]
+            or not isinstance(contact.get("site_ids"), list)
+            or site["id"] not in contact["site_ids"]
+        ):
+            return Outcome(
+                "blocked", "The requested contact is not authorized for this site's message."
+            )
+        return None
+
+    async def compose_message(self, decision: Decision) -> Outcome:
+        """Return a bounded message from current records; never store or send it."""
+        if not decision.ticket_id:
+            return clarification("identity")
+        b = self.backend
+        ticket = await b.record("tickets", decision.ticket_id)
+        self.verified_ticket_id = ticket["id"]
+        asset = await b.record("assets", ticket["asset_id"])
+        site = await b.record("sites", ticket["site_id"])
+        rows = [ticket, asset, site]
+        if any(r["customer_id"] not in self.context["actor"]["customer_ids"] for r in rows):
+            return Outcome("blocked", "The requested records are outside your authorized account.")
+        if len({r["customer_id"] for r in rows}) != 1 or asset["site_id"] != site["id"]:
+            return await self.handoff(
+                "operations", "Current ticket, asset and site identity records conflict."
+            )
+        if (decision.site_id and decision.site_id != site["id"]) or (
+            decision.asset_id and decision.asset_id != asset["id"]
+        ):
+            return clarification("identity")
+        await b.record("customers", site["customer_id"])
+        self.policy = await b.call("get_policy")
+        b.remember("policy", self.policy["rules"]["version"])
+        if asset.get("safety_hold") or ticket.get("severity") == "S1":
+            return await self.handoff("safety", "The asset or ticket requires safety clearance.")
+        recipient_problem = await self._message_recipient(decision, site)
+        if recipient_problem:
+            return recipient_problem
+        status = {"open": "open", "in_progress": "in progress", "resolved": "resolved"}.get(
+            ticket["status"]
+        )
+        if status is None or (
+            status == "resolved" and ticket.get("resolution_verified") is not True
+        ):
+            return await self.handoff(
+                "operations",
+                "The ticket status needs reconciliation before a message can be prepared.",
+            )
+        # Only identifiers and bounded state are copied. Notes, names, summaries,
+        # requested prose and communications never become message instructions/content.
+        subject = f"Service update for ticket {ticket['id']}"
+        body = (
+            f"Ticket {ticket['id']} for equipment {asset['id']} at site {site['id']} is {status}."
+        )
+        if decision.message_purpose == "appointment_update":
+            visits = [
+                v for v in await b.search("visits", ticket["id"]) if v["ticket_id"] == ticket["id"]
+            ]
+            if not visits:
+                return Outcome(
+                    "needs_clarification",
+                    "There is no confirmed appointment for this ticket. Would you like a ticket-status message instead?",
+                )
+            if len(visits) != 1:
+                return await self.handoff(
+                    "operations",
+                    "Conflicting visit records need reconciliation before an appointment message can be prepared.",
+                )
+            visit = visits[0]
+            if (
+                visit["customer_id"] != site["customer_id"]
+                or visit.get("status") != "scheduled"
+                or visit.get("duration_minutes") != 60
+                or status == "resolved"
+                or utc(visit["starts_at"]) <= utc(self.context["now"])
+            ):
+                return await self.handoff(
+                    "operations",
+                    "The current visit cannot support a confirmed upcoming appointment message.",
+                )
+            subject = f"Confirmed appointment for ticket {ticket['id']}"
+            body = (
+                f"A one-hour service visit for ticket {ticket['id']}, equipment {asset['id']} "
+                f"at site {site['id']}, is confirmed for {display_time(visit['starts_at'])}. "
+                f"The visit reference is {visit['id']}. Repair completion is not yet confirmed."
+            )
+        elif decision.message_purpose != "ticket_update":
+            return clarification("message")
+        elif status != "resolved":
+            body += " Repair completion is not yet confirmed."
+        recipient = f" For registered contact {decision.contact_id}." if decision.contact_id else ""
+        return Outcome(
+            "completed",
+            "Here is a message you can copy and send."
+            + recipient
+            + " It has not been sent or saved as a draft.\n\n"
+            + f"Subject: {subject}\n\n{body}",
+        )
+
     @staticmethod
     def _time_question(decision: Decision) -> Outcome | None:
         if decision.time_mode == "unclear":
@@ -399,6 +548,8 @@ class Actions:
             return await self.handoff(
                 "operations", "Current ticket, asset and site identity records conflict."
             )
+        if ticket:
+            self.verified_ticket_id = ticket["id"]
         if (decision.site_id and decision.site_id != site["id"]) or (
             decision.asset_id and decision.asset_id != asset["id"]
         ):
@@ -425,6 +576,10 @@ class Actions:
                 "The account needs review before service can be scheduled.",
                 ticket_id,
             )
+        if decision.message_purpose != "none":
+            recipient_problem = await self._message_recipient(decision, site)
+            if recipient_problem:
+                return recipient_problem
         self.policy = await b.call("get_policy")
         b.remember("policy", self.policy["rules"]["version"])
         now = utc(self.context["now"]).date().isoformat()
@@ -497,6 +652,7 @@ class Actions:
                     return records
         self.backend.remember("tickets", ticket["id"])
         self.intake_ticket_id = ticket["id"]
+        self.verified_ticket_id = ticket["id"]
         self.intake_receipt = (
             f"{'Created' if created else 'Reused'} ticket {ticket['id']} "
             f"for asset {asset['id']} at site {site['id']}. "
