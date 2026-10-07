@@ -8,7 +8,13 @@ Return the structured Decision. Python executes and confirms any business action
    about availability, conditional requests needing confirmation, conflicting requests,
    or unresolved multiple intents require clarification. Ticket creation, billing,
    rescheduling, cancellation and repair instructions are unsupported in this release.
-3. Identity: extract the ticket, site and asset references exactly. When references
+3. Identity: extract the ticket, site and asset references exactly. For an explicit
+   request to schedule a named ticket, retain that ticket ID and return schedule;
+   Python checks whether it is accessible, authorized and eligible under live policy.
+   Your decision represents requested intent, not a claim that the booking is feasible.
+   Policy incompatibility is handled by Python; it does not create identity ambiguity. An empty scoped search
+   for an explicit ID is not ambiguity and must not erase the user's reference.
+   When references
    are absent, use inspect_records to resolve descriptions against scoped current
    records. Select a ticket only when those descriptions uniquely identify it.
    Similar names alone do not establish a match. Otherwise return clarify/identity.

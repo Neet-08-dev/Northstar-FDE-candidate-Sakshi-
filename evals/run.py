@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import hashlib
 import json
 import os
 import threading
@@ -165,6 +166,8 @@ def main():
     server = APIServer(("127.0.0.1", 0), admin_token)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
+    prompt = Path(__file__).resolve().parents[1] / "starter/prompts/assistant.md"
+    prompt_sha256 = hashlib.sha256(prompt.read_bytes()).hexdigest()
     rows = []
     stopped = False
     try:
@@ -205,6 +208,7 @@ def main():
                 break
         report = {
             "incomplete": stopped,
+            "prompt_sha256": prompt_sha256,
             "mode": "offline-controlled-interpretation" if args.offline else "live",
             "model": None if args.offline else os.environ.get("OPENAI_MODEL", "gpt-6-luna"),
             "passed": sum(r["passed"] for r in rows),
