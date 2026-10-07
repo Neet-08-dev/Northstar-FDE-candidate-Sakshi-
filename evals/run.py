@@ -26,6 +26,9 @@ MESSAGE_CASES = Path(__file__).with_name("messages.json")
 
 
 def load_cases(suite: str = "all") -> list[dict]:
+    # Exact UI wording is an opt-in suite; the default already covers these action rules.
+    if suite == "demo":
+        return json.loads(Path(__file__).with_name("demo.json").read_text())
     sources = {"service": CASES, "billing": BILLING_CASES, "messages": MESSAGE_CASES}
     return [
         case
@@ -318,7 +321,9 @@ def main():
     parser.add_argument(
         "--http", action="store_true", help="Run live through the real /process HTTP handler"
     )
-    parser.add_argument("--suite", choices=["all", "service", "billing", "messages"], default="all")
+    parser.add_argument(
+        "--suite", choices=["all", "service", "billing", "messages", "demo"], default="all"
+    )
     parser.add_argument("--interval", type=float, default=10, help="Seconds between paid cases")
     parser.add_argument("--trials", type=int, default=1)
     parser.add_argument("--cases", help="Comma-separated authored case IDs")
