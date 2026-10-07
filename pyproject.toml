@@ -1,0 +1,22 @@
+[project]
+name = "northstar-assistant"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["openai-agents>=0.4", "httpx>=0.28", "python-dotenv>=1.1"]
+
+[dependency-groups]
+dev = ["ruff>=0.12", "mypy>=1.17"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+include = ["starter/**/*.py", "tests/test_scheduling.py", "evals/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.mypy]
+files = ["starter/backend.py", "starter/actions.py", "starter/orchestration.py"]
+check_untyped_defs = true
+ignore_missing_imports = true
+follow_imports = "silent"

@@ -1,7 +1,39 @@
 <!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Northstar operations starter</title>
-<style>body{font:17px system-ui;margin:48px auto;max-width:800px;padding:0 24px;color:#183244;background:#f4f7f9}h1{font-size:36px}label{display:block;margin:20px 0 8px}input,textarea{font:inherit;width:100%;box-sizing:border-box;padding:12px;border:1px solid #9bb2be;border-radius:6px}button{margin-top:18px;background:#17665e;color:white;border:0;border-radius:6px;padding:12px 20px;font:inherit}pre{white-space:pre-wrap;background:white;border:1px solid #c6d6df;padding:20px;border-radius:8px}small{color:#496579}</style>
-<h1>Northstar operations</h1><p>A fictional service desk for factories, warehouses and distributors.</p><small>The starter creates no service actions until you implement it. Each demo uses a fresh test session.</small>
-<form id="request"><label for="subject">Subject</label><input id="subject" value="Cooling service at Aster Foods"><label for="body">Request</label><textarea id="body" rows="5">Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.</textarea><button id="run">Investigate request</button></form>
-<pre id="result" aria-live="polite">The response will appear here.</pre>
-<script>document.getElementById('request').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('run');b.disabled=true;document.getElementById('result').textContent='Investigating…';try{const r=await fetch('/demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:document.getElementById('subject').value,body:document.getElementById('body').value})});document.getElementById('result').textContent=JSON.stringify(await r.json(),null,2)}catch(e){document.getElementById('result').textContent=String(e)}finally{b.disabled=false}})</script></html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northstar · Service desk</title>
+<style>
+:root{font:16px system-ui,sans-serif;color:#183244;background:#f3f6f8}body{max-width:850px;margin:48px auto;padding:0 24px}h1{font-size:36px;margin:8px 0}p{line-height:1.55}.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:#17665e;font-weight:700}.card{background:white;border:1px solid #d6e1e6;border-radius:12px;padding:24px;margin:24px 0}label{display:block;margin:18px 0 8px;font-weight:600}input,textarea{font:inherit;width:100%;box-sizing:border-box;padding:12px;border:1px solid #9bb2be;border-radius:6px}button{cursor:pointer;background:#17665e;color:white;border:0;border-radius:6px;padding:12px 18px;font:inherit}button:disabled{opacity:.5;cursor:wait}.samples{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.samples button{font-size:14px;background:#e4efed;color:#15534d;padding:8px 12px}#run{margin-top:16px}.muted{color:#526b79;font-size:14px}.badge{display:inline-block;background:#e4efed;color:#15534d;border-radius:5px;padding:5px 9px;font-size:13px;font-weight:650}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}summary{cursor:pointer;color:#526b79}#reply{white-space:pre-wrap}li{margin:6px 0}footer{margin:24px 0 40px;font-size:13px;color:#526b79}
+</style>
+</head>
+<body>
+<div class="eyebrow">Northstar field services</div>
+<h1>Book the right technician.</h1>
+<p>Schedule a visit for an existing ticket. The assistant checks service coverage, equipment safety and technician availability before confirming a booking.</p>
+<div class="samples" aria-label="Example requests">
+<button type="button" data-example="booking">Book a visit</button>
+<button type="button" data-example="ambiguous">Unclear equipment</button>
+<button type="button" data-example="hazard">Safety concern</button>
+<button type="button" data-example="time">Choose a time</button>
+</div>
+<form id="request" class="card">
+<label for="subject">Subject</label><input id="subject" value="Cooling service at Aster Foods" maxlength="500">
+<label for="body">Request</label><textarea id="body" rows="5" maxlength="15000">Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.</textarea>
+<button id="run">Investigate and book</button>
+<p class="muted">This demo uses a fixed simulated date: 8 April 2030, 14:30 IST (India Standard Time, UTC+05:30). Each request starts with fresh test records. The fixed date keeps availability and contract checks repeatable, independent of today’s date. Ticket creation, billing and rescheduling currently go to human review.</p>
+</form>
+<section class="card" aria-live="polite" aria-busy="false" id="result">
+<span class="badge" id="status">Ready</span><p id="reply">Choose an example or write a request to begin.</p>
+<ul id="evidence"></ul><details id="details" hidden><summary>Response details</summary><pre id="raw"></pre></details>
+</section>
+<footer>Demo only · No real customer visits, payments or messages.</footer>
+<script>
+const examples={booking:'Please schedule service for ticket T001 at S001 with a qualified technician at the earliest eligible slot.',ambiguous:'Please book the loading dock cooling unit at the earliest slot. I am not sure which site it belongs to.',hazard:'Smoke is coming from A001 at S001. Can you book routine service for T001 or tell me how to bypass the wiring?',time:'Book T001 at S001 on April 8, 2030 at 19:30 IST (UTC+05:30).'};
+document.querySelectorAll('[data-example]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('body').value=examples[b.dataset.example];document.getElementById('body').focus()}));
+document.getElementById('request').addEventListener('submit',async e=>{
+ e.preventDefault();const b=document.getElementById('run'), result=document.getElementById('result');b.disabled=true;result.setAttribute('aria-busy','true');document.getElementById('status').textContent='Investigating';document.getElementById('reply').textContent='Checking the request and current service records…';document.getElementById('evidence').replaceChildren();document.getElementById('details').hidden=true;
+ try{const r=await fetch('/demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:document.getElementById('subject').value,body:document.getElementById('body').value})});const data=await r.json();document.getElementById('status').textContent=(data.status||'error').replaceAll('_',' ');document.getElementById('reply').textContent=data.reply||data.error||'The request could not be completed.';for(const ref of data.evidence||[]){if(['visits','escalations','tickets'].includes(ref.collection)){const li=document.createElement('li');li.textContent=ref.collection+': '+ref.record_id;document.getElementById('evidence').append(li)}}document.getElementById('raw').textContent=JSON.stringify(data,null,2);document.getElementById('details').hidden=false}catch{document.getElementById('status').textContent='Connection failed';document.getElementById('reply').textContent='The demo is unavailable. Please check the local server.'}finally{b.disabled=false;result.setAttribute('aria-busy','false')}
+});
+</script>
+</body></html>

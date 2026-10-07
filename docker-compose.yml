@@ -4,7 +4,7 @@ services:
     command: ["python", "-m", "northstar.api", "--host", "0.0.0.0"]
     environment:
       ADMIN_TOKEN: ${ADMIN_TOKEN:-local-development-only}
-    ports: ["127.0.0.1:8001:8001"]
+    ports: ["127.0.0.1:${MOCK_PORT:-8001}:8001"]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3)"]
       interval: 2s
@@ -19,7 +19,7 @@ services:
     env_file:
       - path: .env
         required: false
-    ports: ["127.0.0.1:8000:8000"]
+    ports: ["127.0.0.1:${AGENT_PORT:-8000}:8000"]
     depends_on:
       mock-api: {condition: service_healthy}
     healthcheck:

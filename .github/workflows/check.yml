@@ -1,13 +1,11 @@
-name: Contract checks
+name: Offline checks
 on: [push, pull_request]
 jobs:
-  contracts:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           version: "0.12.23"
-      - run: make setup
-      - run: uv run --frozen python -m unittest discover -s tests -v
-      - run: docker compose config --quiet
+      - run: make setup check
