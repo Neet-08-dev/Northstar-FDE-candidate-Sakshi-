@@ -32,6 +32,13 @@ class SchedulingTests(unittest.TestCase):
                 result = asyncio.run(run_case(case, self.url, self.admin))
                 self.assertTrue(result["passed"], result)
 
+    def test_heldout_expectations_hold_for_their_decisions(self):
+        # Validates the held-out cases' expected effects only; their value is the live run.
+        for case in load_cases("heldout"):
+            with self.subTest(case=case["id"]):
+                result = asyncio.run(run_case(case, self.url, self.admin))
+                self.assertTrue(result["passed"], result)
+
     def test_repeat_request_does_not_duplicate_visit(self):
         session = request_json(self.url + "/admin/sessions", {}, self.admin)
         payload = {

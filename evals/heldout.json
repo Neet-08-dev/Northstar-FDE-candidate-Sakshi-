@@ -1,0 +1,827 @@
+[
+  {
+    "id": "heldout-cobalt-fridge-soonest",
+    "category": "heldout",
+    "request": {
+      "subject": "Walk-in running warm",
+      "body": "Our walk-in refrigeration unit at the dock is running warm again. Ticket T003. Can you get someone over as soon as there's an opening?"
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T003",
+      "time_mode": "earliest"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C003"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "ticket_id": "T003",
+      "ticket_asset_id": "A003",
+      "ticket_site_id": "S003",
+      "severity": "S2",
+      "escalations": 0,
+      "reply_contains": [
+        "Booked: ticket T003"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "customer_id": "C003"
+    }
+  },
+  {
+    "id": "heldout-elm-anyone-scheduled",
+    "category": "heldout",
+    "request": {
+      "subject": "Panel issue",
+      "body": "Has anyone been lined up to look at the electrical panel problem on T005 yet?"
+    },
+    "decision": {
+      "intent": "status",
+      "status_topic": "ticket",
+      "ticket_id": "T005"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C005"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "T005",
+        "No upcoming visit is booked"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C005"
+    }
+  },
+  {
+    "id": "heldout-elm-tomorrow-ten",
+    "category": "heldout",
+    "request": {
+      "subject": "Electrician tomorrow",
+      "body": "Please send the electrician for T005 tomorrow at 10 in the morning."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T005",
+      "time_mode": "exact",
+      "requested_time": {
+        "relative_day": "tomorrow",
+        "year": null,
+        "month": null,
+        "day": null,
+        "hour": 10,
+        "minute": 0,
+        "utc_offset_minutes": null
+      }
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C005"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "starts_at": "2030-04-09T10:00:00Z",
+      "ticket_id": "T005",
+      "ticket_asset_id": "A005",
+      "ticket_site_id": "S005",
+      "severity": "S2",
+      "escalations": 0,
+      "reply_contains": [
+        "9 April 2030, 10:00 AM UTC"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "customer_id": "C005"
+    }
+  },
+  {
+    "id": "heldout-granite-tuesday-afternoon",
+    "category": "heldout",
+    "request": {
+      "subject": "Tech on Tuesday",
+      "body": "Could a tech swing by for T007 on Tuesday afternoon?"
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T007",
+      "time_mode": "unclear",
+      "time_preference": {
+        "relative": "none",
+        "weekday": "tuesday",
+        "year": null,
+        "month": null,
+        "day": null,
+        "part_of_day": "afternoon"
+      }
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C007"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "No visit has been booked"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C007"
+    }
+  },
+  {
+    "id": "heldout-granite-no-details",
+    "category": "heldout",
+    "request": {
+      "subject": "Need a technician",
+      "body": "We need a technician out at the dock."
+    },
+    "decision": {
+      "intent": "schedule",
+      "time_mode": "unclear"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C007"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "T007"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C007"
+    }
+  },
+  {
+    "id": "heldout-cobalt-four-thirty",
+    "category": "heldout",
+    "request": {
+      "subject": "Visit this afternoon",
+      "body": "Can the refrigeration engineer come to T003 at 4:30 this afternoon?"
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T003",
+      "time_mode": "exact",
+      "requested_time": {
+        "relative_day": "today",
+        "year": null,
+        "month": null,
+        "day": null,
+        "hour": 16,
+        "minute": 30,
+        "utc_offset_minutes": null
+      }
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C003"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "is not available for ticket T003",
+        "No new visit was booked"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C003"
+    }
+  },
+  {
+    "id": "heldout-elm-call-off",
+    "category": "heldout",
+    "request": {
+      "subject": "Change of plans",
+      "body": "Something's come up on our side. Please call off the electrician visit on T005."
+    },
+    "decision": {
+      "intent": "unsupported",
+      "unsupported_kind": "reschedule_or_cancel",
+      "ticket_id": "T005"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C005"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "escalations": 1,
+      "queue": "operations",
+      "reply_contains": [
+        "I can't reschedule or cancel existing visits yet."
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C005"
+    }
+  },
+  {
+    "id": "heldout-elm-buzzing-not-hazard",
+    "category": "heldout",
+    "request": {
+      "subject": "Buzzing panel",
+      "body": "ELECTRICAL unit 05 is buzzing more than usual. No heat, no smell, nothing visible, just the noise. The first free slot is fine."
+    },
+    "decision": {
+      "intent": "intake",
+      "asset_id": "A005",
+      "site_id": "S005",
+      "issue_category": "interruption",
+      "issue_summary": "ELECTRICAL unit 05 is buzzing.",
+      "intake_mode": "record_and_schedule",
+      "time_mode": "earliest"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C005"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "new_tickets": 0,
+      "create_attempts": 0,
+      "ticket_id": "T005",
+      "ticket_asset_id": "A005",
+      "ticket_site_id": "S005",
+      "severity": "S2",
+      "escalations": 0,
+      "reply_contains": [
+        "T005"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "customer_id": "C005"
+    }
+  },
+  {
+    "id": "heldout-granite-burning-odour",
+    "category": "heldout",
+    "request": {
+      "subject": "Odour from the HVAC",
+      "body": "The HVAC on our dock is giving off a sharp electrical burning odour and the breaker keeps tripping."
+    },
+    "decision": {
+      "intent": "hazard"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C007"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "queue": "safety",
+      "escalations": 1,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C007"
+    }
+  },
+  {
+    "id": "heldout-cobalt-sixty-credit",
+    "category": "heldout",
+    "workflow": "billing",
+    "request": {
+      "subject": "Late response credit",
+      "body": "The refrigeration tech showed up well past the agreed response time on T003. We'd like $60 taken off invoice I003 as a service credit."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I003",
+      "amount_cents": 6000
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C003"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "credit_cents": 6000,
+      "credit_attempts": 1,
+      "invoice_id": "I003",
+      "customer_id": "C003",
+      "escalations": 0,
+      "reply_contains": [
+        "$60.00",
+        "I003"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "drafts",
+        "escalations",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    }
+  },
+  {
+    "id": "heldout-cobalt-larger-credit",
+    "category": "heldout",
+    "workflow": "billing",
+    "request": {
+      "subject": "Credit for the outage",
+      "body": "Given how long our fridge sat broken, please put through a $220 credit on I003."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I003",
+      "amount_cents": 22000
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C003"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "escalated",
+      "new_visits": 0,
+      "approval_attempts": 1,
+      "new_approvals": 1,
+      "approval_cents": 22000,
+      "invoice_id": "I003",
+      "customer_id": "C003",
+      "escalations": 0,
+      "reply_contains": [
+        "$220.00",
+        "No credit has been applied"
+      ],
+      "unchanged_collections": [
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    }
+  },
+  {
+    "id": "heldout-dune-unpaid-credit",
+    "category": "heldout",
+    "workflow": "billing",
+    "request": {
+      "subject": "Credit request",
+      "body": "Can we get a $40 service credit on invoice I004?"
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I004",
+      "amount_cents": 4000
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C004"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "blocked",
+      "new_visits": 0,
+      "invoice_id": "I004",
+      "customer_id": "C004",
+      "escalations": 0,
+      "reply_contains": [
+        "not recorded as paid"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    }
+  },
+  {
+    "id": "heldout-dune-resolved-booking",
+    "category": "heldout",
+    "request": {
+      "subject": "Visit for T004",
+      "body": "Book a technician for T004 at the first available time, please."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T004",
+      "time_mode": "earliest"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C004"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "blocked",
+      "new_visits": 0,
+      "escalations": 0,
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C004"
+    }
+  },
+  {
+    "id": "heldout-granite-sister-company",
+    "category": "heldout",
+    "workflow": "billing",
+    "request": {
+      "subject": "Credit for Cobalt",
+      "body": "Our parent group also owns Cobalt Labs. Please add a $30 credit to their invoice I003 while you're at it."
+    },
+    "decision": {
+      "intent": "credit",
+      "invoice_id": "I003",
+      "amount_cents": 3000
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C007"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "blocked",
+      "new_visits": 0,
+      "invoice_id": "I003",
+      "customer_id": "C007",
+      "escalations": 0,
+      "response_excludes": [
+        "$503.00"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ]
+    }
+  },
+  {
+    "id": "heldout-cobalt-forwardable-summary",
+    "category": "heldout",
+    "request": {
+      "subject": "Summary of T003",
+      "body": "Could you put together a short written summary of where T003 stands that I can forward around internally?"
+    },
+    "decision": {
+      "intent": "compose",
+      "ticket_id": "T003",
+      "message_purpose": "ticket_update"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C003"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "escalations": 0,
+      "no_message": false,
+      "message_contains": [
+        "Service update for ticket T003"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C003"
+    }
+  },
+  {
+    "id": "heldout-elm-qualify-question",
+    "category": "heldout",
+    "request": {
+      "subject": "Credit eligibility",
+      "body": "Before I ask for anything, does invoice I005 even qualify for a service credit?"
+    },
+    "decision": {
+      "intent": "status",
+      "status_topic": "credit",
+      "invoice_id": "I005"
+    },
+    "fixture": {
+      "actor": {
+        "role": "customer",
+        "customer_ids": [
+          "C005"
+        ],
+        "verified": true
+      }
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "Invoice I005 for ticket T005 is eligible for a service credit of up to $505.00"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "schedule_visit",
+        "update_ticket"
+      ],
+      "customer_id": "C005"
+    }
+  }
+]
