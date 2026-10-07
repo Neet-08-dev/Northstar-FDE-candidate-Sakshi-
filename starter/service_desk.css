@@ -550,6 +550,39 @@ textarea {
 #selection-note:empty {
   display: none;
 }
+.secondary {
+  min-height: 44px;
+  padding: 11px 16px;
+  border-color: var(--line);
+  font-size: 13px;
+}
+.thread {
+  margin-bottom: 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  font-size: 12px;
+}
+.thread summary {
+  padding: 10px 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.thread-turn {
+  padding: 8px 12px;
+  border-top: 1px solid var(--line-soft);
+}
+.thread-turn p {
+  margin: 0 0 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.thread-you {
+  color: var(--ink);
+}
+.thread-assistant {
+  color: var(--muted);
+}
 .primary {
   min-height: 44px;
   padding: 11px 18px;
@@ -941,7 +974,8 @@ textarea {
   #selection-note {
     margin: 0;
   }
-  .primary {
+  .primary,
+  .secondary {
     width: 100%;
     min-height: 46px;
   }

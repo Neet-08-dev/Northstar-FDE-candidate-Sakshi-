@@ -229,7 +229,7 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "AM or PM"
+        "No visit has been booked"
       ],
       "unchanged_collections": [
         "approvals",
@@ -269,7 +269,7 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "exact time"
+        "No visit has been booked"
       ],
       "unchanged_collections": [
         "approvals",

@@ -29,6 +29,7 @@ class Backend:
         self.deadline, self.max_attempts = deadline, max_attempts
         self.attempts = 0
         self.evidence: list[dict[str, str]] = []
+        self.scoped: set[tuple[str, str]] = set()
 
     def remaining(self) -> float:
         return self.deadline - time.monotonic()
@@ -105,9 +106,14 @@ class Backend:
         return rows
 
     async def record(self, collection: str, record_id: str) -> Record:
-        # Resolve within the scoped collection before attempting a direct lookup.
-        if not any(row["id"] == record_id for row in await self.search(collection, record_id)):
-            raise BackendError("RECORD_UNAVAILABLE")
+        # Resolve within the scoped collection before the first direct lookup. Scope
+        # membership cannot change within one session, so later reads in this request
+        # skip the repeat search but still fetch current state.
+        key = (collection, record_id)
+        if key not in self.scoped:
+            if not any(row["id"] == record_id for row in await self.search(collection, record_id)):
+                raise BackendError("RECORD_UNAVAILABLE")
+            self.scoped.add(key)
         row = await self.call("get_record", collection=collection, record_id=record_id)
         self.remember(collection, row["id"])
         return row

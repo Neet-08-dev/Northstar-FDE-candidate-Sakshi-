@@ -17,6 +17,18 @@ from northstar.http import request_json
 from starter.actions import Decision
 from starter.agent import Handler, process
 
+# Interpretation is controlled in these tests; the independent write check approves.
+# Its own behavior, including rejection and failure, is covered in test_write_check.py.
+_approve_writes = patch("starter.orchestration.verify_write", AsyncMock(return_value=True))
+
+
+def setUpModule():
+    _approve_writes.start()
+
+
+def tearDownModule():
+    _approve_writes.stop()
+
 
 class DemoExamplesTests(unittest.TestCase):
     def test_every_exact_example_has_independent_backend_effects(self):

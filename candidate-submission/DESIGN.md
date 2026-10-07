@@ -31,7 +31,7 @@ Questions for a real customer remain open:
 
 ## Architecture and AI choices
 
-`starter.agent.process` accepts the existing HTTP contract. Two OpenAI Agents SDK agents run in parallel: a focused safety screen decides whether the request describes a possible hazard, and the interpreter returns a typed decision. A hazard from either takes priority. Python executes the business action and constructs the response from confirmed results. No code matches keywords or parses phrases in the request text.
+`starter.agent.process` accepts the existing HTTP contract. Two OpenAI Agents SDK agents run in parallel: a focused safety screen decides whether the request describes a possible hazard, and the interpreter returns a typed decision. A hazard from either takes priority. Python executes the business action and constructs the response from confirmed results. Before the first business write, a third, independent agent checks that the user asked for that exact change (see below). No code matches keywords or parses phrases in the request text.
 
 | Module | Responsibility |
 | --- | --- |
@@ -43,7 +43,7 @@ The model handles varied language and candidate record selection. Deterministic 
 
 Python fits the supplied service. The Agents SDK provides the model/tool loop and structured output, avoiding a custom loop. A plain Python/OpenAI client implementation would reduce framework dependency but require that orchestration code. A coding-agent runtime would add capabilities this request-processing service does not need. No separate MCP server or multi-agent hierarchy is required for this slice. These are design tradeoffs, not comparative performance measurements.
 
-Earlier development trials used `gpt-6-luna`. Repeated Luna failures on the outside-account, missing-amount case motivated the move to `gpt-6.1-sol`, which is now the only model: it is fixed in code with no environment override. Both agents use Responses through the SDK with low reasoning. Exact settings and evaluation revisions are recorded in [EVALS.md](EVALS.md).
+Earlier development trials used `gpt-6-luna`. Repeated Luna failures on the outside-account, missing-amount case motivated the move to `gpt-6.1-sol`, which is the service model: it is fixed in code with no environment override. The evaluation runner alone can select `gpt-6-luna` (`--model`) for cheap iteration, because it hosts the agent in-process. Reasoning effort depends on the model: low for Sol, high for Luna, whose output caps and provider timeout are raised so reasoning tokens do not truncate answers. All agents use Responses through the SDK. Exact settings and evaluation revisions are recorded in [EVALS.md](EVALS.md).
 
 ## Trust, authority and reliability
 
@@ -53,7 +53,7 @@ The interpreter's lookup tool lists the whole scoped collection (up to 40 record
 
 Writes are serialized within each request. Retries replay the same complete arguments and idempotency key, with at most three attempts per call. A slot/version conflict permits one fresh investigation. Existing visits are reused; a different requested time requires confirmation rather than silently rescheduling. The backend handles booking conflicts, while this slice does not perform versioned ticket updates. Changes between policy/coverage reads and a booking remain a race partly controlled by backend checks.
 
-Execution is bounded to eight SDK turns, 48 backend attempts and a 55-second processing budget. Recovery reserves five seconds and three attempts. Provider retries are disabled. Unresolved or uncertain processing creates an operations handoff when possible; a failed handoff returns an error. The assistant never claims an unconfirmed booking or repair completion.
+Execution is bounded to eight SDK turns, 48 backend attempts and a 55-second processing budget. A record is resolved by scoped search the first time it is read in a request; later reads in the same request skip the repeat search but still fetch current state, because scope membership cannot change within a session. Recovery reserves five seconds and three attempts. Provider retries are disabled. Unresolved or uncertain processing creates an operations handoff when possible; a failed handoff returns an error. The assistant never claims an unconfirmed booking or repair completion.
 
 General billing inquiries, standalone approval-status queries, existing-ticket severity/status updates, cancellation, rescheduling, stored drafts and message delivery are unsupported. They receive a human handoff. Service-credit requests and their approval workflow are supported as described below.
 
@@ -91,7 +91,28 @@ Templates use record identifiers, bounded status values and confirmed appointmen
 
 Combined requests check named recipients before service writes and again before presenting a message. A completed booking or ticket remains committed if later message preparation fails. The reply retains its receipt and does not substitute unverified confirmation prose. Conditional requests require clarification because the steps are not atomic. Confirmed receipts and verified ticket identity also survive outer orchestration failures. Handoffs now link an already verified existing ticket, fixing the previous scheduling failure path that only retained intake ticket IDs. Operation-key construction lives in actions; backend transport retains byte-for-byte retries.
 
-The demo starts fresh state for every submission, so it offers an explicit combined booking-and-message example. The runtime does not assume conversation history. Natural-language intent, purpose and recipient resolution still depend on the model; offline controlled-interpretation checks do not validate those language decisions. A later authorized three-case live sample passed on Luna and Sol, with one additional Sol provider failure retained. This sample does not establish broad language coverage; see EVALS.md. Billing messages, stored drafts, sending, tone customization and persistent conversations remain unsupported.
+The demo offers an explicit combined booking-and-message example. `/process` does not assume conversation history; demo follow-ups are described below. Natural-language intent, purpose and recipient resolution still depend on the model; offline controlled-interpretation checks do not validate those language decisions. A later authorized three-case live sample passed on Luna and Sol, with one additional Sol provider failure retained. This sample does not establish broad language coverage; see EVALS.md. Billing messages, stored drafts, sending, tone customization and persistent conversations remain unsupported.
+
+## Helpful replies and follow-ups
+
+The model says what the user wants and what is missing; Python answers with verified options and facts, never model-written prose. Every option is read-only and nothing is booked, created or credited until the user chooses.
+
+- Time: a missing or vague time ("tomorrow afternoon", "8 April", "Tuesday", "next week mornings") returns `time_mode=unclear` with a structured `time_preference`. Python lists up to three open one-hour slots that match it, in IST, or the nearest slots when none match. An unavailable exact time lists the three nearest open slots. A request with no time is never treated as permission for the earliest slot.
+- Records: a clear action with no identified ticket lists up to three of the requester's own open tickets with equipment and site names; intake without equipment lists active equipment. Either question also asks when, if a booking time is missing. A visit request for equipment with an open ticket reuses that ticket instead of asking about the issue.
+- Read-only answers: `intent=status` answers a ticket's status, its next visit, or whether an invoice can receive a credit (paid, recorded SLA breach, remaining balance and approval limit). Status never writes or escalates.
+- Credits: a missing or vague amount is asked with the invoice found, the available balance and the approval limit. A whole percentage is converted to exact cents and offered for confirmation; it is never applied directly.
+- Unsupported requests name what cannot be done (for example rescheduling or cancelling) before the recorded operations handoff. Greetings get a short capability list.
+- Names: replies show equipment, site and contact names beside their IDs. Names come from scoped records and are reduced to plain single-line text without Markdown syntax. Copyable messages keep their identifiers-only templates.
+
+Demo follow-ups: the dashboard sends a `conversation_id` and up to four earlier turns. `/demo` keeps that conversation's synthetic session (30-minute expiry, at most 20, freed by "New conversation" through `/demo/end` or by changing customer), so a follow-up sees earlier effects. Earlier turns reach the interpreter as `untrusted_earlier_turns`; the model resolves answers such as "the second one" or "yes", but earlier replies grant no authority and Python re-checks every action. The safety screen judges only the current request. `/process` accepts the same optional `conversation` field but keeps its five-field response contract; graders sending single requests see no change.
+
+## Independent write check
+
+Python's checks decide whether an action is allowed; they cannot tell whether the user asked for it, because the model chooses the target, timing and amount. A live Luna trial showed the risk: "Book ticket at the earliest available time" named no equipment, yet the interpreter chose an annex unit, created a ticket and booked a visit, and every business check passed.
+
+Before the first business write of a request (create ticket, book visit, issue credit), `Actions` describes the exact change in plain words with record names, for example "create a new maintenance ticket for Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101) and book its earliest open technician visit". A separate agent with its own instructions (`prompts/write_check.md`) sees only that description, the account's equipment list, the user's request and earlier turns, never the interpreter's reasoning, and returns whether the user asked for it. A rejection writes nothing and replies "Before I make any change, please confirm: should I …? Nothing has been changed."; a later "yes" passes the check with the conversation as context. A check failure, such as a provider error, also writes nothing and records an operations handoff. One approval covers the rest of that request, so create-then-book is checked once.
+
+Handoffs and supervisor-approval requests are not checked: they only route work to a person, and the credit itself is checked before `issue_credit`. Read-only answers and slot or record options never write. This is a model judgment, not a guarantee: a wrong write now needs two independent model errors. It uses no keyword or quote matching. A verified write costs one extra model call and roughly 1.5–5 seconds on Luna. Single-request `/process` grading is unchanged when the check approves.
 
 ## Observability and rollout
 

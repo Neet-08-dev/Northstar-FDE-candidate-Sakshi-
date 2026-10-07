@@ -20,6 +20,18 @@ from starter.actions import Decision, RequestedTime
 from starter.agent import Handler
 from starter.orchestration import SafetyScreen, interpret, resolve_requested_time
 
+# Interpretation is controlled in these tests; the independent write check approves.
+# Its own behavior, including rejection and failure, is covered in test_write_check.py.
+_approve_writes = patch("starter.orchestration.verify_write", AsyncMock(return_value=True))
+
+
+def setUpModule():
+    _approve_writes.start()
+
+
+def tearDownModule():
+    _approve_writes.stop()
+
 
 def requested(relative="none", month=None, day=None, hour=0, minute=0, offset=None, year=None):
     return RequestedTime(
@@ -235,14 +247,14 @@ class NaturalTimeTests(unittest.TestCase):
                 "3:30 PM IST",
             ),
             # The model reports an ambiguous time as unclear with no fields.
-            ("8 april 7:30", None, {}, "needs_clarification", None, "AM or PM"),
+            ("8 april 7:30", None, {}, "needs_clarification", None, "No visit has been booked"),
             (
                 "31 april 7:30 PM",
                 requested(month=4, day=31, hour=19, minute=30),
                 {},
                 "needs_clarification",
                 None,
-                "exact time",
+                "No visit has been booked",
             ),
             (
                 "8 april 7:30 PM",

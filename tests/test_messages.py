@@ -17,6 +17,18 @@ from starter.actions import Decision
 from starter.agent import Handler
 from starter.orchestration import process_async
 
+# Interpretation is controlled in these tests; the independent write check approves.
+# Its own behavior, including rejection and failure, is covered in test_write_check.py.
+_approve_writes = patch("starter.orchestration.verify_write", AsyncMock(return_value=True))
+
+
+def setUpModule():
+    _approve_writes.start()
+
+
+def tearDownModule():
+    _approve_writes.stop()
+
 
 class MessageIntegrationTests(unittest.TestCase):
     @classmethod
@@ -122,7 +134,7 @@ class MessageIntegrationTests(unittest.TestCase):
                 with patch.object(World, "call", changing_world):
                     response = asyncio.run(process_async(self.payload(session), self.booking))
                 self.assertEqual(response["status"], status, response)
-                self.assertIn("Booked: ticket T001, visit VISIT-0001", response["reply"])
+                self.assertIn("Booked: ticket T001 for HVAC unit 01 (A001)", response["reply"])
                 self.assertNotIn("Subject: ", response["reply"])
                 if status == "error":
                     self.assertIn("The remaining work could not be confirmed", response["reply"])
@@ -141,7 +153,7 @@ class MessageIntegrationTests(unittest.TestCase):
         with patch("starter.actions.Actions.compose_message", AsyncMock(side_effect=TimeoutError)):
             response = asyncio.run(process_async(self.payload(session), self.booking))
         self.assertEqual(response["status"], "escalated", response)
-        self.assertIn("Booked: ticket T001, visit VISIT-0001", response["reply"])
+        self.assertIn("Booked: ticket T001 for HVAC unit 01 (A001)", response["reply"])
         snapshot = self.snapshot(session)
         self.assertEqual([e["ticket_id"] for e in snapshot["state"]["escalations"]], ["T001"])
         self.assertEqual(len(snapshot["state"]["visits"]), 1)

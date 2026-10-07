@@ -1,0 +1,163 @@
+[
+  {
+    "case": "invented equipment (observed bug)",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 2896
+  },
+  {
+    "case": "no time given",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 2456
+  },
+  {
+    "case": "earliest permitted",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 2832
+  },
+  {
+    "case": "exact time",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 2567
+  },
+  {
+    "case": "wrong time",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 2095
+  },
+  {
+    "case": "ticket only",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 1902
+  },
+  {
+    "case": "booking not allowed",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 1867
+  },
+  {
+    "case": "send a technician",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 1800
+  },
+  {
+    "case": "credit as asked",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 1319
+  },
+  {
+    "case": "wrong amount",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 1613
+  },
+  {
+    "case": "question only",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 2079
+  },
+  {
+    "case": "described equipment credit",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 2457
+  },
+  {
+    "case": "described equipment visit",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 3184
+  },
+  {
+    "case": "follow-up choice",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 2071
+  },
+  {
+    "case": "follow-up wrong slot",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 2203
+  },
+  {
+    "case": "injected approval",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 1741
+  },
+  {
+    "case": "other equipment",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 2736
+  },
+  {
+    "case": "tomorrow resolves from trusted clock",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 2095
+  },
+  {
+    "case": "tomorrow wrong day",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 2364
+  },
+  {
+    "case": "credit by invoice only",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 1472
+  },
+  {
+    "case": "credit with grant id",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 1933
+  },
+  {
+    "case": "follow-up credit yes",
+    "expected": true,
+    "verdict": true,
+    "ok": true,
+    "ms": 2641
+  },
+  {
+    "case": "follow-up credit wrong amount",
+    "expected": false,
+    "verdict": false,
+    "ok": true,
+    "ms": 1724
+  }
+]

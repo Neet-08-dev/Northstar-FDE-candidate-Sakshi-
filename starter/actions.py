@@ -3,6 +3,7 @@
 import hashlib
 import json
 import re
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Literal
@@ -33,14 +34,31 @@ class RequestedTime(BaseModel):
     utc_offset_minutes: int | None = Field(strict=True)
 
 
+class TimePreference(BaseModel):
+    """A non-exact time preference the model read; Python lists matching open slots."""
+
+    model_config = ConfigDict(extra="forbid")
+    relative: Literal["none", "today", "tomorrow", "this_week", "next_week"]
+    weekday: Literal[
+        "none", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+    ]
+    year: int | None = Field(strict=True)
+    month: int | None = Field(strict=True)
+    day: int | None = Field(strict=True)
+    part_of_day: Literal["any", "morning", "afternoon", "evening"]
+
+
 class Decision(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    intent: Literal["schedule", "intake", "credit", "compose", "clarify", "hazard", "unsupported"]
+    intent: Literal[
+        "schedule", "intake", "credit", "compose", "status", "clarify", "hazard", "unsupported"
+    ]
     ticket_id: str = Field(default="", max_length=100)
     site_id: str = Field(default="", max_length=100)
     asset_id: str = Field(default="", max_length=100)
     time_mode: Literal["earliest", "exact", "unclear"] = "unclear"
     requested_time: RequestedTime | None = None
+    time_preference: TimePreference | None = None
     # Resolved by Python from requested_time; never part of the model's output schema.
     starts_at: SkipJsonSchema[str] = Field(default="", max_length=80)
     clarification: Literal[
@@ -54,12 +72,24 @@ class Decision(BaseModel):
         "mixed",
         "message",
         "recipient",
+        "one_asset",
+        "help",
     ] = "identity"
+    status_topic: Literal["none", "ticket", "visit", "credit"] = "none"
+    unsupported_kind: Literal[
+        "reschedule_or_cancel",
+        "message_delivery",
+        "billing_inquiry",
+        "repair_instructions",
+        "ticket_change",
+        "other",
+    ] = "other"
     intake_mode: Literal["record_only", "record_and_schedule"] = "record_only"
     issue_category: Literal["interruption", "maintenance", "unclear"] = "unclear"
     issue_summary: str = Field(default="", max_length=500)
     invoice_id: str = Field(default="", max_length=100)
     amount_cents: int | None = Field(default=None, strict=True)
+    amount_percent: int | None = Field(default=None, strict=True)
     currency: Literal["USD", "unsupported"] = "USD"
     message_purpose: Literal["none", "appointment_update", "ticket_update"] = "none"
     recipient_mode: Literal["generic", "named"] = "generic"
@@ -100,31 +130,89 @@ def utc(value: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
+IST = ZoneInfo("Asia/Kolkata")
+WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+
+
 def display_time(value: str) -> str:
-    local = utc(value).astimezone(ZoneInfo("Asia/Kolkata"))
+    local = utc(value).astimezone(IST)
     clock = f"{local.hour % 12 or 12}:{local:%M} {local:%p}"
     return f"{local.day} {local:%B %Y}, {clock} IST (UTC+05:30)"
 
 
-def clarification(reason: str) -> Outcome:
+def name(value: object) -> str:
+    """A record name made safe for a reply: plain text on one line, no Markdown syntax."""
+    text = " ".join(str(value or "").split())
+    text = "".join(ch for ch in text if ch.isalnum() or ch in " .,-'&/")
+    return text[:60].strip()
+
+
+def describe(asset: Record, site: Record) -> str:
+    """Equipment and site names beside their IDs, for the assistant's own replies."""
+    label = name(asset.get("label")) or "equipment"
+    place = name(site.get("name")) or "site"
+    return f"{label} ({asset['id']}) at {place} ({site['id']})"
+
+
+def article(word: str) -> str:
+    return "An" if word[:1].lower() in "aeiou" else "A"
+
+
+HELP_REPLY = (
+    "I can help with:\n"
+    "- booking a technician visit for an open ticket\n"
+    "- recording a new service issue for your equipment\n"
+    "- checking a ticket's status or its next visit\n"
+    "- checking or requesting a service credit on a paid invoice\n"
+    "- writing a ticket-status or appointment update you can copy\n\n"
+    "What would you like to do? Mention the ticket, equipment or invoice if you know it."
+)
+
+UNSUPPORTED = {
+    "reschedule_or_cancel": "I can't reschedule or cancel existing visits yet.",
+    "message_delivery": "I can write a message for you to copy, but I can't send emails, save drafts or retrieve old drafts.",
+    "billing_inquiry": "I can't answer general invoice or approval-status questions yet.",
+    "repair_instructions": "I can't give repair instructions or promise repair outcomes or compensation.",
+    "ticket_change": "I can't change an existing ticket's severity or status.",
+    "other": "That request is outside what I can do here.",
+}
+
+
+def clarification(reason: str, decision: Decision | None = None) -> Outcome:
+    ticket = decision.ticket_id if decision else ""
     questions = {
-        "invoice": "Please identify the invoice or service ticket for the credit.",
-        "amount": "What exact amount in USD would you like credited? Please use whole cents and a positive amount.",
-        "mixed": "Would you like me to handle the credit request or the service request first? No action has been taken.",
-        "identity": "Please confirm the ticket ID, or the site and asset needing service.",
-        "issue": "Please describe whether equipment has stopped working or needs nonurgent maintenance.",
-        "conditional": "Recording a ticket, booking a visit and preparing a message are separate steps. May I retain completed service actions if a later step cannot finish?",
-        "time": "Please confirm one date and exact time, including AM or PM when needed, or authorize the earliest available qualified slot. Times default to IST; include a UTC offset for another timezone.",
-        "intent": "Would you like me to record a service ticket, book a visit, or request a service credit? Please confirm the action and relevant site, equipment, ticket or invoice.",
-        "message": "Would you like a message about the current ticket status or a confirmed appointment? Please identify the ticket.",
-        "recipient": "Please identify one registered contact authorized for this site, or request a generic message without a named recipient.",
+        "invoice": "Which invoice or service ticket is the credit for?",
+        "amount": "What exact amount in USD would you like credited? Please use a positive amount in whole cents.",
+        "mixed": "I handle credits and service requests one at a time. Which would you like me to do first? No action has been taken.",
+        "identity": "Which ticket, or which equipment and site, do you mean?",
+        "issue": "What is wrong with the equipment: has it stopped working, or does it need nonurgent maintenance?",
+        "conditional": "Recording a ticket, booking a visit and preparing a message are separate steps. May I keep the completed steps if a later step cannot finish?",
+        "time": "When would you like the visit? Tell me a date and time, or ask for the earliest available slot. Times default to IST; include a UTC offset for another timezone.",
+        "intent": HELP_REPLY,
+        "help": HELP_REPLY,
+        "message": (
+            f"Would you like a message about the current status of ticket {ticket}, or about its confirmed appointment?"
+            if ticket
+            else "Would you like a message about a ticket's current status or a confirmed appointment? Which ticket is it for?"
+        ),
+        "recipient": "Who should the message be for? Name a registered contact authorized for this site, or ask for a message without a named recipient.",
+        "one_asset": "I can handle one piece of equipment per request. Which one should I start with? No action has been taken.",
     }
     return Outcome("needs_clarification", questions[reason])
 
 
 class Actions:
-    def __init__(self, backend: Backend, context: Record, policy: Record):
+    def __init__(
+        self,
+        backend: Backend,
+        context: Record,
+        policy: Record,
+        verify: Callable[[str, Record], Awaitable[bool]] | None = None,
+    ):
         self.backend, self.context, self.policy = backend, context, policy
+        # An independent check, asked once before a request's first business write.
+        self.verify = verify
+        self.write_confirmed = False
         self.request_id = context["request_id"]
         self.intake_receipt = ""
         self.intake_ticket_id = ""
@@ -132,6 +220,33 @@ class Actions:
         self.confirmed_reply = ""
         self.recovery_queue = "operations"
         self.safety_handoff: tuple[str, str] | None = None
+        self.contact_name = ""
+
+    async def _confirm_write(self, action: str) -> Outcome | None:
+        """Before the first business write, confirm the user asked for exactly this change.
+
+        Handoffs and supervisor-approval requests are not gated: they only route work
+        to a person. A rejected check writes nothing and asks the user, so their reply
+        can confirm the change. The checker also sees the account's equipment, so it
+        can judge whether the user's description picks out the proposed record.
+        """
+        if self.verify is None or self.write_confirmed:
+            return None
+        customers = self.context["actor"]["customer_ids"]
+        sites = {s["id"]: s for s in await self.backend.search("sites")}
+        equipment = [
+            describe(a, sites[a["site_id"]])
+            for a in sorted(await self.backend.search("assets"), key=lambda a: a["id"])
+            if a.get("customer_id") in customers and a.get("site_id") in sites
+        ][:40]
+        facts = {"current_time": display_time(self.context["now"]), "account_equipment": equipment}
+        if await self.verify(action, facts):
+            self.write_confirmed = True
+            return None
+        return Outcome(
+            "needs_clarification",
+            f"Before I make any change, please confirm: should I {action}? Nothing has been changed.",
+        )
 
     async def handoff(self, queue: str, reason: str, ticket_id: str = "") -> Outcome:
         ticket_id = ticket_id or self.intake_ticket_id or self.verified_ticket_id
@@ -158,7 +273,8 @@ class Actions:
             )
             self.backend.remember("escalations", row["id"])
             return Outcome(
-                "escalated", prefix + f"{reason} A {queue} handoff is recorded as {row['id']}."
+                "escalated",
+                prefix + f"{reason} {article(queue)} {queue} handoff is recorded as {row['id']}.",
             )
         except BackendError:
             return Outcome(
@@ -176,29 +292,38 @@ class Actions:
             return await self.handoff(
                 "identity", "Requester identity must be verified before accessing service records."
             )
-        if decision.intent == "clarify":
-            return clarification(decision.clarification)
         if decision.intent == "unsupported":
             return await self.handoff(
                 "operations",
-                "This assistant records service tickets, books visits, handles service credits and prepares copyable service messages. This request needs human review.",
+                UNSUPPORTED[decision.unsupported_kind]
+                + " I've passed your request to the operations team for review.",
             )
-        if decision.intent == "credit":
+        if decision.intent == "credit" or (
+            decision.intent == "status" and decision.status_topic == "credit"
+        ):
             if decision.message_purpose != "none":
                 return clarification("mixed")
             self.recovery_queue = "billing"
             return await self.credit_service(decision)
         roles = {"customer", "dispatcher", "supervisor"}
-        if decision.intent == "compose":
+        if decision.intent in {"compose", "status", "clarify"}:
             roles.add("finance")
+        if decision.intent in {"status", "clarify"}:
+            roles.add("viewer")
         if self.context["actor"].get("role") not in roles:
             return Outcome(
                 "blocked",
                 "Your current role is not authorized for this requested workflow.",
             )
         try:
+            if decision.intent == "clarify":
+                if decision.clarification == "identity":
+                    return await self._ticket_options(clarification("identity").reply)
+                return clarification(decision.clarification, decision)
+            if decision.intent == "status":
+                return await self.answer_status(decision)
             if decision.intent == "compose" and decision.message_purpose == "none":
-                return clarification("message")
+                return clarification("message", decision)
             if decision.message_purpose != "none":
                 if decision.recipient_mode == "named" and not decision.contact_id:
                     return clarification("recipient")
@@ -207,17 +332,17 @@ class Actions:
                     and decision.intake_mode == "record_only"
                     and decision.message_purpose == "appointment_update"
                 ):
-                    return clarification("message")
+                    return clarification("message", decision)
             if decision.intent == "compose":
                 return await self.compose_message(decision)
             if decision.intent == "intake":
                 outcome = await self.intake_service(decision)
             else:
-                time_question = self._time_question(decision)
                 if not decision.ticket_id:
-                    return clarification("identity")
-                if time_question:
-                    return time_question
+                    return await self._ticket_options(
+                        "Which ticket should I book a visit for?",
+                        ask_time=decision.time_mode == "unclear",
+                    )
                 outcome = await self.schedule_service(decision)
             if outcome.status != "completed" or decision.message_purpose == "none":
                 return outcome
@@ -330,8 +455,6 @@ class Actions:
             or (decision.asset_id and decision.asset_id != ticket["asset_id"])
         ):
             return clarification("invoice")
-        if decision.amount_cents is None or decision.amount_cents <= 0:
-            return clarification("amount")
         self.policy = await b.call("get_policy")
         rules = self.policy["rules"]
         b.remember("policy", rules["version"])
@@ -351,25 +474,35 @@ class Actions:
             or type(ticket["sla_breached"]) is not bool
         ):
             raise ValueError("Invalid billing policy or ledger")
-        if invoice["status"] != "paid":
-            return Outcome(
-                "blocked",
-                f"Invoice {invoice_id} is not recorded as paid. A service credit requires a paid invoice. No credit or approval request was created.",
-            )
-        if not ticket["sla_breached"]:
-            return Outcome(
-                "blocked",
-                f"Ticket {ticket['id']} has no authoritative SLA breach recorded. No credit or approval request was created for invoice {invoice_id}.",
-            )
-        amount = decision.amount_cents
-        assert amount is not None
         remaining = total - credited
+        ineligible = ""
+        if invoice["status"] != "paid":
+            ineligible = f"Invoice {invoice_id} is not recorded as paid. A service credit requires a paid invoice."
+        elif not ticket["sla_breached"]:
+            ineligible = f"Ticket {ticket['id']} has no authoritative SLA breach recorded, so invoice {invoice_id} is not eligible for a service credit."
+        elif remaining == 0:
+            ineligible = f"Invoice {invoice_id} has no remaining paid amount available for credit."
+        if decision.intent == "status":
+            # A read-only eligibility answer; it never requests or applies a credit.
+            if ineligible:
+                return Outcome("completed", ineligible)
+            return Outcome(
+                "completed",
+                f"Invoice {invoice_id} for ticket {ticket['id']} is eligible for a service credit of up to {dollars(remaining)}{self._approval_note(limit, always, remaining)}. Would you like me to request one? Tell me the amount.",
+            )
+        if ineligible:
+            return Outcome("blocked", ineligible + " No credit or approval request was created.")
+        amount = decision.amount_cents
+        if amount is None and decision.amount_percent is not None:
+            return self._percent_question(
+                decision.amount_percent, invoice_id, total, remaining, limit, always
+            )
+        if amount is None or amount <= 0:
+            return Outcome(
+                "needs_clarification",
+                f"Invoice {invoice_id} for ticket {ticket['id']} can receive up to {dollars(remaining)} in service credit{self._approval_note(limit, always, remaining)}. What exact amount in USD would you like credited? No credit or approval request was created.",
+            )
         if amount > remaining:
-            if remaining == 0:
-                return Outcome(
-                    "blocked",
-                    f"Invoice {invoice_id} has no remaining paid amount available for credit. No credit or approval request was created.",
-                )
             return Outcome(
                 "needs_clarification",
                 f"Only {dollars(remaining)} remains available for credit on invoice {invoice_id}. Would you like to request that amount instead? No credit or approval request was created.",
@@ -413,6 +546,8 @@ class Actions:
                 args["approval_id"] = grant["id"]
             else:
                 if pending is None:
+                    # Not gated: a pending approval only asks a supervisor to review;
+                    # the credit itself is checked before issue_credit.
                     pending = await b.call(
                         "request_approval",
                         **args,
@@ -429,6 +564,11 @@ class Actions:
                     "escalated",
                     f"Supervisor approval {pending['id']} is pending for a {dollars(amount)} credit on invoice {invoice_id}. No credit has been applied.",
                 )
+        check = await self._confirm_write(
+            f"apply a {dollars(amount)} service credit to {await self._invoice_label(invoice, ticket)}"
+        )
+        if check:
+            return check
         credit = await b.call(
             "issue_credit",
             **args,
@@ -441,6 +581,159 @@ class Actions:
             "completed",
             f"Applied a {dollars(amount)} service credit to invoice {invoice_id}. Credit reference: {credit['id']}.",
         )
+
+    async def _invoice_label(self, invoice: Record, ticket: Record) -> str:
+        """Invoice, ticket and equipment names for the write check; only read when checking."""
+        label = f"invoice {invoice['id']}"
+        if self.verify is None or self.write_confirmed:
+            return label
+        asset = await self.backend.record("assets", ticket["asset_id"])
+        site = await self.backend.record("sites", ticket["site_id"])
+        return f"{label} (the invoice for ticket {ticket['id']} on {describe(asset, site)})"
+
+    @staticmethod
+    def _approval_note(limit: int, always: bool, remaining: int) -> str:
+        if always:
+            return "; any credit needs supervisor approval"
+        if limit < remaining:
+            return f"; credits above {dollars(limit)} need supervisor approval"
+        return ""
+
+    @staticmethod
+    def _percent_question(
+        percent: int, invoice_id: str, total: int, remaining: int, limit: int, always: bool
+    ) -> Outcome:
+        """Convert a requested percentage to exact cents for confirmation; never apply it."""
+        if not 0 < percent <= 100:
+            return clarification("amount")
+        if total * percent % 100:
+            return Outcome(
+                "needs_clarification",
+                f"{percent}% of invoice {invoice_id}'s {dollars(total)} total is not a whole-cent amount. What exact amount in USD would you like credited? No credit or approval request was created.",
+            )
+        amount = total * percent // 100
+        if amount > remaining:
+            return Outcome(
+                "needs_clarification",
+                f"{percent}% of invoice {invoice_id}'s {dollars(total)} total is {dollars(amount)}, but only {dollars(remaining)} remains available for credit. What amount would you like instead? No credit or approval request was created.",
+            )
+        # Name the step that would actually follow, so a "yes" confirms that exact step.
+        step = (
+            f"request supervisor approval for a {dollars(amount)} service credit"
+            if always or amount > limit
+            else f"apply a {dollars(amount)} service credit"
+        )
+        return Outcome(
+            "needs_clarification",
+            f"{percent}% of invoice {invoice_id}'s {dollars(total)} total is {dollars(amount)}. Would you like me to {step} to invoice {invoice_id}? No credit or approval request was created.",
+        )
+
+    async def _ticket_options(self, question: str, ask_time: bool = False) -> Outcome:
+        """Ask which ticket, offering the requester's own open tickets as verified options."""
+        b = self.backend
+        customers = self.context["actor"]["customer_ids"]
+        tickets = sorted(
+            (
+                t
+                for t in await b.search("tickets")
+                if t.get("customer_id") in customers and t.get("status") in {"open", "in_progress"}
+            ),
+            key=lambda t: t["id"],
+        )
+        if tickets:
+            assets = {a["id"]: a for a in await b.search("assets")}
+            sites = {s["id"]: s for s in await b.search("sites")}
+            lines = []
+            for t in tickets[:3]:
+                asset, site = assets.get(t["asset_id"]), sites.get(t["site_id"])
+                where = (
+                    describe(asset, site)
+                    if asset and site
+                    else f"equipment {t['asset_id']} at site {t['site_id']}"
+                )
+                lines.append(f"- {t['id']}: {where}, {t['status'].replace('_', ' ')}")
+            text = (
+                f"{question} Your open tickets:\n"
+                + "\n".join(lines)
+                + "\n\nReply with the ticket, or describe the equipment if it isn't listed."
+            )
+        else:
+            text = f"{question} You have no open tickets. To record a new issue, tell me the equipment, its site and what is wrong."
+        if ask_time:
+            text += " Also tell me when: the earliest available slot, or a date and time."
+        return Outcome("needs_clarification", text)
+
+    async def _equipment_options(self, question: str, ask_time: bool = False) -> Outcome:
+        """Ask which equipment, offering the requester's own active assets as verified options."""
+        customers = self.context["actor"]["customer_ids"]
+        assets = sorted(
+            (
+                a
+                for a in await self.backend.search("assets")
+                if a.get("customer_id") in customers and a.get("status") == "active"
+            ),
+            key=lambda a: a["id"],
+        )
+        if not assets:
+            return clarification("identity")
+        sites = {s["id"]: s for s in await self.backend.search("sites")}
+        lines = [
+            f"- {describe(a, sites[a['site_id']])}" for a in assets[:3] if a["site_id"] in sites
+        ]
+        text = f"{question} Your equipment:\n" + "\n".join(lines) + "\n\nReply with the equipment."
+        if ask_time:
+            text += " Also tell me when: the earliest available slot, or a date and time."
+        return Outcome("needs_clarification", text)
+
+    async def answer_status(self, decision: Decision) -> Outcome:
+        """Answer a ticket or visit question from verified records; never writes."""
+        if not decision.ticket_id:
+            return await self._ticket_options("Which ticket would you like the status of?")
+        b = self.backend
+        ticket = await b.record("tickets", decision.ticket_id)
+        asset = await b.record("assets", ticket["asset_id"])
+        site = await b.record("sites", ticket["site_id"])
+        if any(
+            r["customer_id"] not in self.context["actor"]["customer_ids"]
+            for r in [ticket, asset, site]
+        ):
+            return Outcome("blocked", "The requested records are outside your authorized account.")
+        self.verified_ticket_id = ticket["id"]
+        status = {"open": "open", "in_progress": "in progress", "resolved": "resolved"}.get(
+            ticket["status"]
+        )
+        if status is None or (
+            status == "resolved" and ticket.get("resolution_verified") is not True
+        ):
+            return await self.handoff(
+                "operations", "The ticket status needs reconciliation before it can be reported."
+            )
+        lines = [
+            f"Ticket {ticket['id']} for {describe(asset, site)} is {status} (severity {name(ticket.get('severity'))})."
+        ]
+        if asset.get("safety_hold") is True or ticket.get("severity") == "S1":
+            lines.append("It is on safety hold, so routine visits need safety clearance first.")
+        now = utc(self.context["now"])
+        visits = sorted(
+            (
+                v
+                for v in await b.search("visits", ticket["id"])
+                if v.get("ticket_id") == ticket["id"]
+                and v.get("status") == "scheduled"
+                and utc(v["starts_at"]) > now
+            ),
+            key=lambda v: utc(v["starts_at"]),
+        )
+        if visits:
+            visit = visits[0]
+            lines.append(
+                f"The next one-hour visit is booked for {display_time(visit['starts_at'])} with technician {visit['technician_id']} (visit {visit['id']})."
+            )
+        elif status != "resolved":
+            lines.append(
+                "No upcoming visit is booked. Would you like me to book the earliest available slot?"
+            )
+        return Outcome("completed", " ".join(lines))
 
     async def _message_recipient(self, decision: Decision, site: Record) -> Outcome | None:
         if decision.recipient_mode == "generic" and not decision.contact_id:
@@ -457,6 +750,7 @@ class Actions:
             return Outcome(
                 "blocked", "The requested contact is not authorized for this site's message."
             )
+        self.contact_name = name(contact.get("name"))
         return None
 
     async def _record_safety(self, record: Record, ticket_id: str = "") -> Outcome | None:
@@ -471,7 +765,7 @@ class Actions:
     async def compose_message(self, decision: Decision) -> Outcome:
         """Return a bounded message from current records; never store or send it."""
         if not decision.ticket_id:
-            return clarification("identity")
+            return await self._ticket_options("Which ticket is the message for?")
         b = self.backend
         ticket = await b.record("tickets", decision.ticket_id)
         self.verified_ticket_id = ticket["id"]
@@ -552,7 +846,14 @@ class Actions:
             return clarification("message")
         elif status != "resolved":
             body += " Repair completion is not yet confirmed."
-        recipient = f" For registered contact {decision.contact_id}." if decision.contact_id else ""
+        recipient = ""
+        if decision.contact_id:
+            who = (
+                f"{self.contact_name} ({decision.contact_id})"
+                if self.contact_name
+                else decision.contact_id
+            )
+            recipient = f" For registered contact {who}."
         message = Message(subject, body, decision.contact_id)
         return Outcome(
             "completed",
@@ -564,15 +865,14 @@ class Actions:
         )
 
     @staticmethod
-    def _time_question(decision: Decision) -> Outcome | None:
-        if decision.time_mode == "unclear":
-            return clarification("time")
-        if decision.time_mode == "exact":
-            try:
-                utc(decision.starts_at)
-            except (ValueError, TypeError):
-                return clarification("time")
-        return None
+    def _exact(decision: Decision) -> bool:
+        if decision.time_mode != "exact":
+            return False
+        try:
+            utc(decision.starts_at)
+            return True
+        except (ValueError, TypeError):
+            return False
 
     async def _eligible(
         self, decision: Decision
@@ -677,21 +977,37 @@ class Actions:
 
     async def intake_service(self, decision: Decision) -> Outcome:
         if not decision.asset_id:
-            return clarification("identity")
-        if decision.issue_category == "unclear" or not decision.issue_summary.strip():
-            return clarification("issue")
+            return await self._equipment_options(
+                "Which equipment is this about?",
+                ask_time=decision.intake_mode == "record_and_schedule"
+                and decision.time_mode == "unclear",
+            )
         ticket: Record | None
         # Explicit ticket references must never turn into permission to create a replacement.
         if decision.ticket_id:
             ticket = await self.backend.record("tickets", decision.ticket_id)
         else:
             ticket = await self._open_ticket(decision.asset_id)
+        # The issue only matters when a new ticket must be created; an open one is reused.
+        if ticket is None and (
+            decision.issue_category == "unclear" or not decision.issue_summary.strip()
+        ):
+            return clarification("issue")
         records = await self._service_records(decision, ticket)
         if isinstance(records, Outcome):
             return records
         asset, site, _ = records
         created = False
         if ticket is None:
+            plan = f"create a new {'service-interruption' if decision.issue_category == 'interruption' else 'maintenance'} ticket for {describe(asset, site)}"
+            if decision.intake_mode == "record_and_schedule":
+                plan += {
+                    "earliest": " and book its earliest open technician visit",
+                    "exact": " and book a technician visit at the time you requested",
+                }.get(decision.time_mode, " and then offer you visit times")
+            check = await self._confirm_write(plan)
+            if check:
+                return check
             args = {
                 "site_id": site["id"],
                 "asset_id": asset["id"],
@@ -719,16 +1035,11 @@ class Actions:
         self.intake_ticket_id = ticket["id"]
         self.verified_ticket_id = ticket["id"]
         self.intake_receipt = (
-            f"{'Created' if created else 'Reused'} ticket {ticket['id']} "
-            f"for asset {asset['id']} at site {site['id']}. "
+            f"{'Created' if created else 'Reused open'} ticket {ticket['id']} "
+            f"for {describe(asset, site)}. "
         )
         if decision.intake_mode == "record_only":
             return Outcome("completed", self.intake_receipt + "No new visit was booked.")
-        question = self._time_question(decision)
-        if question:
-            return Outcome(
-                question.status, self.intake_receipt + "No new visit was booked. " + question.reply
-            )
         booking = decision.model_copy(update={"intent": "schedule", "ticket_id": ticket["id"]})
         outcome = await self.schedule_service(booking)
         # Handoffs already include the receipt, including timeout recovery in orchestration.
@@ -808,6 +1119,7 @@ class Actions:
             if isinstance(eligible, Outcome):
                 return eligible
             ticket, asset, site, contracts = eligible
+            where = describe(asset, site)
             existing = [
                 v for v in await b.search("visits", ticket["id"]) if v["ticket_id"] == ticket["id"]
             ]
@@ -819,14 +1131,12 @@ class Actions:
                     return await self.handoff(
                         "operations", "Existing visit records need reconciliation.", ticket["id"]
                     )
-                if decision.time_mode == "exact" and utc(visit["starts_at"]) != utc(
-                    decision.starts_at
-                ):
+                if self._exact(decision) and utc(visit["starts_at"]) != utc(decision.starts_at):
                     return Outcome(
                         "needs_clarification",
                         f"Ticket {ticket['id']} already has a visit at {display_time(visit['starts_at'])}. Please confirm whether you want operations to reschedule it.",
                     )
-                return self._booked(ticket["id"], visit, existing=True)
+                return self._booked(ticket["id"], where, visit, existing=True)
             slots = (await b.call("list_slots", asset_id=asset["id"]))["slots"]
             candidates = []
             for slot in slots:
@@ -842,12 +1152,20 @@ class Actions:
                 ):
                     candidates.append(slot)
             candidates.sort(key=lambda s: (utc(s["starts_at"]), s["technician_id"]))
-            if decision.time_mode == "exact":
-                matching = [s for s in candidates if utc(s["starts_at"]) == utc(decision.starts_at)]
-                if not matching and candidates:
+            # Distinct open start times, earliest first; options never book anything.
+            times = list(dict.fromkeys(utc(s["starts_at"]) for s in candidates))
+            if decision.time_mode != "earliest" and not self._exact(decision) and times:
+                return self._slot_options(ticket["id"], where, times, decision.time_preference)
+            if self._exact(decision):
+                wanted = utc(decision.starts_at)
+                matching = [s for s in candidates if utc(s["starts_at"]) == wanted]
+                if not matching and times:
+                    nearest = sorted(sorted(times, key=lambda t: abs(t - wanted))[:3])
                     return Outcome(
                         "needs_clarification",
-                        f"The requested time is unavailable. Would {display_time(candidates[0]['starts_at'])} work instead? No new visit was booked.",
+                        f"{display_time(decision.starts_at)} is not available for ticket {ticket['id']}. The nearest open one-hour slots for {where} are:\n"
+                        + "\n".join(f"- {display_time(t.isoformat())}" for t in nearest)
+                        + "\n\nReply with the slot you want. No new visit was booked.",
                     )
                 candidates = matching
             if not candidates:
@@ -867,6 +1185,18 @@ class Actions:
                     "Technician eligibility changed; dispatch must reconcile availability.",
                     ticket["id"],
                 )
+            when = (
+                "at the earliest open slot, " if decision.time_mode == "earliest" else ""
+            ) + display_time(slot["starts_at"])
+            check = await self._confirm_write(
+                f"book a one-hour technician visit for ticket {ticket['id']}, {where}, {when}"
+            )
+            if check:
+                return (
+                    Outcome(check.status, self.intake_receipt + check.reply)
+                    if self.intake_receipt
+                    else check
+                )
             args = {
                 "ticket_id": ticket["id"],
                 "technician_id": tech["id"],
@@ -879,7 +1209,7 @@ class Actions:
                     idempotency_key=operation_key(self.request_id, "schedule_visit", args),
                 )
                 b.remember("visits", visit["id"])
-                return self._booked(ticket["id"], visit)
+                return self._booked(ticket["id"], where, visit)
             except BackendError as exc:
                 if replan == 0 and exc.code in {
                     "SLOT_UNAVAILABLE",
@@ -890,10 +1220,65 @@ class Actions:
                 raise
         raise BackendError("CONFLICT_UNRESOLVED")
 
+    def _slot_options(
+        self,
+        ticket_id: str,
+        where: str,
+        times: list[datetime],
+        preference: TimePreference | None,
+    ) -> Outcome:
+        """Ask when, offering up to three verified open slots; never books."""
+        matching = [t for t in times if self._matches(t, preference)] if preference else times
+        lead = f"When would you like the visit for ticket {ticket_id}, {where}?"
+        if preference and not matching:
+            lead += " There are no open slots matching that preference. The nearest open one-hour slots are:"
+            matching = times
+        elif preference:
+            lead += " These open one-hour slots match your preference:"
+        else:
+            lead += " The next open one-hour slots are:"
+        return Outcome(
+            "needs_clarification",
+            lead
+            + "\n"
+            + "\n".join(f"- {display_time(t.isoformat())}" for t in matching[:3])
+            + "\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+        )
+
+    def _matches(self, start: datetime, preference: TimePreference) -> bool:
+        """Calendar filtering of a model-read preference, in IST."""
+        local = start.astimezone(IST)
+        today = utc(self.context["now"]).astimezone(IST).date()
+        monday = today - timedelta(days=today.weekday())
+        if preference.relative == "next_week":
+            monday += timedelta(days=7)
+        days: set | None = None
+        try:
+            if preference.month and preference.day:
+                days = {
+                    datetime(preference.year or today.year, preference.month, preference.day).date()
+                }
+            elif preference.relative in {"today", "tomorrow"}:
+                days = {today + timedelta(days=int(preference.relative == "tomorrow"))}
+            elif preference.weekday != "none":
+                index = list(WEEKDAYS).index(preference.weekday)
+                if preference.relative in {"this_week", "next_week"}:
+                    days = {monday + timedelta(days=index)}
+                else:
+                    days = {today + timedelta(days=(index - today.weekday()) % 7)}
+            elif preference.relative in {"this_week", "next_week"}:
+                days = {monday + timedelta(days=i) for i in range(7)}
+        except ValueError:
+            days = None
+        hours = {"morning": (6, 12), "afternoon": (12, 17), "evening": (17, 22)}.get(
+            preference.part_of_day, (0, 24)
+        )
+        return (days is None or local.date() in days) and hours[0] <= local.hour < hours[1]
+
     @staticmethod
-    def _booked(ticket_id: str, visit: Record, existing: bool = False) -> Outcome:
+    def _booked(ticket_id: str, where: str, visit: Record, existing: bool = False) -> Outcome:
         lead = "Already scheduled" if existing else "Booked"
         return Outcome(
             "completed",
-            f"{lead}: ticket {ticket_id}, visit {visit['id']}, technician {visit['technician_id']}, at {display_time(visit['starts_at'])} for one hour. Repair completion is not yet confirmed.",
+            f"{lead}: ticket {ticket_id} for {where}, visit {visit['id']}, technician {visit['technician_id']}, at {display_time(visit['starts_at'])} for one hour. Repair completion is not yet confirmed.",
         )

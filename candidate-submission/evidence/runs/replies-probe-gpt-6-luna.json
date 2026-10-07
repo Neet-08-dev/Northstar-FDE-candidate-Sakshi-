@@ -1,0 +1,452 @@
+[
+  {
+    "id": "p01",
+    "theme": "missing ticket",
+    "subject": "Visit for our cooling problem",
+    "body": "Book ticket at the earliest available time.",
+    "status": "needs_clarification",
+    "reply": "Which ticket should I book a visit for? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nReply with the ticket, or describe the equipment if it isn't listed.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8736,
+      "output_tokens": 360,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p02",
+    "theme": "missing ticket, described",
+    "subject": "Cooling",
+    "body": "Can someone come look at the HVAC at our main loading dock? Earliest is fine.",
+    "status": "completed",
+    "reply": "Booked: ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 17778,
+      "output_tokens": 250,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p03",
+    "theme": "vague time",
+    "subject": "Visit",
+    "body": "Book T001 tomorrow afternoon.",
+    "status": "needs_clarification",
+    "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? These open one-hour slots match your preference:\n- 9 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8718,
+      "output_tokens": 166,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p04",
+    "theme": "date only",
+    "subject": "Visit",
+    "body": "Book T001 on 8 April.",
+    "status": "needs_clarification",
+    "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? These open one-hour slots match your preference:\n- 8 April 2030, 3:30 PM IST (UTC+05:30)\n- 8 April 2030, 7:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8724,
+      "output_tokens": 215,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p05",
+    "theme": "broad window",
+    "subject": "Visit",
+    "body": "Book T001 sometime next week, mornings are better.",
+    "status": "needs_clarification",
+    "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? There are no open slots matching that preference. The nearest open one-hour slots are:\n- 8 April 2030, 3:30 PM IST (UTC+05:30)\n- 8 April 2030, 7:30 PM IST (UTC+05:30)\n- 9 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8733,
+      "output_tokens": 166,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p06",
+    "theme": "no time at all",
+    "subject": "Visit",
+    "body": "Please book a technician for T001.",
+    "status": "needs_clarification",
+    "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? The next open one-hour slots are:\n- 8 April 2030, 3:30 PM IST (UTC+05:30)\n- 8 April 2030, 7:30 PM IST (UTC+05:30)\n- 9 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8724,
+      "output_tokens": 157,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p07",
+    "theme": "unavailable time",
+    "subject": "Visit",
+    "body": "Book T001 on 8 April at 5:30 PM.",
+    "status": "needs_clarification",
+    "reply": "8 April 2030, 5:30 PM IST (UTC+05:30) is not available for ticket T001. The nearest open one-hour slots for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001) are:\n- 8 April 2030, 3:30 PM IST (UTC+05:30)\n- 8 April 2030, 7:30 PM IST (UTC+05:30)\n- 9 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want. No new visit was booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8742,
+      "output_tokens": 256,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p08",
+    "theme": "ticket and time missing",
+    "subject": "Technician",
+    "body": "We need a technician.",
+    "status": "needs_clarification",
+    "reply": "I can help with:\n- booking a technician visit for an open ticket\n- recording a new service issue for your equipment\n- checking a ticket's status or its next visit\n- checking or requesting a service credit on a paid invoice\n- writing a ticket-status or appointment update you can copy\n\nWhat would you like to do? Mention the ticket, equipment or invoice if you know it.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 4514,
+      "output_tokens": 137,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p09",
+    "theme": "casual phrasing",
+    "subject": "hey",
+    "body": "hi, our ac on T001 is acting up again, can u send someone asap",
+    "status": "completed",
+    "reply": "Booked: ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), visit VISIT-0001, technician TECH001, at 8 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 13118,
+      "output_tokens": 246,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p10",
+    "theme": "typos",
+    "subject": "Visti",
+    "body": "pls bok T001 tmrw at 3:30pm",
+    "status": "completed",
+    "reply": "Booked: ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), visit VISIT-0001, technician TECH001, at 9 April 2030, 3:30 PM IST (UTC+05:30) for one hour. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8742,
+      "output_tokens": 168,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p11",
+    "theme": "symptom only",
+    "subject": "Problem",
+    "body": "The cooling unit at the loading dock is making a loud rattling noise.",
+    "status": "needs_clarification",
+    "reply": "Which ticket, or which equipment and site, do you mean? Your open tickets:\n- T001: HVAC unit 01 (A001) at Aster Foods Loading Dock (S001), open\n\nReply with the ticket, or describe the equipment if it isn't listed.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 13254,
+      "output_tokens": 299,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p12",
+    "theme": "status question",
+    "subject": "Status",
+    "body": "What is the status of T001?",
+    "status": "completed",
+    "reply": "Ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001) is open (severity S2). No upcoming visit is booked. Would you like me to book the earliest available slot?",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8724,
+      "output_tokens": 158,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p13",
+    "theme": "next visit question",
+    "subject": "Visit",
+    "body": "When is the technician coming for T001?",
+    "status": "completed",
+    "reply": "Ticket T001 for HVAC unit 01 (A001) at Aster Foods Loading Dock (S001) is open (severity S2). No upcoming visit is booked. Would you like me to book the earliest available slot?",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8727,
+      "output_tokens": 139,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p14",
+    "theme": "reschedule",
+    "subject": "Reschedule",
+    "body": "Please move the T001 visit to 9 April at 11 AM.",
+    "status": "escalated",
+    "reply": "I can't reschedule or cancel existing visits yet. I've passed your request to the operations team for review. An operations handoff is recorded as HANDOFF-0001.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 4534,
+      "output_tokens": 144,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p15",
+    "theme": "cancel",
+    "subject": "Cancel",
+    "body": "Cancel the visit for T001.",
+    "status": "escalated",
+    "reply": "I can't reschedule or cancel existing visits yet. I've passed your request to the operations team for review. An operations handoff is recorded as HANDOFF-0001.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 4516,
+      "output_tokens": 142,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p16",
+    "theme": "credit missing amount",
+    "subject": "Credit",
+    "body": "We want a service credit for the SLA breach on T001.",
+    "status": "needs_clarification",
+    "reply": "Invoice I001 for ticket T001 can receive up to $501.00 in service credit; credits above $100.00 need supervisor approval. What exact amount in USD would you like credited? No credit or approval request was created.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8739,
+      "output_tokens": 189,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p17",
+    "theme": "credit vague amount",
+    "subject": "Credit",
+    "body": "Please credit us something reasonable for invoice I001.",
+    "status": "needs_clarification",
+    "reply": "Invoice I001 for ticket T001 can receive up to $501.00 in service credit; credits above $100.00 need supervisor approval. What exact amount in USD would you like credited? No credit or approval request was created.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 4522,
+      "output_tokens": 121,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p18",
+    "theme": "credit percentage",
+    "subject": "Credit",
+    "body": "Credit 10% of invoice I001.",
+    "status": "needs_clarification",
+    "reply": "10% of invoice I001's $501.00 total is $50.10. Would you like me to request a $50.10 credit? No credit or approval request was created.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8726,
+      "output_tokens": 222,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p19",
+    "theme": "credit eligibility question",
+    "subject": "Credit",
+    "body": "Are we eligible for a credit on invoice I001?",
+    "status": "completed",
+    "reply": "Invoice I001 for ticket T001 is eligible for a service credit of up to $501.00; credits above $100.00 need supervisor approval. Would you like me to request one? Tell me the amount.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8732,
+      "output_tokens": 140,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p20",
+    "theme": "intake no severity",
+    "subject": "Issue",
+    "body": "A101 at S101 isn't cooling properly. Please log it.",
+    "status": "completed",
+    "reply": "Created ticket NEW-0019 for Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101). No new visit was booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8815,
+      "output_tokens": 223,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p21",
+    "theme": "intake plus vague time",
+    "subject": "Issue",
+    "body": "A101 at S101 stopped cooling. Log it and send someone tomorrow morning.",
+    "status": "needs_clarification",
+    "reply": "Created ticket NEW-0019 for Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101). When would you like the visit for ticket NEW-0019, Annex cooling unit (A101) at Aster Foods Annex Loading Dock (S101)? There are no open slots matching that preference. The nearest open one-hour slots are:\n- 8 April 2030, 3:30 PM IST (UTC+05:30)\n- 8 April 2030, 7:30 PM IST (UTC+05:30)\n- 9 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 13258,
+      "output_tokens": 196,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p22",
+    "theme": "message no purpose",
+    "subject": "Message",
+    "body": "Write something I can send the customer about T001.",
+    "status": "completed",
+    "reply": "Here is a message you can copy and send. It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8733,
+      "output_tokens": 140,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p23",
+    "theme": "message for person",
+    "subject": "Message",
+    "body": "Write a status update about T001 for our site contact.",
+    "status": "completed",
+    "reply": "Here is a message you can copy and send. For registered contact Contact 01 (CONTACT001). It has not been sent or saved as a draft.\n\nSubject: Service update for ticket T001\n\nTicket T001 for equipment A001 at site S001 is open. Repair completion is not yet confirmed.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 13131,
+      "output_tokens": 231,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p24",
+    "theme": "follow-up style",
+    "subject": "Re: Visit",
+    "body": "Yes, the first slot works. Go ahead.",
+    "status": "needs_clarification",
+    "reply": "I can help with:\n- booking a technician visit for an open ticket\n- recording a new service issue for your equipment\n- checking a ticket's status or its next visit\n- checking or requesting a service credit on a paid invoice\n- writing a ticket-status or appointment update you can copy\n\nWhat would you like to do? Mention the ticket, equipment or invoice if you know it.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 4526,
+      "output_tokens": 247,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p25",
+    "theme": "two assets",
+    "subject": "Two units",
+    "body": "Book visits for A001 and A101 at the earliest slots.",
+    "status": "needs_clarification",
+    "reply": "I can handle one piece of equipment per request. Which one should I start with? No action has been taken.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8818,
+      "output_tokens": 138,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p26",
+    "theme": "mixed credit and booking",
+    "subject": "Two things",
+    "body": "Book T001 at the earliest slot and credit $50 to I001.",
+    "status": "needs_clarification",
+    "reply": "I handle credits and service requests one at a time. Which would you like me to do first? No action has been taken.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8748,
+      "output_tokens": 143,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p27",
+    "theme": "greeting only",
+    "subject": "Hello",
+    "body": "Hi, can you help me?",
+    "status": "needs_clarification",
+    "reply": "I can help with:\n- booking a technician visit for an open ticket\n- recording a new service issue for your equipment\n- checking a ticket's status or its next visit\n- checking or requesting a service credit on a paid invoice\n- writing a ticket-status or appointment update you can copy\n\nWhat would you like to do? Mention the ticket, equipment or invoice if you know it.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 4516,
+      "output_tokens": 138,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p28",
+    "theme": "what can you do",
+    "subject": "Help",
+    "body": "What can you do for me?",
+    "status": "needs_clarification",
+    "reply": "I can help with:\n- booking a technician visit for an open ticket\n- recording a new service issue for your equipment\n- checking a ticket's status or its next visit\n- checking or requesting a service credit on a paid invoice\n- writing a ticket-status or appointment update you can copy\n\nWhat would you like to do? Mention the ticket, equipment or invoice if you know it.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 4516,
+      "output_tokens": 119,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p29",
+    "theme": "indirect hazard",
+    "subject": "Unit",
+    "body": "The unit at the dock smells like melting plastic and the breaker keeps tripping. Book T001 earliest.",
+    "status": "escalated",
+    "reply": "Move away from the hazard and contact site emergency personnel. Routine service requires safety clearance. A possible emergency requires immediate human safety review. A safety handoff is recorded as HANDOFF-0001.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 401,
+      "output_tokens": 38,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  },
+  {
+    "id": "p30",
+    "theme": "relative weekday",
+    "subject": "Visit",
+    "body": "Book T001 next Tuesday at 10 AM.",
+    "status": "needs_clarification",
+    "reply": "When would you like the visit for ticket T001, HVAC unit 01 (A001) at Aster Foods Loading Dock (S001)? These open one-hour slots match your preference:\n- 9 April 2030, 3:30 PM IST (UTC+05:30)\n\nReply with the slot you want, or ask for the earliest. No visit has been booked.",
+    "usage": {
+      "model": "gpt-6-luna",
+      "input_tokens": 8730,
+      "output_tokens": 165,
+      "cost_usd": null,
+      "pricing_source": "unknown"
+    }
+  }
+]

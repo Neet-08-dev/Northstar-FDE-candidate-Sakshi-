@@ -296,7 +296,7 @@
       "new_visits": 0,
       "escalations": 0,
       "reply_contains": [
-        "requested time is unavailable",
+        "is not available for ticket T001",
         "8 April 2030, 3:30 PM IST",
         "No new visit was booked."
       ],
@@ -638,7 +638,7 @@
         "is open."
       ],
       "reply_contains": [
-        "registered contact CONTACT001"
+        "registered contact Contact 01 (CONTACT001)"
       ],
       "message_evidence": [
         {

@@ -72,13 +72,64 @@ def normalize_time(decision: Decision, context: Record) -> Decision:
         return decision.model_copy(update={"time_mode": "unclear", "starts_at": ""})
 
 
+# Luna is cheap enough to reason harder by default; reasoning tokens count toward
+# the output cap, so high effort gets a larger cap and a longer provider timeout.
+EFFORT: dict[str, Literal["low", "high"]] = {"gpt-6-luna": "high", "gpt-6.1-sol": "low"}
+
+
+def effort() -> Literal["low", "high"]:
+    return EFFORT.get(MODEL, "low")
+
+
+def provider_timeout() -> float:
+    return 40 if effort() == "high" else 20
+
+
 def model_settings(max_tokens: int) -> ModelSettings:
     return ModelSettings(
-        reasoning=Reasoning(effort="low"),
-        max_tokens=max_tokens,
+        reasoning=Reasoning(effort=effort()),
+        max_tokens=max_tokens * (4 if effort() == "high" else 1),
         parallel_tool_calls=False,
         store=False,
     )
+
+
+class WriteCheck(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    requested: bool
+
+
+Verifier = Callable[[Record, Record, str, Record], Awaitable[bool]]
+
+
+async def verify_write(payload: Record, usage: Record, action: str, facts: Record) -> bool:
+    """An independent model check that the user asked for exactly this business write.
+
+    It sees only the user's words, earlier turns and the proposed change, never the
+    interpreter's reasoning, so a misunderstanding must recur independently to pass.
+    """
+    data: Record = {
+        "proposed_action": action,
+        "trusted_facts": facts,
+        "untrusted_request": payload["request"],
+    }
+    if payload.get("conversation"):
+        data["untrusted_earlier_turns"] = payload["conversation"]
+    async with AsyncOpenAI(max_retries=0, timeout=provider_timeout()) as client:
+        agent = Agent(
+            name="Northstar write check",
+            instructions=PROMPTS.joinpath("write_check.md").read_text(),
+            model=OpenAIResponsesModel(MODEL, client),
+            model_settings=model_settings(600),
+            output_type=WriteCheck,
+        )
+        result = await Runner.run(
+            agent, json.dumps(data), max_turns=1, run_config=RunConfig(tracing_disabled=True)
+        )
+    counted = result.context_wrapper.usage
+    usage["input_tokens"] = (usage.get("input_tokens") or 0) + counted.input_tokens
+    usage["output_tokens"] = (usage.get("output_tokens") or 0) + counted.output_tokens
+    return WriteCheck.model_validate(result.final_output).requested
 
 
 async def screen_hazard(model: OpenAIResponsesModel, payload: Record, policy: Record) -> Any:
@@ -157,16 +208,18 @@ async def interpret_request(
         tools=[inspect_records],
         output_type=Decision,
     )
-    # The immutable context is separately labeled; the request remains user data.
+    # The immutable context is separately labeled; the request and any earlier turns
+    # (demo follow-ups) remain user data that grants no authority.
+    data: Record = {
+        "trusted_context": {"now": context["now"]},
+        "current_policy": policy["rules"],
+        "untrusted_request": payload["request"],
+    }
+    if payload.get("conversation"):
+        data["untrusted_earlier_turns"] = payload["conversation"]
     return await Runner.run(
         agent,
-        json.dumps(
-            {
-                "trusted_context": {"now": context["now"]},
-                "current_policy": policy["rules"],
-                "untrusted_request": payload["request"],
-            }
-        ),
+        json.dumps(data),
         max_turns=8,
         run_config=RunConfig(tracing_disabled=True),
     )
@@ -182,7 +235,7 @@ async def interpret(
         cost_usd=None,
         pricing_source="unknown",
     )
-    async with AsyncOpenAI(max_retries=0, timeout=20) as client:
+    async with AsyncOpenAI(max_retries=0, timeout=provider_timeout()) as client:
         model = OpenAIResponsesModel(MODEL, client)
         screen = asyncio.create_task(screen_hazard(model, payload, policy))
         hazard: asyncio.Future[bool] = asyncio.get_running_loop().create_future()
@@ -242,10 +295,28 @@ def validate_payload(payload: Record) -> None:
         raise ValueError("Invalid request fields")
     if len(request["subject"]) + len(request["body"]) > 16000:
         raise ValueError("Request text exceeds limit")
+    # Optional earlier turns for follow-ups: at most four, each subject/body/reply text.
+    turns = payload.get("conversation", [])
+    if (
+        not isinstance(turns, list)
+        or len(turns) > 4
+        or any(
+            not isinstance(turn, dict)
+            or set(turn) != {"subject", "body", "reply"}
+            or not all(isinstance(v, str) for v in turn.values())
+            for turn in turns
+        )
+        or sum(len(v) for turn in turns for v in turn.values()) > 16000
+    ):
+        raise ValueError("Invalid conversation")
 
 
 async def process_async(
-    payload: Record, interpreter: Interpreter | None = None, *, include_message: bool = False
+    payload: Record,
+    interpreter: Interpreter | None = None,
+    *,
+    include_message: bool = False,
+    verifier: Verifier | None = None,
 ) -> Record:
     start = time.monotonic()
     validate_payload(payload)
@@ -268,7 +339,15 @@ async def process_async(
             context = await backend.call("get_context")
             policy = await backend.call("get_policy")
             backend.remember("policy", policy["rules"]["version"])
-            actions = Actions(backend, context, policy)
+            # Real interpretation is always followed by the independent write check;
+            # tests that inject a canned interpretation may inject a checker too.
+            check = verifier or (verify_write if interpreter is None else None)
+            actions = Actions(
+                backend,
+                context,
+                policy,
+                (lambda action, facts: check(payload, usage, action, facts)) if check else None,
+            )
             # The model screens every request for hazards before any record access or write.
             decision = await (interpreter or interpret)(payload, backend, context, policy, usage)
             outcome = await actions.handle(normalize_time(decision, context))

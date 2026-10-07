@@ -1244,15 +1244,16 @@
       "body": "Please credit 10% of I001."
     },
     "decision": {
-      "intent": "clarify",
-      "clarification": "amount"
+      "intent": "credit",
+      "invoice_id": "I001",
+      "amount_percent": 10
     },
     "fixture": {},
     "expected": {
       "status": "needs_clarification",
       "new_visits": 0,
       "reply_contains": [
-        "exact amount"
+        "10% of invoice I001's $501.00 total is $50.10. Would you like me to apply a $50.10 service credit to invoice I001?"
       ]
     }
   },
@@ -1327,13 +1328,17 @@
       "body": "Am I eligible for a service credit on I001?"
     },
     "decision": {
-      "intent": "clarify",
-      "clarification": "intent"
+      "intent": "status",
+      "status_topic": "credit",
+      "invoice_id": "I001"
     },
     "fixture": {},
     "expected": {
-      "status": "needs_clarification",
-      "new_visits": 0
+      "status": "completed",
+      "new_visits": 0,
+      "reply_contains": [
+        "Invoice I001 for ticket T001 is eligible for a service credit"
+      ]
     }
   },
   {
