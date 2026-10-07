@@ -37,6 +37,7 @@ const samples = [
   },
   {
     "id": "intake",
+    "onlyFor": "C001",
     "group": "Tickets",
     "title": "Record an interruption",
     "hint": "Create a ticket without a visit",
@@ -45,6 +46,7 @@ const samples = [
   },
   {
     "id": "intakeBooking",
+    "onlyFor": "C001",
     "group": "Tickets",
     "title": "Maintenance and visit",
     "hint": "Record the issue and book service",
@@ -125,6 +127,7 @@ const samples = [
   },
   {
     "id": "unauthorizedMessage",
+    "onlyFor": "C001",
     "group": "Messages",
     "title": "Update for a contractor",
     "hint": "Check recipient authorization",
@@ -296,6 +299,165 @@ function empty(title, description) {
   );
   $("result").replaceChildren(panel);
 }
+
+// Demo customers. The presenter chooses whose session the request runs in; the
+// server turns that choice into the session actor. Examples are written for the
+// default customer. For another customer, references to the default customer's
+// primary records become that customer's own. Examples that need records only
+// the default customer has keep their text and show access scoping instead.
+const customerKey = "northstar.demoCustomer";
+let catalog = null;
+let customer = null;
+let loadedSample = samples.find((s) => s.id === "booking");
+const sampleTags = new Map();
+function primaryRecords(c) {
+  return [
+    c.sites[0]?.name,
+    c.assets[0]?.label,
+    c.contacts.find((contact) => contact.authorized)?.name,
+    c.tickets[0]?.id,
+    c.invoices[0]?.id,
+  ];
+}
+function forCustomer(sample) {
+  const text = { subject: sample.subject, body: sample.body };
+  if (!catalog || !customer || customer.id === catalog.default || sample.onlyFor)
+    return text;
+  const base = catalog.customers.find((c) => c.id === catalog.default);
+  const target = primaryRecords(customer);
+  const swaps = new Map();
+  primaryRecords(base).forEach((from, i) => {
+    if (from && target[i]) swaps.set(from, target[i]);
+  });
+  if (!swaps.size) return text;
+  const pattern = new RegExp(
+    `\\b(${[...swaps.keys()]
+      .sort((a, b) => b.length - a.length)
+      .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|")})\\b`,
+    "g",
+  );
+  for (const field of ["subject", "body"])
+    text[field] = text[field].replace(pattern, (m) => swaps.get(m));
+  return text;
+}
+function money(cents, currency) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency || "USD",
+  }).format(cents / 100);
+}
+function renderAccount() {
+  $("account-name").textContent = customer.name;
+  $("account-meta").textContent = [
+    customer.id,
+    customer.tier,
+    customer.account_status,
+  ].join(" · ");
+  const records = $("account-records");
+  records.replaceChildren();
+  const section = (title, rows) => {
+    if (!rows.length) return;
+    records.append(node("dt", title));
+    for (const [id, label, meta] of rows) {
+      const row = node("dd");
+      row.append(node("code", id), document.createTextNode(label));
+      if (meta) row.append(node("span", meta));
+      records.append(row);
+    }
+  };
+  section(
+    "Tickets",
+    customer.tickets.map((t) => [t.id, t.summary, `${t.status} · ${t.severity}`]),
+  );
+  section(
+    "Invoices",
+    customer.invoices.map((i) => [i.id, money(i.total_cents, i.currency), i.status]),
+  );
+  section(
+    "Sites",
+    customer.sites.map((s) => [s.id, s.name, s.access_window]),
+  );
+  section(
+    "Equipment",
+    customer.assets.map((a) => [a.id, a.label, a.required_skill]),
+  );
+  section(
+    "Contacts",
+    customer.contacts.map((c) => [
+      c.id,
+      c.name,
+      c.authorized ? "authorized" : "not authorized",
+    ]),
+  );
+  $("account").hidden = false;
+}
+function refreshSamples() {
+  const base = catalog?.customers.find((c) => c.id === catalog.default);
+  for (const [sample, tag] of sampleTags) {
+    tag.hidden = !customer || !sample.onlyFor || sample.onlyFor === customer.id;
+    tag.textContent = `Uses ${base?.name ?? "default"} records`;
+  }
+  if (loadedSample) {
+    const text = forCustomer(loadedSample);
+    $("subject").value = text.subject;
+    $("body").value = text.body;
+  }
+}
+function setCustomer(id, announce) {
+  customer = catalog.customers.find((c) => c.id === id);
+  try {
+    localStorage.setItem(customerKey, id);
+  } catch {}
+  renderAccount();
+  refreshSamples();
+  if (announce)
+    empty(
+      `Requesting as ${customer.name}`,
+      "Requests now run in this customer's session.",
+    );
+}
+async function loadCustomers() {
+  const select = $("customer");
+  try {
+    const response = await fetch("/demo/customers");
+    if (!response.ok) throw new Error("Customers unavailable");
+    catalog = await response.json();
+    const groups = new Map();
+    for (const c of catalog.customers) {
+      const tier = c.tier.charAt(0).toUpperCase() + c.tier.slice(1);
+      if (!groups.has(tier)) {
+        const group = node("optgroup");
+        group.label = tier;
+        groups.set(tier, group);
+      }
+      const option = node("option", `${c.name} · ${c.id}`);
+      option.value = c.id;
+      groups.get(tier).append(option);
+    }
+    select.replaceChildren(...groups.values());
+    let saved = null;
+    try {
+      saved = localStorage.getItem(customerKey);
+    } catch {}
+    const initial =
+      catalog.customers.find((c) => c.id === saved) ??
+      catalog.customers.find((c) => c.id === catalog.default);
+    select.value = initial.id;
+    select.disabled = false;
+    setCustomer(initial.id, false);
+  } catch {
+    catalog = null;
+    customer = null;
+    select.replaceChildren(node("option", "Default demo customer"));
+    select.disabled = true;
+    select.title = "Customer list unavailable";
+  }
+}
+$("customer").addEventListener("change", (event) => {
+  if (!pending) setCustomer(event.target.value, true);
+});
+
 for (const [index, group] of [
   ...new Set(samples.map((s) => s.group)),
 ].entries()) {
@@ -322,11 +484,19 @@ for (const [index, group] of [
     button.setAttribute("aria-pressed", "false");
     const label = node("span", sample.title);
     label.append(node("small", sample.hint));
+    if (sample.onlyFor) {
+      const tag = node("span", undefined, "tag warn");
+      tag.hidden = true;
+      sampleTags.set(sample, tag);
+      label.append(tag);
+    }
     button.append(label, node("span", "Use", "use-label"));
     button.addEventListener("click", () => {
       if (pending) return;
-      $("subject").value = sample.subject;
-      $("body").value = sample.body;
+      loadedSample = sample;
+      const text = forCustomer(sample);
+      $("subject").value = text.subject;
+      $("body").value = text.body;
       document
         .querySelectorAll("[data-example]")
         .forEach((el) =>
@@ -356,12 +526,13 @@ $("browse-examples").addEventListener("click", () => {
 });
 for (const id of ["subject", "body"])
   $(id).addEventListener("input", () => {
+    loadedSample = null;
     document
       .querySelectorAll("[data-example]")
       .forEach((el) => el.setAttribute("aria-pressed", "false"));
     $("selection-note").textContent = "";
   });
-function render(result) {
+function render(result, asCustomer) {
   const labels = {
     completed: "Completed",
     needs_clarification: "Needs your input",
@@ -391,6 +562,10 @@ function render(result) {
             : " amber"),
     ),
   );
+  if (asCustomer)
+    head.append(
+      node("span", `As ${asCustomer.name} · ${asCustomer.id}`, "as-customer"),
+    );
   let text = result.reply;
   let message = null;
   // Extract only the action layer's bounded copyable-message envelope. The rest
@@ -432,21 +607,25 @@ $("composer").addEventListener("submit", async (event) => {
     $("body"),
     ...document.querySelectorAll("[data-example]"),
   ];
+  if (catalog) controls.push($("customer"));
   controls.forEach((el) => (el.disabled = true));
   $("run").textContent = "Submitting…";
   $("selection-note").textContent = "";
   $("response-panel").setAttribute("aria-busy", "true");
   $("result").replaceChildren(
-    node("p", "Checking current records and policy…", "small"),
+    node("p", "Checking current records and policy…", "pending"),
   );
+  const asCustomer = customer;
+  const payload = { subject: $("subject").value, body };
+  if (asCustomer) payload.customer_id = asCustomer.id;
   try {
     const response = await fetch("/demo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ subject: $("subject").value, body }),
+      body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error("Request failed");
-    render(await response.json());
+    render(await response.json(), asCustomer);
   } catch {
     $("result").replaceChildren(
       node("span", "Response unavailable", "badge red"),
@@ -471,3 +650,4 @@ $("composer").addEventListener("submit", async (event) => {
       });
   }
 });
+loadCustomers();

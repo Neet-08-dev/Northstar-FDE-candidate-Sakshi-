@@ -9,40 +9,37 @@
     <script defer src="/service_desk.js"></script>
   </head>
   <body>
-    <div id="service-desk">
-      <header class="top">
-        <a class="brand" href="/"
-          ><span class="mark" aria-hidden="true">N</span
-          ><span>Northstar<small>Field services</small></span></a
+    <header class="top">
+      <a class="brand" href="/"
+        ><span class="mark" aria-hidden="true">N</span
+        ><span>Northstar<small>Field services</small></span></a
+      >
+      <div class="customer-picker">
+        <label for="customer">Customer</label>
+        <span class="select">
+          <select id="customer" disabled>
+            <option>Loading customers…</option>
+          </select>
+        </span>
+      </div>
+      <div class="environment">
+        <span class="pill"><span class="dot"></span> Synthetic demo</span>
+        <span class="clock"
+          >8 Apr 2030 · 2:30 PM <abbr title="UTC+05:30">IST</abbr></span
         >
-        <div class="environment">
-          <span class="dot"></span> Synthetic demo
-          <span class="clock">8 Apr 2030 · 2:30 PM IST</span>
-        </div>
-      </header>
-      <main id="app">
-        <div class="intro">
-          <div>
-            <h1>Service desk</h1>
-            <p>Arrange a visit, request a credit, or write an update.</p>
-          </div>
-          <div class="timezone">
-            Default time zone <strong>IST <span>UTC+05:30</span></strong>
-          </div>
-        </div>
-        <div id="workspace" class="workspace">
-          <aside
-            id="examples"
-            class="examples"
-            aria-labelledby="examples-title"
-          >
-            <div class="section-head">
-              <span class="demo-step">1 · Choose</span>
+      </div>
+    </header>
+    <main id="app">
+      <div class="intro">
+        <h1>Service desk</h1>
+        <p>Arrange a visit, request a credit, or write an update.</p>
+      </div>
+      <div id="workspace" class="workspace">
+        <aside id="examples" class="panel examples" aria-labelledby="examples-title">
+          <div class="section-head">
+            <div>
+              <span class="step">1 · Choose</span>
               <h2 id="examples-title">Try a demo request</h2>
-              <p class="demo-instructions">
-                Click to fill your request. Then select
-                <strong>Send request</strong>.
-              </p>
             </div>
             <button
               type="button"
@@ -52,72 +49,88 @@
             >
               Browse 16 examples <span aria-hidden="true">⌄</span>
             </button>
+          </div>
+          <div class="panel-body">
+            <details id="account" class="account" hidden>
+              <summary>
+                <span>
+                  <span id="account-name" class="account-name"></span>
+                  <small id="account-meta"></small>
+                </span>
+                <span class="account-toggle">Records</span>
+              </summary>
+              <dl id="account-records"></dl>
+              <p class="account-note">
+                The session belongs to this customer. Requests can only read or
+                change its records.
+              </p>
+            </details>
+            <p class="demo-instructions">
+              Click to fill your request. Then select
+              <strong>Send request</strong>.
+            </p>
             <div id="sample-list"></div>
-          </aside>
-          <section
-            id="compose-panel"
-            class="compose-panel"
-            aria-labelledby="compose-title"
-          >
-            <div class="section-head">
-              <h2 id="compose-title">Your request</h2>
-              <span class="step">2 · Submit</span>
-            </div>
-            <form id="composer">
-              <label for="subject">Subject</label
-              ><input
-                id="subject"
-                maxlength="500"
-                autocomplete="off"
-                value="Visit for our cooling problem"
-              /><label for="body">Request</label
-              ><textarea required id="body" rows="6" maxlength="15000">
+          </div>
+        </aside>
+        <section id="compose-panel" class="panel compose-panel" aria-labelledby="compose-title">
+          <div class="section-head">
+            <h2 id="compose-title">Your request</h2>
+            <span class="step">2 · Submit</span>
+          </div>
+          <form id="composer" class="panel-body">
+            <label for="subject">Subject</label
+            ><input
+              id="subject"
+              maxlength="500"
+              autocomplete="off"
+              value="Visit for our cooling problem"
+            /><label for="body">Request</label
+            ><textarea required id="body" rows="6" maxlength="15000">
 Book ticket T001 at the earliest available time.</textarea
-              >
-              <div class="form-actions">
-                <span id="selection-note" class="small" role="status"></span
-                ><button type="submit" class="primary" id="run">
-                  Send request <span aria-hidden="true">→</span>
-                </button>
-              </div>
-            </form>
-          </section>
-          <section
-            id="response-panel"
-            class="response-panel"
-            aria-labelledby="response-title"
-            aria-busy="false"
-          >
-            <div class="section-head">
-              <h2 id="response-title">Response</h2>
-              <span class="step">3 · Review</span>
+            >
+            <div class="form-actions">
+              <span id="selection-note" role="status"></span
+              ><button type="submit" class="primary" id="run">
+                Send request <span aria-hidden="true">→</span>
+              </button>
             </div>
-            <div id="result" aria-live="polite">
-              <div class="empty">
-                <div class="empty-symbol" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                  >
-                    <path
-                      d="M6 4h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7l-6 3v-3a3 3 0 0 1-2-3V7a3 3 0 0 1 3-3Z"
-                    />
-                    <path d="M7 9h10M7 13h7" />
-                  </svg>
-                </div>
-                <h3>Your response appears here</h3>
+          </form>
+        </section>
+        <section
+          id="response-panel"
+          class="panel response-panel"
+          aria-labelledby="response-title"
+          aria-busy="false"
+        >
+          <div class="section-head">
+            <h2 id="response-title">Response</h2>
+            <span class="step">3 · Review</span>
+          </div>
+          <div id="result" class="panel-body" aria-live="polite">
+            <div class="empty">
+              <div class="empty-symbol" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path
+                    d="M6 4h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7l-6 3v-3a3 3 0 0 1-2-3V7a3 3 0 0 1 3-3Z"
+                  />
+                  <path d="M7 9h10M7 13h7" />
+                </svg>
               </div>
+              <h3>Your response appears here</h3>
             </div>
-          </section>
-        </div>
-        <p class="footnote">
-          Each submission uses fresh synthetic records. No real customer visits,
-          payments or messages.
-        </p>
-      </main>
-    </div>
+          </div>
+        </section>
+      </div>
+      <p class="footnote">
+        Each submission uses fresh synthetic records. No real customer visits,
+        payments or messages.
+      </p>
+    </main>
     <div id="toast" role="status"></div>
   </body>
 </html>
