@@ -20,7 +20,8 @@ from .backend import Backend, Record
 
 log = logging.getLogger("northstar.agent")
 Interpreter = Callable[[Record, Backend, Record, Record, Record], Awaitable[Decision]]
-MODEL = "gpt-6.1-sol"
+# The service model. The eval runner may override it in-process; nothing else can.
+MODEL = "gpt-6-luna"
 PROMPTS = Path(__file__).with_name("prompts")
 
 

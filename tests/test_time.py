@@ -178,7 +178,7 @@ class NaturalTimeTests(unittest.TestCase):
                 out, _, usage = self.run_interpret(screen=False, decision=decision)
                 self.assertEqual(out.time_mode, expected_mode)
                 self.assertEqual((usage["input_tokens"], usage["output_tokens"]), (2, 2))
-                self.assertEqual(usage["model"], "gpt-6.1-sol")
+                self.assertEqual(usage["model"], "gpt-6-luna")
 
     def test_model_safety_screen_overrides_interpretation(self):
         booking = Decision(intent="schedule", ticket_id="T001", time_mode="earliest")

@@ -346,7 +346,7 @@ def main():
         "--model",
         choices=["gpt-6.1-sol", "gpt-6-luna"],
         default=orchestration.MODEL,
-        help="Evaluation-only model override for cheap iteration; the service is fixed to Sol",
+        help="Evaluation-only model override for comparison; the service is fixed to Luna",
     )
     args = parser.parse_args()
     # The runner hosts the agent in-process, so this never changes a deployed service.
