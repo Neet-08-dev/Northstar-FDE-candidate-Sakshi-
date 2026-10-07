@@ -4,6 +4,12 @@ Build an AI operations assistant for a fictional commercial field-services busin
 
 AI coding and building tools are explicitly permitted and encouraged: Codex, Claude Code, Cursor, Copilot, Gemini CLI or any other tools. Choose any runtime model, provider, framework or deterministic components. No model key is required to start the scaffold.
 
+## Implemented scheduling slice
+
+The assistant now uses Python + OpenAI Agents SDK to book visits for existing tickets, with deterministic policy/authority checks, clarification and real safety/operations handoffs. See [local setup and demo](candidate-submission/README.md) and [evaluation results](candidate-submission/EVALS.md). Ticket creation and billing are not yet implemented.
+
+Use `make setup` and `make dev` for local development. Configure `OPENAI_API_KEY` in ignored `.env`; development defaults to GPT-6 Luna. Offline checks: `make check`. Live evaluations are explicitly invoked and consume API credit.
+
 ## Get your assessment workspace
 
 Your hiring team will give you a private submission repository, a timebox and a due date. Clone that repository and work there. If asked to create your own copy, select **Use this template → Create a new repository**, choose **Private**, and grant the hiring team access in the new repository's Settings. Use a template copy to keep your submission private; GitHub forks of this public project stay public.
@@ -19,10 +25,10 @@ docker compose up --build -d
 docker compose run --rm public-evals
 ```
 
-In PowerShell use `Copy-Item .env.example .env`. Open http://localhost:8000 for the starter demo. API health: http://localhost:8001/health. The initial agent deliberately returns a human-review handoff, so most public evals will fail until you implement it. That is expected. `docker compose down` stops the services. The mock starts fresh whenever it restarts; each evaluation additionally gets its own isolated session.
+In PowerShell use `Copy-Item .env.example .env`. Open http://localhost:8000 for the starter demo. API health: http://localhost:8001/health. The full public suite includes workflows beyond the scheduling slice; those remain unsupported. `docker compose down` stops the services. The mock starts fresh whenever it restarts; each evaluation additionally gets its own isolated session.
 
 ## Start without Docker
-Python 3.12 or later; no pip packages are needed. From this repository root, use three terminals:
+Python 3.12 or later; run `make setup` to install the locked SDK dependencies, then activate `.venv` (`. .venv/bin/activate`). From this repository root, use three terminals:
 
 ```sh
 python -m northstar.api

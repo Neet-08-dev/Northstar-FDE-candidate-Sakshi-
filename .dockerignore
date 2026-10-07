@@ -5,3 +5,7 @@ __pycache__
 **/__pycache__
 reports
 .venv
+
+.tools/
+.mypy_cache/
+.ruff_cache/

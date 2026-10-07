@@ -1,5 +1,7 @@
 import threading
 import unittest
+from unittest.mock import AsyncMock, patch
+from starter.actions import Decision
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -59,8 +61,9 @@ class HTTPIsolationTests(unittest.TestCase):
 
     def test_starter_uses_injected_session_without_mutating(self):
         session = self.session()
-        output = process({'api_url': self.url, 'session_token': session['session_token'], 'request': {'id': 'x', 'subject': 'help', 'body': 'Do work'}, 'run_id': 'x'})
-        self.assertEqual(output['status'], 'error')
+        with patch('starter.orchestration.interpret', AsyncMock(return_value=Decision(intent='clarify', clarification='intent'))):
+            output = process({'api_url': self.url, 'session_token': session['session_token'], 'request': {'id': 'x', 'subject': 'help', 'body': 'Do work'}, 'run_id': 'x'})
+        self.assertEqual(output['status'], 'needs_clarification')
         snapshot = request_json(self.url + '/admin/sessions/' + session['session_id'] + '/snapshot', token='test-admin-private')
         self.assertEqual([e['tool'] for e in snapshot['audit']], ['get_context', 'get_policy'])
         self.assertNotIn(session['session_token'], str(output))

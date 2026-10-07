@@ -1,16 +1,17 @@
-# Design
+# Existing-ticket scheduling slice
 
-## Workflow and success criteria
-Describe the staff problem, chosen scope, stakeholders and deployment-quality bar. List assumptions and questions you would ask a real customer.
+The assistant books a qualified one-hour visit for an existing open ticket. It accepts an explicitly authorized earliest slot or an exact timestamp with timezone. Unclear equipment/time requires clarification; unsafe or unsupported work receives a real handoff. Ticket creation, credits, rescheduling, cancellation and message drafting remain outside this slice.
 
-## Architecture and AI choices
-Explain what uses AI, what is deterministic, tool boundaries, model/framework alternatives and why you chose this approach. Include a small diagram if useful.
+`starter.agent.process` preserves the supplied HTTP contract. `starter/orchestration.py` runs one OpenAI Agents SDK agent with a typed decision and a scoped, read-only investigation tool. Python then executes `Actions.handle`. The model interprets language; it cannot set credentials, policy, role, retry keys or committed evidence.
 
-## Trust, authority and reliability
-Explain identity, customer isolation, evidence precedence, prompt-injection handling, credit approvals, scheduling, idempotency, retry limits, optimistic versions and human handoffs.
+`starter/actions.py` owns the business workflow: live relationships, actor authority, active account/site/asset, coverage dates/skills, safety clearance, ticket state, access hours, qualified slots and existing visits. It owns stable logical-operation keys. `starter/backend.py` owns request-local HTTP access, typed failures, exact replay and bounded retries. External dependencies are injected at model/transport seams. Tests cross the action/process interfaces and inspect the independent simulator state.
 
-## Observability and rollout
-Describe traces, sensitive-data handling, cost/latency measurement, staged rollout, operator controls, rollback and remaining failure modes. Distinguish measured facts from estimates.
+Identity, scenario time and policy come from the injected backend. No runtime fixture reads or admin access occur in processing. The local demo alone allocates synthetic sessions using a development admin credential; omit ADMIN_TOKEN to disable it. Explicit IDs are resolved within scoped search results before direct lookup. Record notes never confer authority and are excluded from model investigation results.
 
-## Time spent and tradeoffs
-Record actual time, intentionally deferred work and how your design changes at 800 requests/day.
+Writes are serialized within a request. A lost response replays the same arguments/key (at most three attempts). A slot/version conflict permits one fresh investigation. Existing visits are reused rather than duplicated. Booking evidence comes from successful tool results. Uncertain outcomes require reconciliation; a failed escalation returns error, never a fictitious handoff.
+
+Limits: eight SDK turns, 48 backend attempts, 55 seconds total with five seconds/three attempts reserved for recovery. Provider retries are disabled; provider failure becomes an operational handoff. HTTP calls have bounded timeouts and no redirects. Logs contain outcome metadata, usage and tool names, not credentials or raw prompts. SDK remote tracing and response storage are disabled. Unavailable cost/token totals are reported as unknown.
+
+Development defaults to gpt-6-luna with low reasoning; gpt-6.1-sol is the intended final model. Both use Responses through the SDK. Full Sol validation is required before final submission. Existing-template documentation and the eight public scenarios are preserved; unsupported workflows are disclosed rather than counted as implemented.
+
+Known limits: conservative keyword screening can hand off a negated/historical hazard; indirect hazard recognition still depends on the model. Broad time windows and overnight site-access windows are not supported. The backend does not offer an atomic transaction across policy/coverage reads and booking, so changes after validation remain a race controlled partly by backend checks. No production throughput claim is made for 800 requests/day; production would need admission control, provider-capacity planning and stronger transactional interfaces.
