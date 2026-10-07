@@ -75,7 +75,9 @@ class WriteCheckTests(unittest.TestCase):
             decision, False, "Book ticket at the earliest available time."
         )
         self.assertEqual(out["status"], "needs_clarification")
-        self.assertIn("Before I make any change, please confirm: should I create a new", out["reply"])
+        self.assertIn(
+            "Before I make any change, please confirm: should I create a new", out["reply"]
+        )
         self.assertIn("Nothing has been changed.", out["reply"])
         self.assertIn("Annex cooling unit (A101)", actions[0])
         self.assertEqual(writes, [])
