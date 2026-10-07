@@ -145,6 +145,20 @@ class DemoExamplesTests(unittest.TestCase):
             )
 
 
+class DemoPageTests(unittest.TestCase):
+    def test_response_content_never_becomes_markup(self):
+        # Replies, evidence IDs and run details are model or record text. Only the
+        # constant copy icon is ever assigned as HTML.
+        script = Path("starter/service_desk.js").read_text()
+        assignments = [line.strip() for line in script.splitlines() if ".innerHTML" in line]
+        self.assertTrue(assignments)
+        for line in assignments:
+            self.assertRegex(line, r"\.innerHTML = copyIcon;")
+        for unsafe in ["insertAdjacentHTML", "outerHTML", "document.write", "eval("]:
+            self.assertNotIn(unsafe, script)
+        self.assertIn('node("pre", raw, "raw")', script, "Raw JSON is rendered as text")
+
+
 class DemoCustomerSelectionTests(unittest.TestCase):
     """The presenter picks the session customer; request text never changes it."""
 

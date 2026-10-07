@@ -515,6 +515,7 @@ function thread(turns) {
         "thread-assistant",
       ),
     );
+    if (turn.result) item.append(runDetails(turn.result, turn.meta));
     box.append(item);
   }
   return box;
@@ -617,14 +618,158 @@ for (const id of ["subject", "body"])
       .forEach((el) => el.setAttribute("aria-pressed", "false"));
     $("selection-note").textContent = "";
   });
-function render(result, asCustomer, earlier = []) {
-  const labels = {
-    completed: "Completed",
-    needs_clarification: "Needs your input",
-    escalated: "Human review",
-    blocked: "Blocked",
-    error: "Unable to complete",
-  };
+// Run details for reviewers: everything /demo returned, plus what the browser
+// measured. Built from text nodes only, since replies and evidence IDs come
+// from the model and records.
+const statusLabels = {
+  completed: "Completed",
+  needs_clarification: "Needs your input",
+  escalated: "Human review",
+  blocked: "Blocked",
+  error: "Unable to complete",
+};
+function count(n) {
+  return typeof n === "number" ? n.toLocaleString("en-US") : "Not reported";
+}
+function keyValues(rows) {
+  const list = node("dl", undefined, "kv");
+  for (const [key, value] of rows) {
+    if (value === undefined || value === null || value === "") continue;
+    list.append(node("dt", key));
+    const dd = node("dd");
+    if (value instanceof Node) dd.append(value);
+    else dd.textContent = String(value);
+    list.append(dd);
+  }
+  return list;
+}
+function detailSection(title, ...content) {
+  const section = node("section", undefined, "rd-section");
+  section.append(node("h4", title), ...content);
+  return section;
+}
+function runDetails(result, meta) {
+  const usage = result.usage || {};
+  const usedModel = usage.model && usage.model !== "none";
+  const tokens =
+    typeof usage.input_tokens === "number" && typeof usage.output_tokens === "number"
+      ? usage.input_tokens + usage.output_tokens
+      : null;
+  const evidence = Array.isArray(result.evidence) ? result.evidence : [];
+  const box = node("details", undefined, "run-details");
+  const summary = node("summary");
+  const chips = node("span", undefined, "chips");
+  const chip = (text, extra) => chips.append(node("span", text, "chip" + (extra ? " " + extra : "")));
+  chip(usedModel ? usage.model : "No model call");
+  if (meta.ms !== undefined) chip(`${(meta.ms / 1000).toFixed(1)} s`);
+  if (usedModel) chip(tokens === null ? "Tokens not reported" : `${count(tokens)} tokens`);
+  chip(`${evidence.length} ${evidence.length === 1 ? "record" : "records"} cited`);
+  if (usage.provider_error) chip("Provider error", "warn");
+  summary.append(node("span", "Run details", "rd-title"), chips);
+  box.append(summary);
+
+  box.append(
+    detailSection(
+      "Request",
+      keyValues([
+        ["Outcome", `${statusLabels[result.status] ?? result.status} (${result.status})`],
+        ["Customer", meta.customer ? `${meta.customer.name} · ${meta.customer.id}` : "Default demo customer"],
+        ["Conversation", `Turn ${meta.turn} · ${meta.conversation.slice(0, 8)}`],
+        ["Sent", meta.sentAt],
+        ["Round trip", meta.ms === undefined ? undefined : `${count(Math.round(meta.ms))} ms, measured in this browser`],
+        ["Subject", meta.subject],
+        ["Request", meta.body],
+      ]),
+    ),
+  );
+
+  const cost =
+    usage.cost_usd === null || usage.cost_usd === undefined
+      ? "Unknown (no verified pricing)"
+      : `$${Number(usage.cost_usd).toFixed(4)}`;
+  box.append(
+    detailSection(
+      "Model usage",
+      keyValues([
+        ["Model", usedModel ? usage.model : "None: answered without a model call"],
+        ["Input tokens", count(usage.input_tokens)],
+        ["Output tokens", count(usage.output_tokens)],
+        ["Total tokens", tokens === null ? undefined : count(tokens)],
+        ["Cost", cost],
+        ["Pricing source", usage.pricing_source],
+        ["Provider error", usage.provider_error],
+      ]),
+      node(
+        "p",
+        "Totals cover the safety screen, the interpreter and, before any change, the independent write check.",
+        "rd-note",
+      ),
+    ),
+  );
+
+  const groups = new Map();
+  for (const ref of evidence) {
+    if (!ref || typeof ref.collection !== "string" || typeof ref.record_id !== "string") continue;
+    if (!groups.has(ref.collection)) groups.set(ref.collection, []);
+    groups.get(ref.collection).push(ref.record_id);
+  }
+  const refs = node("dl", undefined, "kv evidence");
+  for (const [collection, ids] of groups) {
+    refs.append(node("dt", collection));
+    const dd = node("dd");
+    ids.forEach((id) => dd.append(node("code", id)));
+    refs.append(dd);
+  }
+  box.append(
+    detailSection(
+      "Evidence",
+      groups.size ? refs : node("p", "No records cited.", "rd-note"),
+      node(
+        "p",
+        "Records the assistant read or created for this outcome. Policy evidence is the policy version in force.",
+        "rd-note",
+      ),
+    ),
+  );
+
+  if (result.message) {
+    box.append(
+      detailSection(
+        "Prepared message",
+        keyValues([
+          ["Recipient", result.message.contact_id || "No named recipient"],
+          ["Delivery", "Not sent or stored. Copy it from the response."],
+        ]),
+      ),
+    );
+  }
+
+  const raw = JSON.stringify(result, null, 2);
+  const copy = node("button", "Copy JSON", "secondary raw-copy");
+  copy.type = "button";
+  copy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(raw);
+      toast("Response JSON copied");
+    } catch {
+      toast("Select the JSON to copy. Clipboard access is unavailable.");
+    }
+  });
+  const head = node("div", undefined, "rd-raw-head");
+  head.append(
+    node(
+      "p",
+      result.summary === result.reply ? "Exact response. summary repeats reply." : "Exact response.",
+      "rd-note",
+    ),
+    copy,
+  );
+  box.append(detailSection("Raw response", head, node("pre", raw, "raw")));
+  return box;
+}
+function render(result, meta, earlier = []) {
+  const labels = statusLabels;
+  const asCustomer = meta.customer;
   if (
     !Object.hasOwn(labels, result.status) ||
     typeof result.reply !== "string" ||
@@ -664,6 +809,7 @@ function render(result, asCustomer, earlier = []) {
   const text = message ? message.preface : result.reply;
   $("result").replaceChildren(head, markdown(text));
   if (message) $("result").append(messagePreview(message));
+  $("result").append(runDetails(result, meta));
   if (earlier.length) $("result").prepend(thread(earlier));
 }
 $("composer").addEventListener("submit", async (event) => {
@@ -692,7 +838,7 @@ $("composer").addEventListener("submit", async (event) => {
     node("p", "Checking current records and policy…", "pending"),
   );
   const asCustomer = customer;
-  conversation ??= { id: conversationId(), turns: [] };
+  conversation ??= { id: conversationId(), turns: [], details: [] };
   const current = conversation;
   if (!current.turns.length) current.sample = loadedSample;
   const subject = $("subject").value;
@@ -703,6 +849,15 @@ $("composer").addEventListener("submit", async (event) => {
     history: current.turns.slice(-4),
   };
   if (asCustomer) payload.customer_id = asCustomer.id;
+  const meta = {
+    customer: asCustomer,
+    conversation: current.id,
+    turn: current.turns.length + 1,
+    subject,
+    body,
+    sentAt: new Date().toLocaleString(),
+  };
+  const started = performance.now();
   try {
     const response = await fetch("/demo", {
       method: "POST",
@@ -711,11 +866,19 @@ $("composer").addEventListener("submit", async (event) => {
     });
     if (!response.ok) throw new Error("Request failed");
     const result = await response.json();
-    render(result, asCustomer, current.turns.slice(-4));
+    meta.ms = performance.now() - started;
+    const shown = current.turns.length - Math.min(current.turns.length, 4);
+    render(
+      result,
+      meta,
+      current.turns.slice(shown).map((turn, i) => ({ ...turn, ...current.details[shown + i] })),
+    );
     if (conversation === current) {
+      // History sent to the server stays {subject, body, reply}; details stay here.
       current.turns.push({ subject, body, reply: result.reply });
+      current.details.push({ result, meta });
       const next = current.sample?.followUps?.[current.turns.length - 1];
-      if (next) $("result").append(suggestion(next));
+      if (next) $("result").querySelector(":scope > .run-details").before(suggestion(next));
       $("new-conversation").hidden = false;
       $("body").value = "";
       $("body").placeholder = "Reply here to continue this conversation…";
