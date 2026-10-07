@@ -1,6 +1,30 @@
 # Evaluation report
 
-This report leads with current billing verification. Older intake and scheduling checkpoints follow as historical evidence; their unsupported-scope statements describe those earlier revisions.
+This report covers targeted live and offline copyable-message verification followed by preserved intake, demo and scheduling evidence. Results from different prompts are kept separate.
+
+## Copyable-message live sample, 7 October 2026
+
+After the offline implementation commit `7db5e62b57cfb96351da8f5902793c497c29c1f8`, the user explicitly authorized paid evaluations. The bounded sample contains three cases: a generic ticket-status message, an unauthorized named recipient, and a booking with an authorized named-recipient appointment message. Each ran once on Luna and successfully once on Sol. An initial Sol attempt failed at the provider and is retained separately. No runtime or prompt changes were made.
+
+| Run | Passed | Median | Maximum | Reported input / output tokens | Maximum backend attempts |
+| --- | --- | --- | --- | --- | --- |
+| messages-live-luna | 3/3 | 5.145s | 5.834s | 16085 / 333 | 33 |
+| messages-live-sol | 0/1 | 1.767s | 1.767s | unknown | 3 |
+| messages-live-sol-retry | 3/3 | 7.063s | 8.996s | 5825 / 218 | 31 |
+
+There were seven attempted trials, one more than the proposed six because of the provider failure. The first Sol ticket-message trial returned `InternalServerError`; the runner stopped immediately, and the assistant recorded an operations handoff without a booking or draft. That trial failed and has unknown token usage. One bounded retry of the three-case Sol sample passed 3/3. Overall, six trials passed and one failed due to the provider. Reported usage totals 21910 input and 551 output tokens, excluding unavailable usage for the failed attempt. Billed dollar cost is unknown.
+
+Independent checks confirmed factual message content and evidence, no draft-storage attempts, no business changes for standalone messages or the refused recipient, and exactly one confirmed visit per combined request. The six successful trials had no forbidden tool attempts. Prompt SHA-256 remained `7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62`. Exact requests, decisions, replies, sanitized audits, per-check outcomes and report hashes are preserved in [live message evidence](evidence/message-live-evaluations.json), including the failed provider attempt.
+
+This sample uses explicit ticket/contact IDs. It does not establish live coverage for ambiguous names, implicit references, other message purposes, intake with messages, injection variants, storage-versus-delivery intent, or the full 95-case suite. Each successful model/case pair has one trial; there is no estimated rare-failure rate. The prior offline suite remains 29 test methods and 95 scenarios. It was not rerun for these documentation-only result updates. No Docker rebuild or browser execution was performed.
+
+Reproduce the three-case sample only when further paid calls are intended:
+
+```sh
+MESSAGE_SAMPLE=message-ticket,message-book-named,message-unauthorized-contact
+OPENAI_MODEL=gpt-6-luna .tools/uv/bin/uv run --frozen python -m evals.run --cases "$MESSAGE_SAMPLE" --interval 0 --out reports/messages-live-luna-new.json
+OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run --frozen python -m evals.run --cases "$MESSAGE_SAMPLE" --interval 0 --out reports/messages-live-sol-new.json
+```
 
 ## Billing and approvals, 7 October 2026
 
@@ -59,11 +83,11 @@ Additional integration tests exercise the actual HTTP `/process` handler with co
 
 A targeted adversarial case initially failed: a contact's malformed `site_ids` string passed Python's membership test. The action now requires a list before testing site membership. The failed trial and passing regression are both retained in [message evidence](evidence/message-evaluations.json). A separate initial test expectation used null for an unlinked escalation; the backend stores an empty string. That fixture expectation was corrected without weakening linked-handoff checks.
 
-The final prompt SHA-256 is `7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62`. Source hashes, all 50 new results and the 45 previous-case check results are in the evidence. New-case median latency was 23.0 ms and maximum latency 341 ms. The full run used at most 43 backend attempts per request. These are local synthetic timings with controlled interpretation, not model or production latency. Model calls, model tokens and model spend for this slice were zero.
+The final prompt SHA-256 is `7b5e33ac3d56dd2e7c1eabed41984afed2660557ae65c136bc22fc0cbd237b62`. Source hashes, all 50 new results and the 45 previous-case check results are in the evidence. New-case median latency was 23.0 ms and maximum latency 341 ms. The full run used at most 43 backend attempts per request. These are local synthetic timings with controlled interpretation, not model or production latency. At this offline checkpoint, model calls, model tokens and model spend for the message slice were zero; the later live sample is reported above.
 
-No live model trial was authorized or performed. Offline cases supply the Decision, so they do not establish that the model correctly recognizes drafting, sending, recipient ambiguity, commitments or combined requests. The current prompt has not been evaluated with Luna or Sol. Earlier full live runs and targeted intake/demo runs below remain associated with their own prompts. No Docker rebuild, full public-suite success, held-out evaluation or production reliability is claimed for this slice.
+No live model trial had been authorized or performed at the offline checkpoint. Offline cases supply the Decision, so they do not establish that the model correctly recognizes drafting, sending, recipient ambiguity, commitments or combined requests. The prompt had not yet been evaluated with Luna or Sol at that checkpoint; the later three-case sample above is the only new live coverage. Earlier full live runs and targeted intake/demo runs below remain associated with their own prompts. No Docker rebuild, full public-suite success, held-out evaluation or production reliability is claimed for this slice.
 
-Reproduce with `make check` and, when a saved JSON report is useful, `make eval-offline`. `--cases` accepts IDs from either authored file. Live evaluation remains a separately authorized action. Stored drafts, draft retrieval, sending, billing messages, arbitrary wording customization and persistent conversations remain unsupported.
+Reproduce with `make check` and, when a saved JSON report is useful, `make eval-offline`. `--cases` accepts IDs from either authored file. The later live evaluation was separately authorized and is reported above. Stored drafts, draft retrieval, sending, billing messages, arbitrary wording customization and persistent conversations remain unsupported.
 
 ## Customer demo wording checks, 7 October 2026
 
