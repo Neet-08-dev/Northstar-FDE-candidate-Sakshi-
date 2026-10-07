@@ -3,7 +3,7 @@
 This is the local intake, scheduling and service-credit implementation, pending user review before publication. Original submission fields are retained below so remaining work is visible.
 
 - Candidate identifier: Sakshi.
-- Repository and exact commit: Local branch `codex/billing-approvals`, based on staging `e61a9510635d67be8bb2ce80924c1168bc099582` after PR #2 merged. Dedicated worktree: `/Users/sakshi/.codex/worktrees/billing-approvals/Northstar-FDE-candidate-Sakshi-`. Use `git rev-parse HEAD` for the review commit. Nothing from this branch has been pushed.
+- Repository and exact commit: Local branch `codex/billing-approvals`, rebased onto staging `4abf967` after the report-packaging change in PR #6. The live evaluations were performed before this evidence-only rebase. Dedicated worktree: `/Users/sakshi/.codex/worktrees/billing-approvals/Northstar-FDE-candidate-Sakshi-`. Use `git rev-parse HEAD` for the review commit. The branch is published as [draft PR #5](https://github.com/Neet-08-dev/Northstar-FDE-candidate-Sakshi-/pull/5).
 - Actual time spent: The candidate estimates 10 to 20 minutes of planning and about 30 minutes of review per slice, or 40 to 50 minutes combined. This excludes implementation/testing time and is not a measured total assessment duration. The complete total remains unrecorded.
 - Start command and health check: Run `make setup`, configure ignored `.env`, then `make dev`. The default demo is http://localhost:8000; health checks are http://localhost:8000/health and http://localhost:8001/health. See the isolated Docker command below for ports 8020/8021.
 - Model/provider, settings and environment variable names (no values): OpenAI Responses through the Agents SDK. The default and final-validation model is `gpt-6.1-sol`. Development can explicitly select `gpt-6-luna`, whose observed interpretation failures are retained in EVALS.md. Low reasoning, 1,600 maximum output tokens and eight SDK turns. Configure `OPENAI_API_KEY` and optionally `OPENAI_MODEL`; environment values override `.env`. `ADMIN_TOKEN` is only for local demo administration. `AGENT_PORT` and `MOCK_PORT` select Docker host ports.
@@ -37,7 +37,7 @@ Each submission starts fresh synthetic state at the fixed scenario time of 8 Apr
 
 ## Review status
 
-PR #2 is merged into the staging base. Billing changes stay on the local `codex/billing-approvals` branch for user review. No billing PR, push or merge is authorized or performed. Historical results and current verification are distinguished in [EVALS.md](EVALS.md).
+PR #2 and the report-packaging correction in PR #6 are merged into the staging base. Billing is published as [draft PR #5](https://github.com/Neet-08-dev/Northstar-FDE-candidate-Sakshi-/pull/5) for user review. No merge has been performed and auto-merge remains disabled. Historical results and current verification are distinguished in [EVALS.md](EVALS.md).
 
 `make check` already exercises every authored scenario offline. Run `make eval-offline` only when you need its separate JSON report. The live intake sample and repeat commands are recorded in [EVALS.md](EVALS.md).
 

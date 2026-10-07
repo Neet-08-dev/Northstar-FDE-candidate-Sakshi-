@@ -1,0 +1,504 @@
+{
+  "incomplete": false,
+  "prompt_sha256": "c4482251cfec553bbbddb5053a29207d3df2f6219b56f48b2128c3d471350809",
+  "mode": "live",
+  "model": "gpt-6-luna",
+  "entrypoint": "http-process",
+  "passed": 4,
+  "total": 5,
+  "results": [
+    {
+      "id": "billing-ordinary",
+      "category": "billing",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 4267,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Applied a $75.00 service credit to invoice I001. Credit reference: CREDIT-0001.",
+        "reply": "Applied a $75.00 service credit to invoice I001. Credit reference: CREDIT-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "invoices",
+            "record_id": "I001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "credits",
+            "record_id": "CREDIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 1873,
+          "output_tokens": 115,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "issue_credit",
+          "committed": true,
+          "code": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "billing-above-limit",
+      "category": "billing",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 4194,
+      "decision": {},
+      "response": {
+        "status": "escalated",
+        "summary": "Supervisor approval PENDING-0001 is pending for a $150.00 credit on invoice I001. No credit has been applied.",
+        "reply": "Supervisor approval PENDING-0001 is pending for a $150.00 credit on invoice I001. No credit has been applied.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "invoices",
+            "record_id": "I001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "approvals",
+            "record_id": "PENDING-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 1868,
+          "output_tokens": 219,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "request_approval",
+          "committed": true,
+          "code": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "billing-valid-grant",
+      "category": "billing",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 3413,
+      "decision": {},
+      "response": {
+        "status": "completed",
+        "summary": "Applied a $150.00 service credit to invoice I001. Credit reference: CREDIT-0001.",
+        "reply": "Applied a $150.00 service credit to invoice I001. Credit reference: CREDIT-0001.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "invoices",
+            "record_id": "I001"
+          },
+          {
+            "collection": "tickets",
+            "record_id": "T001"
+          },
+          {
+            "collection": "approvals",
+            "record_id": "APP-1"
+          },
+          {
+            "collection": "credits",
+            "record_id": "CREDIT-0001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 1872,
+          "output_tokens": 69,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_record",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "issue_credit",
+          "committed": true,
+          "code": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "billing-named-equipment",
+      "category": "billing",
+      "passed": false,
+      "checks": {
+        "status": false,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": false,
+        "approval_attempts": true,
+        "reply_details": false,
+        "credit_count": false,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": false,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 16101,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Please identify the invoice or service ticket for the credit.",
+        "reply": "Please identify the invoice or service ticket for the credit.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          },
+          {
+            "collection": "sites",
+            "record_id": "S001"
+          },
+          {
+            "collection": "assets",
+            "record_id": "A001"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 14563,
+          "output_tokens": 281,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "search_records",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "trial": 1
+    },
+    {
+      "id": "billing-mixed",
+      "category": "billing",
+      "passed": true,
+      "checks": {
+        "status": true,
+        "ticket_count": true,
+        "create_attempts": true,
+        "visit_count": true,
+        "no_other_business_writes": true,
+        "response_shape": true,
+        "attempt_budget": true,
+        "credit_attempts": true,
+        "approval_attempts": true,
+        "reply_details": true,
+        "credit_count": true,
+        "credit_details": true,
+        "approval_count": true,
+        "approval_details": true,
+        "no_service_writes": true,
+        "ledger_balances": true,
+        "approval_consumption": true,
+        "billing_evidence": true,
+        "model_completed": true,
+        "deadline": true,
+        "no_token_leak": true
+      },
+      "latency_ms": 2138,
+      "decision": {},
+      "response": {
+        "status": "needs_clarification",
+        "summary": "Would you like me to handle the credit request or the service request first? No action has been taken.",
+        "reply": "Would you like me to handle the credit request or the service request first? No action has been taken.",
+        "evidence": [
+          {
+            "collection": "policy",
+            "record_id": "NS-2030.1"
+          }
+        ],
+        "usage": {
+          "model": "gpt-6-luna",
+          "input_tokens": 1874,
+          "output_tokens": 66,
+          "cost_usd": null,
+          "pricing_source": "unknown"
+        }
+      },
+      "audit": [
+        {
+          "tool": "get_context",
+          "committed": false,
+          "code": null
+        },
+        {
+          "tool": "get_policy",
+          "committed": false,
+          "code": null
+        }
+      ],
+      "trial": 1
+    }
+  ]
+}

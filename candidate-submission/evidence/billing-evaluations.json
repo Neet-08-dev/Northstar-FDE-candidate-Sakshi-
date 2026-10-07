@@ -268,7 +268,8 @@
           "decision": {},
           "audit": []
         }
-      ]
+      ],
+      "report": "runs/billing-development.json"
     },
     {
       "name": "billing-identity-diagnosis",
@@ -431,7 +432,8 @@
             }
           ]
         }
-      ]
+      ],
+      "report": "runs/billing-identity-diagnosis.json"
     },
     {
       "name": "billing-identity-regression",
@@ -571,7 +573,8 @@
           "decision": {},
           "audit": []
         }
-      ]
+      ],
+      "report": "runs/billing-identity-regression.json"
     },
     {
       "name": "billing-full-luna",
@@ -4904,7 +4907,8 @@
           "decision": {},
           "audit": []
         }
-      ]
+      ],
+      "report": "runs/billing-full-luna.json"
     },
     {
       "name": "billing-full-luna-final",
@@ -9295,7 +9299,8 @@
           "decision": {},
           "audit": []
         }
-      ]
+      ],
+      "report": "runs/billing-full-luna-final.json"
     },
     {
       "name": "billing-final-luna-regressions",
@@ -9690,7 +9695,8 @@
             }
           ]
         }
-      ]
+      ],
+      "report": "runs/billing-final-luna-regressions.json"
     },
     {
       "name": "billing-full-sol-final",
@@ -14089,7 +14095,8 @@
           "decision": {},
           "audit": []
         }
-      ]
+      ],
+      "report": "runs/billing-full-sol-final.json"
     },
     {
       "name": "billing-final-sol-regressions",
@@ -14457,7 +14464,8 @@
           "decision": {},
           "audit": []
         }
-      ]
+      ],
+      "report": "runs/billing-final-sol-regressions.json"
     }
   ],
   "public_runs": [
@@ -14830,7 +14838,8 @@
         }
       ],
       "prompt_sha256": "a673d1d695c8b6318270cd2d55eecb0f03b4574dccf0a7931cf916b37c9906a3",
-      "model_completed": true
+      "model_completed": true,
+      "report": "runs/billing-public.json"
     },
     {
       "name": "billing-public-final",
@@ -15189,7 +15198,8 @@
         }
       ],
       "prompt_sha256": "4acd147410cf889cef48984c8f7e1a1e5f058ea9f90d4bc82a7dd277f224588b",
-      "model_completed": true
+      "model_completed": true,
+      "report": "runs/billing-public-final.json"
     },
     {
       "name": "billing-public-sol-final",
@@ -15560,7 +15570,8 @@
         }
       ],
       "prompt_sha256": "86a33e9b7865e7eb7c8b3c14090b1b6cd2e216c41af806dad8840cb6250348c8",
-      "model_completed": true
+      "model_completed": true,
+      "report": "runs/billing-public-sol-final.json"
     }
   ],
   "browser_checks": {
@@ -15576,5 +15587,6 @@
     "Exact backend snapshots and credentials are not included; grader assertions ran before session deletion",
     "Concurrent final Sol suite and regression runs may affect latency",
     "Billed cost is unavailable"
-  ]
+  ],
+  "report_reference_note": "Report paths are relative to this JSON file. Report hashes identify the original saved bytes. Billing reports include reduced audit events and, in later runs, scoped read lookup arguments. They do not contain write arguments or full backend snapshots, so historical state effects and exact write replay cannot be independently recomputed from these reports. No new evaluations were run to archive them."
 }
