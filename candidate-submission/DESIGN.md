@@ -12,6 +12,14 @@ A ticket tracks the service problem; a visit tracks its appointment. A ticket ID
 
 The current assumptions are that the injected session establishes customer identity, the backend provides authoritative records, and scheduling permission comes from the request. The fixed 2030 scenario clock belongs to the assessment. Replies display IST while stored timestamps retain the UTC contract.
 
+### Natural time and the selected service desk
+
+The SDK extracts the literal requested date/time into the internal Decision's `requested_time` field. It must occur in the request; an invented year or timezone is rejected. Orchestration resolves English day/month and month/day dates, optional years, ISO dates/timestamps, today and tomorrow using only `get_context.now`. Omitted timezone means IST. Omitted year means the current calendar year in the requested timezone, including across UTC/local New Year boundaries. Past dates never silently advance a year or day. Explicit IST, UTC, GMT and numerical offsets of the form `+05:30` retain their requested instant. Python sends the selected slot's UTC timestamp to the backend. Direct internal Decisions with explicit `starts_at` remain supported for controlled tests; the production SDK must extract a literal.
+
+One-digit times without AM/PM, short numeric dates, weekday phrases, broad windows, named DST/IANA zones, conflicting zones/times, invalid dates and unsupported relative expressions require clarification. Two-digit HH:MM means a 24-hour clock. Time interpretation does not authorize fallback booking, cancellation or rescheduling. The existing one-hour, safety, role, coverage and current-state checks remain in Actions. Confirmations, existing appointments, alternatives and message templates share one human-readable IST format with uppercase AM/PM and the UTC offset.
+
+The finalized A UI has an example rail, composer and response, with mobile stacking. Example selection only fills the form and clears the old response. Submission calls the real `/demo` route; each demo gets fresh scoped synthetic records. Loading and HTTP/invalid-response failures never substitute a simulated success. Static assets have an exact route allowlist and a content security policy. Markdown creates text nodes and allows only HTTP(S) links; response data never enters `innerHTML`. A constant copy-icon SVG is the only HTML assignment. The action layer's existing message envelope becomes one subject/body preview with plain-text copy controls. Messages are neither sent nor stored. The public `/process` response contract is unchanged.
+
 Questions for a real customer remain open:
 
 - How do customers identify equipment, and which site labels or serial numbers are familiar to them?

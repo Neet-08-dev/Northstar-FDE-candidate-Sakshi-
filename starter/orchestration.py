@@ -7,6 +7,7 @@ import os
 import re
 import time
 from collections.abc import Awaitable, Callable
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
@@ -15,11 +16,117 @@ from agents import Agent, ModelSettings, OpenAIResponsesModel, RunConfig, Runner
 from openai import AsyncOpenAI
 from openai.types.shared import Reasoning
 
-from .actions import SAFETY_REPLY, Actions, Decision, Outcome
+from .actions import SAFETY_REPLY, Actions, Decision, Outcome, utc
 from .backend import Backend, Record
 
 log = logging.getLogger("northstar.agent")
 Interpreter = Callable[[Record, Backend, Record, Record, Record], Awaitable[Decision]]
+
+
+def resolve_requested_time(value: str, now: str) -> str:
+    """Resolve a bounded literal time using only the request-scoped clock.
+
+    Omitted years mean the current calendar year in the requested zone, even
+    when that date has passed. Availability checks decide whether it is bookable.
+    Named DST zones, date-only requests and alternative times require clarification.
+    """
+    text = value.strip()
+    zone = timezone(timedelta(hours=5, minutes=30))
+    match = re.search(r"\s*(IST|UTC|GMT)?([+-]\d{1,2}:\d{2})?\s*$", text, re.I)
+    if match and (match[1] or match[2]):
+        if match[1] and match[1].upper() == "IST" and match[2]:
+            raise ValueError("Contradictory timezone")
+        minutes = 330 if (match[1] or "").upper() == "IST" else 0
+        if match[2]:
+            hours, mins = map(int, match[2][1:].split(":"))
+            if hours > 14 or mins > 59 or (hours == 14 and mins):
+                raise ValueError("Invalid UTC offset")
+            minutes = (hours * 60 + mins) * (1 if match[2][0] == "+" else -1)
+        zone = timezone(timedelta(minutes=minutes))
+        text = text[: match.start()].strip()
+    elif text.endswith("Z"):
+        zone = timezone.utc
+        text = text[:-1]
+    # The suffix is removed first so ISO dates cannot be mistaken for offsets.
+    clock = re.fullmatch(
+        r"(.+?)(?:\s+(?:at\s+)?|T)(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?\s*(AM|PM)?",
+        text,
+        re.I,
+    )
+    if not clock:
+        raise ValueError("One date and exact time required")
+    date_text, hour_text, minute_text, second_text, period = clock.groups()
+    hour, minute = int(hour_text), int(minute_text or "0")
+    second = int(second_text or "0")
+    if minute > 59 or hour > 23 or second > 59:
+        raise ValueError("Invalid clock time")
+    if period:
+        if not 1 <= hour <= 12:
+            raise ValueError("Invalid twelve-hour time")
+        hour = hour % 12 + (12 if period.upper() == "PM" else 0)
+    elif minute_text is None or len(hour_text) != 2:
+        raise ValueError("Use AM/PM or HH:MM")
+    scoped_now = utc(now).astimezone(zone)
+    date_text = date_text.strip().lower()
+    if date_text in {"today", "tomorrow"}:
+        day = scoped_now.date() + timedelta(days=int(date_text == "tomorrow"))
+    elif re.fullmatch(r"\d{4}-\d{2}-\d{2}", date_text):
+        day = datetime.strptime(date_text, "%Y-%m-%d").date()
+    else:
+        date_match = re.fullmatch(r"(\d{1,2})\s+([a-z]+)(?:\s+(\d{4}))?", date_text)
+        month_first = re.fullmatch(r"([a-z]+)\s+(\d{1,2})(?:,?\s+(\d{4}))?", date_text)
+        if date_match:
+            day_text, month_text, year_text = date_match.groups()
+        elif month_first:
+            month_text, day_text, year_text = month_first.groups()
+        else:
+            raise ValueError("Unsupported or ambiguous date")
+        months = {
+            name: index
+            for index, name in enumerate(
+                [
+                    "january",
+                    "february",
+                    "march",
+                    "april",
+                    "may",
+                    "june",
+                    "july",
+                    "august",
+                    "september",
+                    "october",
+                    "november",
+                    "december",
+                ],
+                1,
+            )
+        }
+        months.update({name[:3]: index for name, index in list(months.items())})
+        month = months.get(month_text)
+        if month is None:
+            raise ValueError("Unsupported month")
+        day = datetime(int(year_text or scoped_now.year), month, int(day_text)).date()
+    return (
+        datetime.combine(day, datetime.min.time(), zone)
+        .replace(hour=hour, minute=minute, second=second)
+        .astimezone(timezone.utc)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
+
+
+def normalize_time(decision: Decision, context: Record) -> Decision:
+    if not decision.requested_time:
+        return decision
+    try:
+        if decision.time_mode != "exact":
+            raise ValueError("Conflicting time modes")
+        resolved = resolve_requested_time(decision.requested_time, context["now"])
+        if decision.starts_at and utc(decision.starts_at) != utc(resolved):
+            raise ValueError("Conflicting instants")
+        return decision.model_copy(update={"starts_at": resolved})
+    except (ValueError, TypeError):
+        return decision.model_copy(update={"time_mode": "unclear", "starts_at": ""})
 
 
 async def interpret(
@@ -95,7 +202,16 @@ async def interpret(
         )
     counted = result.context_wrapper.usage
     usage.update(input_tokens=counted.input_tokens, output_tokens=counted.output_tokens)
-    return Decision.model_validate(result.final_output)
+    decision = Decision.model_validate(result.final_output)
+    if decision.time_mode == "exact":
+        request_text = payload["request"]["subject"] + "\n" + payload["request"]["body"]
+        literal = " ".join(decision.requested_time.lower().split())
+        supplied = " ".join(request_text.lower().split())
+        # The SDK extracts a literal; it cannot replace the date, add a year or
+        # invent a timezone before Python resolves the scoped calendar.
+        if not literal or literal not in supplied:
+            decision = decision.model_copy(update={"time_mode": "unclear", "starts_at": ""})
+    return decision
 
 
 def validate_payload(payload: Record) -> None:
@@ -160,7 +276,7 @@ async def process_async(payload: Record, interpreter: Interpreter | None = None)
                 decision = await (interpreter or interpret)(
                     payload, backend, context, policy, usage
                 )
-                outcome = await actions.handle(decision)
+                outcome = await actions.handle(normalize_time(decision, context))
     except Exception as exc:
         # Record only exception type; provider errors can contain request text or credentials.
         log.warning(json.dumps({"event": "processing_failed", "error_type": type(exc).__name__}))

@@ -1,147 +1,123 @@
 <!doctype html>
+
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Northstar · Service desk</title>
-<style>
-:root{font:16px system-ui,sans-serif;color:#183244;background:#f3f6f8}body{max-width:850px;margin:48px auto;padding:0 24px}h1{font-size:36px;margin:8px 0}p{line-height:1.55}.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:#17665e;font-weight:700}.card{background:white;border:1px solid #d6e1e6;border-radius:12px;padding:24px;margin:24px 0}label{display:block;margin:18px 0 8px;font-weight:600}input,textarea{font:inherit;width:100%;box-sizing:border-box;padding:12px;border:1px solid #9bb2be;border-radius:6px}button{cursor:pointer;background:#17665e;color:white;border:0;border-radius:6px;padding:12px 18px;font:inherit}button:disabled{opacity:.5;cursor:wait}.samples{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}.example-group{min-width:0}.example-group h3{font-size:16px;margin:0 0 10px}.example-group ul{list-style:none;padding:0;margin:0}.example-group li{margin:8px 0}.example-group button{width:100%;text-align:left;min-height:44px}h2{font-size:20px;margin:24px 0 8px}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #276d9b;outline-offset:3px}@media(max-width:720px){.samples{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){body{margin:24px auto;padding:0 16px}.card{padding:16px}.samples{grid-template-columns:1fr}h1{font-size:30px}}.samples button{font-size:14px;background:#e4efed;color:#15534d;padding:8px 12px}#run{margin-top:16px}.muted{color:#526b79;font-size:14px}.badge{display:inline-block;background:#e4efed;color:#15534d;border-radius:5px;padding:5px 9px;font-size:13px;font-weight:650}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}summary{cursor:pointer;color:#526b79}#reply{white-space:pre-wrap}li{margin:6px 0}footer{margin:24px 0 40px;font-size:13px;color:#526b79}
-</style>
-</head>
-<body>
-<div class="eyebrow">Northstar field services</div>
-<h1>Record the issue. Arrange service.</h1>
-<p>Record a service issue, request a technician or ask for a service credit. The assistant checks current records and policy before confirming an action.</p>
-<section aria-labelledby="examples-heading">
-<h2 id="examples-heading">Try an example</h2>
-<p class="muted">Choose one to fill in the subject and request, then select Send request.</p>
-<p class="muted" id="demo-clock">Fixed demo time: <time datetime="2030-04-08T09:00:00Z">8 April 2030, 14:30 IST</time> (UTC+05:30). Each submission starts with fresh synthetic records.</p>
-<div class="samples">
-<section class="example-group" aria-labelledby="billing-heading">
-<h3 id="billing-heading">Billing</h3>
-<ul>
-<li><button type="button" data-example="credit">Small credit</button></li>
-<li><button type="button" data-example="approval">Larger credit</button></li>
-<li><button type="button" data-example="missingAmount">Credit without an amount</button></li>
-<li><button type="button" data-example="ineligibleCredit">Credit over invoice total</button></li>
-</ul>
-</section>
-<section class="example-group" aria-labelledby="scheduling-heading">
-<h3 id="scheduling-heading">Scheduling</h3>
-<ul>
-<li><button type="button" data-example="booking">Earliest visit</button></li>
-<li><button type="button" data-example="time">Choose a date and time</button></li>
-<li><button type="button" data-example="unavailableTime">Unavailable time</button></li>
-<li><button type="button" data-example="hazard">Immediate safety concern</button></li>
-</ul>
-</section>
-<section class="example-group" aria-labelledby="tickets-heading">
-<h3 id="tickets-heading">Tickets</h3>
-<ul>
-<li><button type="button" data-example="intake">Record an interruption</button></li>
-<li><button type="button" data-example="intakeBooking">Maintenance and visit</button></li>
-<li><button type="button" data-example="reuseTicket">Use an open ticket</button></li>
-<li><button type="button" data-example="ambiguous">Unclear equipment</button></li>
-</ul>
-</section>
-<section class="example-group" aria-labelledby="messages-heading">
-<h3 id="messages-heading">Messages</h3>
-<ul>
-<li><button type="button" data-example="message">Ticket status</button></li>
-<li><button type="button" data-example="namedMessage">Update for a contact</button></li>
-<li><button type="button" data-example="bookingMessage">Book and write an update</button></li>
-<li><button type="button" data-example="unauthorizedMessage">Update for a contractor</button></li>
-</ul>
-</section>
-</div>
-</section>
-<form id="request" class="card">
-<label for="subject">Subject</label><input id="subject" value="Visit for our reported cooling problem" maxlength="500">
-<label for="body">Request</label><textarea id="body" rows="5" maxlength="15000">I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?</textarea>
-<button id="run">Send request</button>
-<p class="muted">Service credits require a paid invoice and a recorded missed service commitment. Larger credits may need supervisor approval; pending approval does not mean a credit has been applied. Cancellation and rescheduling go to human review. A recorded ticket remains open if booking needs clarification or cannot finish.</p>
-<p class="muted">Ask for a ticket-status or appointment message to copy from the reply. Messages are not sent or saved as drafts. To book and prepare an update in this demo, request both together.</p>
-</form>
-<section class="card" aria-live="polite" aria-busy="false" id="result">
-<span class="badge" id="status">Ready</span><p id="reply">Choose an example or write a request to begin.</p>
-<ul id="evidence"></ul><details id="details" hidden><summary>Response details</summary><pre id="raw"></pre></details>
-</section>
-<footer>Demo only · No real customer visits, payments or messages.</footer>
-<script>
-const examples={
-  "credit": {
-    "subject": "Service credit",
-    "body": "Please apply a $75 service credit to invoice I001 for the delayed response."
-  },
-  "approval": {
-    "subject": "Service credit",
-    "body": "Please credit $150 to I001 for the missed response deadline."
-  },
-  "missingAmount": {
-    "subject": "Credit for our delayed service",
-    "body": "Please apply a service credit to invoice I001 for the delayed response."
-  },
-  "ineligibleCredit": {
-    "subject": "Request for a $600 service credit",
-    "body": "Please apply a $600 service credit to invoice I001 for the delayed response."
-  },
-  "booking": {
-    "subject": "Visit for our reported cooling problem",
-    "body": "I'm following up on ticket T001 for the cooling problem at our loading dock. Could you send someone at the next available time?"
-  },
-  "time": {
-    "subject": "Visit on 8 April at 7:30 pm",
-    "body": "Could a technician come for ticket T001 on 8 April 2030 at 7:30 pm IST?"
-  },
-  "unavailableTime": {
-    "subject": "Visit on 8 April at 5:30 pm",
-    "body": "Could a technician come for ticket T001 on 8 April 2030 at 5:30 pm IST? Please check with me before booking a different time."
-  },
-  "hazard": {
-    "subject": "Smoke from the cooling unit",
-    "body": "There's smoke coming from the cooling unit at our main loading dock. What should we do?"
-  },
-  "intake": {
-    "subject": "Cooling problem at the annex",
-    "body": "The annex cooling unit at Aster Foods Annex Loading Dock has stopped cooling. Please log the problem. We'll arrange a visit later."
-  },
-  "intakeBooking": {
-    "subject": "Maintenance for the annex cooling unit",
-    "body": "We'd like routine maintenance for the cooling unit at our Aster Foods annex. Please send someone at the next available time."
-  },
-  "reuseTicket": {
-    "subject": "Cooling problem at our main loading dock",
-    "body": "HVAC unit 01 at Aster Foods Loading Dock has stopped cooling. Please log the problem against any open ticket for that unit. We will arrange a visit later."
-  },
-  "ambiguous": {
-    "subject": "Cooling unit not working",
-    "body": "The cooling unit by our loading dock isn't working. Can you send someone?"
-  },
-  "message": {
-    "subject": "Service message",
-    "body": "Write a message I can send about the current status of T001."
-  },
-  "namedMessage": {
-    "subject": "Ticket update for Contact 01",
-    "body": "Write a message I can send to our site contact, named \"Contact 01\", about the current status of T001."
-  },
-  "bookingMessage": {
-    "subject": "Service message",
-    "body": "Book T001 at the earliest slot and write an appointment update I can send."
-  },
-  "unauthorizedMessage": {
-    "subject": "Ticket update for our contractor",
-    "body": "Write a message I can send to the contact listed as Unapproved contractor about the current status of T001."
-  }
-};
-document.querySelectorAll('[data-example]').forEach(button=>button.addEventListener('click',()=>{
- const example=examples[button.dataset.example];
- document.getElementById('subject').value=example.subject;
- document.getElementById('body').value=example.body;
- document.getElementById('body').focus();
-}));
-document.getElementById('request').addEventListener('submit',async e=>{
- e.preventDefault();const b=document.getElementById('run'), result=document.getElementById('result');b.disabled=true;result.setAttribute('aria-busy','true');document.getElementById('status').textContent='Investigating';document.getElementById('reply').textContent='Checking the request and current service records…';document.getElementById('evidence').replaceChildren();document.getElementById('details').hidden=true;
- try{const r=await fetch('/demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:document.getElementById('subject').value,body:document.getElementById('body').value})});const data=await r.json();document.getElementById('status').textContent=(data.status||'error').replaceAll('_',' ');document.getElementById('reply').textContent=data.reply||data.error||'The request could not be completed.';for(const ref of data.evidence||[]){if(['visits','escalations','tickets','credits','approvals'].includes(ref.collection)){const li=document.createElement('li');li.textContent=ref.collection+': '+ref.record_id;document.getElementById('evidence').append(li)}}document.getElementById('raw').textContent=JSON.stringify(data,null,2);document.getElementById('details').hidden=false}catch{document.getElementById('status').textContent='Connection failed';document.getElementById('reply').textContent='The demo is unavailable. Please check the local server.'}finally{b.disabled=false;result.setAttribute('aria-busy','false')}
-});
-</script>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Northstar | Service desk</title>
+    <link rel="stylesheet" href="/service_desk.css" />
+    <script defer src="/service_desk.js"></script>
+  </head>
+  <body>
+    <div id="service-desk">
+      <header class="top">
+        <a class="brand" href="/"
+          ><span class="mark" aria-hidden="true">N</span
+          ><span>Northstar<small>Field services</small></span></a
+        >
+        <div class="environment">
+          <span class="dot"></span> Synthetic demo
+          <span class="clock">8 Apr 2030 · 2:30 PM IST</span>
+        </div>
+      </header>
+      <main id="app">
+        <div class="intro">
+          <div>
+            <h1>Service desk</h1>
+            <p>Arrange a visit, request a credit, or write an update.</p>
+          </div>
+          <div class="timezone">
+            Default time zone <strong>IST <span>UTC+05:30</span></strong>
+          </div>
+        </div>
+        <div id="workspace" class="workspace">
+          <aside
+            id="examples"
+            class="examples"
+            aria-labelledby="examples-title"
+          >
+            <div class="section-head">
+              <span class="demo-step">1 · Choose</span>
+              <h2 id="examples-title">Try a demo request</h2>
+              <p class="demo-instructions">
+                Click to fill your request. Then select
+                <strong>Send request</strong>.
+              </p>
+            </div>
+            <button
+              type="button"
+              id="browse-examples"
+              aria-expanded="false"
+              aria-controls="sample-list"
+            >
+              Browse 16 examples <span aria-hidden="true">⌄</span>
+            </button>
+            <div id="sample-list"></div>
+          </aside>
+          <section
+            id="compose-panel"
+            class="compose-panel"
+            aria-labelledby="compose-title"
+          >
+            <div class="section-head">
+              <h2 id="compose-title">Your request</h2>
+              <span class="step">2 · Submit</span>
+            </div>
+            <form id="composer">
+              <label for="subject">Subject</label
+              ><input
+                id="subject"
+                maxlength="500"
+                autocomplete="off"
+                value="Visit for our cooling problem"
+              /><label for="body">Request</label
+              ><textarea required id="body" rows="6" maxlength="15000">
+Book ticket T001 at the earliest available time.</textarea
+              >
+              <div class="form-actions">
+                <span id="selection-note" class="small" role="status"></span
+                ><button type="submit" class="primary" id="run">
+                  Send request <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </form>
+          </section>
+          <section
+            id="response-panel"
+            class="response-panel"
+            aria-labelledby="response-title"
+            aria-busy="false"
+          >
+            <div class="section-head">
+              <h2 id="response-title">Response</h2>
+              <span class="step">3 · Review</span>
+            </div>
+            <div id="result" aria-live="polite">
+              <div class="empty">
+                <div class="empty-symbol" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <path
+                      d="M6 4h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7l-6 3v-3a3 3 0 0 1-2-3V7a3 3 0 0 1 3-3Z"
+                    />
+                    <path d="M7 9h10M7 13h7" />
+                  </svg>
+                </div>
+                <h3>Your response appears here</h3>
+              </div>
+            </div>
+          </section>
+        </div>
+        <p class="footnote">
+          Each submission uses fresh synthetic records. No real customer visits,
+          payments or messages.
+        </p>
+      </main>
+    </div>
+    <div id="toast" role="status"></div>
+  </body>
+</html>

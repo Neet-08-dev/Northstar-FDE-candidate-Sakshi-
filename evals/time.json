@@ -1,0 +1,264 @@
+[
+  {
+    "id": "natural-time-default",
+    "category": "natural-time",
+    "request": {
+      "subject": "Service visit",
+      "body": "Book T001 on 8 april 7:30 PM."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "exact",
+      "requested_time": "8 april 7:30 PM"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "escalations": 0,
+      "reply_contains": [
+        "7:30 PM IST"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "starts_at": "2030-04-08T14:00:00Z"
+    }
+  },
+  {
+    "id": "natural-time-utc",
+    "category": "natural-time",
+    "request": {
+      "subject": "Service visit",
+      "body": "Book T001 on 8 april 14:00 UTC."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "exact",
+      "requested_time": "8 april 14:00 UTC"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "escalations": 0,
+      "reply_contains": [
+        "7:30 PM IST"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "starts_at": "2030-04-08T14:00:00Z"
+    }
+  },
+  {
+    "id": "natural-time-tomorrow",
+    "category": "natural-time",
+    "request": {
+      "subject": "Service visit",
+      "body": "Book T001 on tomorrow at 3:30 PM."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "exact",
+      "requested_time": "tomorrow at 3:30 PM"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "escalations": 0,
+      "reply_contains": [
+        "9 April 2030, 3:30 PM IST"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "starts_at": "2030-04-09T10:00:00Z"
+    }
+  },
+  {
+    "id": "natural-time-rollover",
+    "category": "natural-time",
+    "request": {
+      "subject": "Service visit",
+      "body": "Book T001 on 1 january 7:30 PM."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "exact",
+      "requested_time": "1 january 7:30 PM"
+    },
+    "fixture": {
+      "now": "2030-12-31T20:00:00Z",
+      "patches": [
+        {
+          "collection": "contracts",
+          "id": "CON001",
+          "set": {
+            "ends_at": "2031-12-31"
+          }
+        },
+        {
+          "collection": "technicians",
+          "id": "TECH001",
+          "set": {
+            "available_slots": [
+              "2031-01-01T14:00:00Z"
+            ]
+          }
+        }
+      ]
+    },
+    "expected": {
+      "status": "completed",
+      "new_visits": 1,
+      "escalations": 0,
+      "reply_contains": [
+        "1 January 2031, 7:30 PM IST"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket"
+      ],
+      "starts_at": "2031-01-01T14:00:00Z"
+    }
+  },
+  {
+    "id": "natural-time-ambiguous",
+    "category": "natural-time",
+    "request": {
+      "subject": "Service visit",
+      "body": "Book T001 on 8 april 7:30."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "exact",
+      "requested_time": "8 april 7:30"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "AM or PM"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket",
+        "schedule_visit"
+      ]
+    }
+  },
+  {
+    "id": "natural-time-contradictory",
+    "category": "natural-time",
+    "request": {
+      "subject": "Service visit",
+      "body": "Book T001 on 8 april 7:30 PM IST, actually UTC."
+    },
+    "decision": {
+      "intent": "schedule",
+      "ticket_id": "T001",
+      "time_mode": "exact",
+      "requested_time": "8 april 7:30 PM IST, actually UTC"
+    },
+    "fixture": {},
+    "expected": {
+      "status": "needs_clarification",
+      "new_visits": 0,
+      "escalations": 0,
+      "reply_contains": [
+        "exact time"
+      ],
+      "unchanged_collections": [
+        "approvals",
+        "credits",
+        "drafts",
+        "escalations",
+        "invoices",
+        "tickets",
+        "visits"
+      ],
+      "forbidden_tools": [
+        "create_ticket",
+        "draft_message",
+        "escalate",
+        "issue_credit",
+        "request_approval",
+        "update_ticket",
+        "schedule_visit"
+      ]
+    }
+  }
+]
