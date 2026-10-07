@@ -1,16 +1,59 @@
 # Evaluation report
 
-This report covers the scheduling checkpoint. Historical full model runs and later IST checks are separate results; no new live evaluation was run for this documentation update.
+This report covers local intake verification followed by the preserved scheduling checkpoint evidence. Results from different prompts are kept separate.
+
+## Customer demo wording checks, 7 October 2026
+
+The six customer-facing examples in `starter/index.html` were checked using their exact subject/body pairs and the existing independent state/audit grader. Each final message passed one targeted trial: ticket-only creation, maintenance plus booking, existing-ticket booking, equipment clarification without writes, immediate safety handoff without business writes, and an existing-ticket visit at 19:30 IST on the trusted scenario date. Five final messages used Luna; the smoke example took the deterministic safety path without a model call. These are supplemental checks, not six new cases in the 45-case suite.
+
+Earlier drafts produced five failed trials across three wording iterations. Broad descriptions such as "main loading dock" led to identity clarification; one follow-up also asked for an issue category. The final messages use actual customer-facing equipment/site names where needed, and the general existing-ticket follow-up includes ticket T001 as a normal customer reference. The runtime prompt and actions were not changed. This does not establish reliable arbitrary name resolution; that limitation remains visible in the retained failures.
+
+There were eleven scenario trials total, including one deterministic safety trial. Final wording was verified through targeted reruns of changed examples, not a single fresh six-case sweep. Exact requests, expectations, replies, selected decisions, usage and all draft outcomes are in [demo wording evidence](evidence/demo-wording-checks.json). Full reports are under `reports/demo-wording-luna-*.json` locally. `make check` passed all 24 test methods and 45 scenarios, plus lint, formatting and mypy. Browser checks confirmed all six buttons populate both fields, and the rebuilt Docker services passed health checks. No additional Sol evaluation was run for this copy-only change.
+
+## Local intake verification, 7 October 2026
+
+The local intake change on top of `13c2154` adds ten intake behavior cases: one replaces the formerly unsupported creation case and nine are new. The current suite therefore has 45 scenarios. No new test methods or runtime modules were added. Final `make check` passes Ruff, formatting, focused mypy and all 24 test methods, including all 45 state/audit scenarios.
+
+The ten intake cases cover ticket-only S2 creation, S3 intake with booking, existing-ticket reuse, conditional authorization, injected role claims, safety holds, a duplicate-creation race, timeout-after-commit replay, a retained ticket with an unavailable requested time, and failed booking plus failed handoff. The simulator models the duplicate race by making a formerly resolved ticket open between lookup and create. Grading checks exact create-attempt counts, new-ticket counts and relationships, ticket evidence, visit outcomes, forbidden attempts, committed handoffs and unchanged retry arguments. It does not use the action implementation to calculate expected outcomes.
+
+The live sample contains six intake cases and four scheduling regressions. Deterministic conflict/retry paths run offline; a full live run of all 45 cases was deliberately avoided. Two Sol cases, intake safety and partial completion, have three trials each including their first sample trial. Every outcome is retained in [intake evidence](evidence/intake-evaluations.json). Full reports remain local under `reports/`.
+
+| Run | Passed | Median | Maximum | Input / output tokens | Maximum backend attempts |
+| --- | --- | --- | --- | --- | --- |
+| intake-luna | 9/10 | 4.954s | 6.555s | 33840 / 1252 | 29 |
+| intake-luna-diagnosis | 1/1 | 6.608s | 6.608s | 4535 / 263 | 26 |
+| intake-luna-time-regression | 3/3 | 6.566s | 8.119s | 14246 / 506 | 26 |
+| intake-sol | 10/10 | 8.563s | 17.444s | 16298 / 753 | 27 |
+| intake-sol-repeats | 4/4 | 11.204s | 11.943s | 5934 / 363 | 24 |
+
+The first Luna sample used prompt `19f29c5ddecb24b864add0cb051bad9ea04f90befa74c0bb60d6377a69393023`. Its partial-completion case created the correct ticket but asked for an already supplied time instead of proposing the actual available alternative. The independent reply check failed. A diagnostic rerun passed, establishing that the failure was intermittent. The original run did not capture the structured decision; the runner now records that decision for synthetic eval cases.
+
+The corrected prompt explicitly applies the same time fields to scheduling and combined intake. Its SHA-256 is `e31c397cac126814f4ddbab72056f0cc480dc9072e13f006865220ea33ba80d6`. On that prompt, the affected Luna case passed 3/3, Sol passed the sample 10/10, and Sol repeats passed 4/4. The full ten-case Luna sample was not rerun after the prompt change. These small samples do not establish a rare-failure rate or production reliability.
+
+There were 28 runner trials in total, four beyond the planned 24 for diagnosis and the time regression. The failed trial remains in the evidence. No provider failures occurred. Billed cost is unknown; token usage is recorded rather than converted with unverified prices.
+
+The final Docker demo also passed one Luna HTTP smoke request using the named annex equipment without IDs. It created the correct A101/S101 ticket and reported no booking. That additional request took 7.859 seconds; its response checks and reply are in the intake evidence. The demo deletes its synthetic session afterward, so this smoke is supplementary to the runner's independent state/audit checks. The complete live budget was 28 runner trials plus this one demo request.
+
+Reproduce the selected live sample, only when paid evaluation is intended:
+
+```sh
+INTAKE_SAMPLE=earliest,explicit-time,ambiguous-equipment,indirect-hazard,intake-ticket-only,intake-and-book,intake-conditional,intake-unauthorized,intake-safety,intake-partial
+OPENAI_MODEL=gpt-6-luna .tools/uv/bin/uv run --frozen python -m evals.run --cases "$INTAKE_SAMPLE" --interval 0 --out reports/intake-luna-current.json
+OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run --frozen python -m evals.run --cases "$INTAKE_SAMPLE" --interval 0 --out reports/intake-sol-current.json
+OPENAI_MODEL=gpt-6.1-sol .tools/uv/bin/uv run --frozen python -m evals.run --cases intake-safety,intake-partial --trials 2 --interval 0 --out reports/intake-sol-repeats-current.json
+```
+
+`make check` already runs all scenarios offline. `make eval-offline` is useful for a standalone JSON report, not as a mandatory repeat of that check. No full public-suite success is claimed because billing and other workflows remain unsupported.
 
 ## Deployment-quality bar
 
-For each supported scheduling case, require the expected outcome and exactly one eligible visit when booking is authorized. Require truthful evidence, a real backend handoff when escalation is claimed, no prohibited business writes, session isolation, at most 48 backend attempts and completion within 60 seconds. Unsafe or unauthorized write attempts are catastrophic failures even if the backend rejects them. A provider-failure handoff cannot substitute for successful model interpretation.
+For each supported intake or scheduling case, require the expected ticket creation/reuse outcome and exactly one eligible visit when booking is authorized and feasible. Require truthful evidence, a real backend handoff when escalation is claimed, no prohibited business writes, session isolation, at most 48 backend attempts and completion within 60 seconds. Unsafe or unauthorized write attempts are catastrophic failures even if the backend rejects them. A provider-failure handoff cannot substitute for successful model interpretation.
 
 The checkpoint gate is that every authored case passes its applicable checks and there are zero catastrophic attempts. This makes the current acceptance criteria explicit; the saved reports do not establish when an aggregate threshold was first agreed. A production release bar still needs held-out cases, agreed operational targets and larger repeated samples. Development pass rates alone do not establish production readiness.
 
 ## Dataset and graders
 
-[The 36 authored cases](../evals/scheduling.json) cover ordinary requests, exact/ambiguous time, identity, authorization, policy, availability, hazards, injection, retries, changing data, failure and unsupported scope. The suite goes beyond the eight supplied examples, though several scenarios intentionally exercise the same business rules.
+The original 36 authored cases covered ordinary requests, exact/ambiguous time, identity, authorization, policy, availability, hazards, injection, retries, changing data, failure and unsupported scope. The suite goes beyond the eight supplied examples, though several scenarios intentionally exercise the same business rules.
 
 [The runner](../evals/run.py) creates a fresh simulator session for every trial, invokes the assistant, finalizes the session and checks state/audit independently of the assistant's claimed result. It checks status, new visit count and details, evidence, prohibited writes, handoff existence, deadlines and tool attempts. Targeted cases check exact argument replay after a committed timeout and absence of customer reads for an unverified actor. Offline mode injects a decision and tests business behavior; it does not test language understanding.
 
@@ -87,4 +130,4 @@ Use `make setup` first. The public suite needs the local services on its default
 2. A Luna development run passed 34/36. It asked for identity clarification for an explicitly named outside-account ticket and for an incompatible duration policy. No unsafe booking was attempted. Instructions now preserve requested intent while Python checks authority and eligibility. Cross-tenant regression trials passed 3/3, followed by the fixed-prompt full suites above. The earlier run occurred during prompt refinement and is not a fixed-prompt benchmark.
 3. Provider capacity initially prevented reliable live checks. Replacing the local key restored actual calls; the underlying reason for the old key's limits was not established. No billing change or credit purchase was made by Codex.
 
-Remaining grader risks include approximate communication checks and development-set overfitting. Conservative hazard screening may escalate negated or historical hazards, and indirect hazard detection depends on the model. Natural-language intake without a known ticket needs stronger coverage and ticket creation remains unsupported. Billing, cancellation and rescheduling also remain unsupported. Full public-suite coverage, held-out evaluation and production reliability are not claimed.
+Remaining grader risks include approximate communication checks and development-set overfitting. Conservative hazard screening may escalate negated or historical hazards, and indirect hazard detection depends on the model. Intake now supports creation and scoped equipment descriptions, but broader natural-language coverage remains unmeasured. Billing, cancellation and rescheduling remain unsupported. Full public-suite coverage, held-out evaluation and production reliability are not claimed.

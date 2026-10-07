@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from northstar.api import APIServer
 from northstar.http import request_json
 from starter.actions import Decision
-from starter.orchestration import process_async
+from starter.orchestration import interpret, process_async
 
 CASES = Path(__file__).with_name("scheduling.json")
 
@@ -26,15 +26,22 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
     initial_ids = {v["id"] for v in snapshot["initial"].get("visits", [])}
     new_visits = [v for v in snapshot["state"]["visits"] if v["id"] not in initial_ids]
     audit = snapshot["audit"]
+    old_tickets = {row["id"] for row in snapshot["initial"]["tickets"]}
+    new_tickets = [row for row in snapshot["state"]["tickets"] if row["id"] not in old_tickets]
+    allowed_creates = expected.get("create_attempts", 0)
+    ticket_id = expected.get("ticket_id", "T001")
+    if expected.get("new_tickets") == 1 and len(new_tickets) == 1:
+        ticket_id = new_tickets[0]["id"]
     checks = {
         "status": response["status"] == expected["status"],
+        "ticket_count": len(new_tickets) == expected.get("new_tickets", 0),
+        "create_attempts": sum(e["tool"] == "create_ticket" for e in audit) == allowed_creates,
         "visit_count": len(new_visits) == expected["new_visits"],
         "no_other_business_writes": not any(
             e["tool"]
             in {
                 "issue_credit",
                 "request_approval",
-                "create_ticket",
                 "update_ticket",
                 "draft_message",
             }
@@ -46,7 +53,7 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
     }
     if expected["new_visits"]:
         checks["booking_details"] = bool(new_visits) and all(
-            v["ticket_id"] == "T001"
+            v["ticket_id"] == ticket_id
             and v["starts_at"] == expected.get("starts_at", "2030-04-08T10:00:00Z")
             and v["technician_id"] in {"TECH001", "TECH002"}
             and v["duration_minutes"] == 60
@@ -56,6 +63,35 @@ def check(case: dict, response: dict, snapshot: dict) -> dict[str, bool]:
             {"collection": "visits", "record_id": v["id"]} in response["evidence"]
             and v["id"] in response["reply"]
             for v in new_visits
+        )
+    if expected.get("new_tickets") or expected.get("ticket_id"):
+        tickets = [row for row in snapshot["state"]["tickets"] if row["id"] == ticket_id]
+        checks["ticket_details"] = len(tickets) == 1 and all(
+            row["asset_id"] == expected["ticket_asset_id"]
+            and row["site_id"] == expected["ticket_site_id"]
+            and row["customer_id"] == "C001"
+            and row["severity"] == expected["severity"]
+            and row["status"] in {"open", "in_progress"}
+            and bool(row["summary"].strip())
+            for row in tickets
+        )
+        checks["ticket_evidence"] = {"collection": "tickets", "record_id": ticket_id} in response[
+            "evidence"
+        ] and ticket_id in response["reply"]
+    checks["reply_details"] = all(
+        value in response["reply"] for value in expected.get("reply_contains", [])
+    )
+    if "escalations" in expected:
+        checks["handoff_count"] = len(snapshot["state"]["escalations"]) == expected["escalations"]
+    if expected.get("no_booking_attempt"):
+        checks["no_booking_attempt"] = not any(e["tool"] == "schedule_visit" for e in audit)
+    if expected.get("replay_tool"):
+        attempts = [e for e in audit if e["tool"] == expected["replay_tool"]]
+        checks["exact_replay"] = (
+            len(attempts) == 2
+            and attempts[0]["arguments"] == attempts[1]["arguments"]
+            and sum(e.get("committed", False) for e in attempts) == 1
+            and attempts[1].get("replayed") is True
         )
     if expected.get("queue"):
         checks["real_handoff"] = any(
@@ -103,12 +139,16 @@ async def run_case(case: dict, api_url: str, admin_token: str, offline: bool = T
         "request": {**case["request"], "id": run_id},
     }
 
-    async def fixed(*_: Any) -> Decision:
-        return Decision.model_validate(case["decision"])
+    selected_decision: dict = {}
+
+    async def interpretation(*args: Any) -> Decision:
+        decision = Decision.model_validate(case["decision"]) if offline else await interpret(*args)
+        selected_decision.update(decision.model_dump())
+        return decision
 
     started = time.monotonic()
     try:
-        response = await process_async(payload, interpreter=fixed if offline else None)
+        response = await process_async(payload, interpreter=interpretation)
         snapshot = request_json(
             api_url + "/admin/sessions/" + session["session_id"] + "/finalize", {}, admin_token
         )
@@ -123,6 +163,7 @@ async def run_case(case: dict, api_url: str, admin_token: str, offline: bool = T
             "passed": all(checks.values()),
             "checks": checks,
             "latency_ms": round((time.monotonic() - started) * 1000),
+            "decision": selected_decision,
             "response": response,
             "audit": [
                 {

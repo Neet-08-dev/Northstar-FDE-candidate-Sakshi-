@@ -15,13 +15,16 @@ SAFETY_REPLY = "Move away from the hazard and contact site emergency personnel. 
 
 class Decision(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    intent: Literal["schedule", "clarify", "hazard", "unsupported"]
+    intent: Literal["schedule", "intake", "clarify", "hazard", "unsupported"]
     ticket_id: str = Field(default="", max_length=100)
     site_id: str = Field(default="", max_length=100)
     asset_id: str = Field(default="", max_length=100)
     time_mode: Literal["earliest", "exact", "unclear"] = "unclear"
     starts_at: str = Field(default="", max_length=80)
-    clarification: Literal["identity", "time", "intent"] = "identity"
+    clarification: Literal["identity", "time", "intent", "issue", "conditional"] = "identity"
+    intake_mode: Literal["record_only", "record_and_schedule"] = "record_only"
+    issue_category: Literal["interruption", "maintenance", "unclear"] = "unclear"
+    issue_summary: str = Field(default="", max_length=500)
 
 
 @dataclass(frozen=True)
@@ -44,9 +47,11 @@ def display_time(value: str) -> str:
 
 def clarification(reason: str) -> Outcome:
     questions = {
-        "identity": "Please confirm the ticket ID and site or asset for the service visit.",
+        "identity": "Please confirm the ticket ID, or the site and asset needing service.",
+        "issue": "Please describe whether equipment has stopped working or needs nonurgent maintenance.",
+        "conditional": "Creating a ticket and booking a visit are separate actions. May I retain the ticket if booking cannot be completed?",
         "time": "Please confirm the date, time and timezone, or authorize the earliest available qualified slot.",
-        "intent": "Would you like me to book a service visit for an existing ticket? Please confirm the ticket ID.",
+        "intent": "Would you like me to record a service ticket, book a visit, or both? Please identify the site and asset or existing ticket.",
     }
     return Outcome("needs_clarification", questions[reason])
 
@@ -55,12 +60,15 @@ class Actions:
     def __init__(self, backend: Backend, context: Record, policy: Record):
         self.backend, self.context, self.policy = backend, context, policy
         self.request_id = context["request_id"]
+        self.intake_receipt = ""
+        self.intake_ticket_id = ""
 
     async def handoff(self, queue: str, reason: str, ticket_id: str = "") -> Outcome:
+        ticket_id = ticket_id or self.intake_ticket_id
         args = {"queue": queue, "reason": reason}
         if ticket_id:
             args["ticket_id"] = ticket_id
-        prefix = SAFETY_REPLY + " " if queue == "safety" else ""
+        prefix = (SAFETY_REPLY + " " if queue == "safety" else "") + self.intake_receipt
         try:
             row = await self.backend.call(
                 "escalate",
@@ -93,30 +101,32 @@ class Actions:
         if decision.intent == "unsupported":
             return await self.handoff(
                 "operations",
-                "This assistant currently books visits for existing tickets. This request needs human review.",
+                "This assistant records service tickets and books visits. This request needs human review.",
             )
         if self.context["actor"].get("role") not in {"customer", "dispatcher", "supervisor"}:
-            return Outcome("blocked", "Your current role is not authorized to schedule service.")
-        if not decision.ticket_id:
-            return clarification("identity")
-        if decision.time_mode == "unclear":
-            return clarification("time")
-        if decision.time_mode == "exact":
-            try:
-                utc(decision.starts_at)
-            except (ValueError, TypeError):
-                return clarification("time")
+            return Outcome(
+                "blocked",
+                "Your current role is not authorized to create tickets or schedule service.",
+            )
         try:
+            if decision.intent == "intake":
+                return await self.intake_service(decision)
+            time_question = self._time_question(decision)
+            if not decision.ticket_id:
+                return clarification("identity")
+            if time_question:
+                return time_question
             return await self.schedule_service(decision)
         except BackendError as exc:
             if exc.code in {"RECORD_UNAVAILABLE", "FORBIDDEN", "UNVERIFIED"}:
                 return Outcome(
                     "blocked",
-                    "The requested record is unavailable within your authorized account. Please confirm the reference or contact operations for access verification.",
+                    self.intake_receipt
+                    + "The requested record is unavailable within your authorized account. Please confirm the reference or contact operations for access verification.",
                 )
             return await self.handoff(
                 "operations",
-                "Scheduling could not be confirmed because a tool was unavailable or live state changed. Operations must reconcile any uncertain booking before retrying.",
+                "Service could not be completed because a tool was unavailable or live state changed. Operations must reconcile any uncertain ticket or booking before retrying.",
             )
         except (KeyError, ValueError, TypeError):
             return await self.handoff(
@@ -124,20 +134,47 @@ class Actions:
                 "Current service records or policy need reconciliation before a booking can be confirmed.",
             )
 
+    @staticmethod
+    def _time_question(decision: Decision) -> Outcome | None:
+        if decision.time_mode == "unclear":
+            return clarification("time")
+        if decision.time_mode == "exact":
+            try:
+                utc(decision.starts_at)
+            except (ValueError, TypeError):
+                return clarification("time")
+        return None
+
     async def _eligible(
         self, decision: Decision
     ) -> tuple[Record, Record, Record, list[Record]] | Outcome:
-        b = self.backend
-        ticket = await b.record("tickets", decision.ticket_id)
-        asset = await b.record("assets", ticket["asset_id"])
-        site = await b.record("sites", ticket["site_id"])
-        customer_ids = self.context["actor"]["customer_ids"]
-        if any(row["customer_id"] not in customer_ids for row in [ticket, asset, site]):
-            return Outcome("blocked", "The requested records are outside your authorized account.")
-        if (
-            len({row["customer_id"] for row in [ticket, asset, site]}) != 1
-            or asset["site_id"] != site["id"]
+        ticket = await self.backend.record("tickets", decision.ticket_id)
+        records = await self._service_records(decision, ticket)
+        if isinstance(records, Outcome):
+            return records
+        asset, site, contracts = records
+        rules = self.policy["rules"]["scheduling"]
+        if rules.get("duration_minutes") != 60 or any(
+            rules.get(k) is not True
+            for k in ["require_skill", "require_region", "require_safety_clearance"]
         ):
+            return await self.handoff(
+                "operations", "The current scheduling policy needs human review.", ticket["id"]
+            )
+        return ticket, asset, site, contracts
+
+    async def _service_records(
+        self, decision: Decision, ticket: Record | None = None
+    ) -> tuple[Record, Record, list[Record]] | Outcome:
+        b = self.backend
+        asset = await b.record("assets", ticket["asset_id"] if ticket else decision.asset_id)
+        site = await b.record("sites", ticket["site_id"] if ticket else asset["site_id"])
+        related = [asset, site] + ([ticket] if ticket else [])
+        ticket_id = ticket["id"] if ticket else ""
+        customer_ids = self.context["actor"]["customer_ids"]
+        if any(row["customer_id"] not in customer_ids for row in related):
+            return Outcome("blocked", "The requested records are outside your authorized account.")
+        if len({row["customer_id"] for row in related}) != 1 or asset["site_id"] != site["id"]:
             return await self.handoff(
                 "operations", "Current ticket, asset and site identity records conflict."
             )
@@ -145,17 +182,17 @@ class Actions:
             decision.asset_id and decision.asset_id != asset["id"]
         ):
             return clarification("identity")
-        if asset.get("safety_hold") or ticket.get("severity") == "S1":
+        if asset.get("safety_hold") or (ticket and ticket.get("severity") == "S1"):
             return await self.handoff(
-                "safety", "The asset or ticket requires safety clearance.", ticket["id"]
+                "safety", "The asset or ticket requires safety clearance.", ticket_id
             )
         if asset["status"] != "active" or site["status"] != "active":
             return await self.handoff(
                 "operations",
                 "The asset or site is inactive and requires reconciliation.",
-                ticket["id"],
+                ticket_id,
             )
-        if ticket["status"] not in {"open", "in_progress"}:
+        if ticket and ticket["status"] not in {"open", "in_progress"}:
             return Outcome(
                 "blocked",
                 "This ticket is resolved or unavailable for scheduling. No visit was booked.",
@@ -165,18 +202,10 @@ class Actions:
             return await self.handoff(
                 "operations",
                 "The account needs review before service can be scheduled.",
-                ticket["id"],
+                ticket_id,
             )
         self.policy = await b.call("get_policy")
         b.remember("policy", self.policy["rules"]["version"])
-        rules = self.policy["rules"]["scheduling"]
-        if rules.get("duration_minutes") != 60 or any(
-            rules.get(k) is not True
-            for k in ["require_skill", "require_region", "require_safety_clearance"]
-        ):
-            return await self.handoff(
-                "operations", "The current scheduling policy needs human review.", ticket["id"]
-            )
         now = utc(self.context["now"]).date().isoformat()
         contracts = [
             c
@@ -191,9 +220,79 @@ class Actions:
             return await self.handoff(
                 "operations",
                 "Service coverage is unavailable or expired. Operations must quote or reconcile coverage.",
-                ticket["id"],
+                ticket_id,
             )
-        return ticket, asset, site, contracts
+        return asset, site, contracts
+
+    async def _open_ticket(self, asset_id: str) -> Record | None:
+        rows = [
+            row
+            for row in await self.backend.search("tickets", asset_id)
+            if row["asset_id"] == asset_id and row["status"] in {"open", "in_progress"}
+        ]
+        if len(rows) > 1:
+            raise BackendError("CONFLICTING_OPEN_TICKETS")
+        return rows[0] if rows else None
+
+    async def intake_service(self, decision: Decision) -> Outcome:
+        if not decision.asset_id:
+            return clarification("identity")
+        if decision.issue_category == "unclear" or not decision.issue_summary.strip():
+            return clarification("issue")
+        ticket: Record | None
+        # Explicit ticket references must never turn into permission to create a replacement.
+        if decision.ticket_id:
+            ticket = await self.backend.record("tickets", decision.ticket_id)
+        else:
+            ticket = await self._open_ticket(decision.asset_id)
+        records = await self._service_records(decision, ticket)
+        if isinstance(records, Outcome):
+            return records
+        asset, site, _ = records
+        created = False
+        if ticket is None:
+            args = {
+                "site_id": site["id"],
+                "asset_id": asset["id"],
+                "severity": "S2" if decision.issue_category == "interruption" else "S3",
+                "summary": decision.issue_summary.strip(),
+            }
+            try:
+                ticket = await self.backend.call(
+                    "create_ticket",
+                    **args,
+                    idempotency_key=operation_key(self.request_id, "create_ticket", args),
+                )
+                created = True
+            except BackendError as exc:
+                if exc.code != "DUPLICATE_OPEN_TICKET":
+                    raise
+                # Reconcile one competing creation through scoped records, not error prose.
+                ticket = await self._open_ticket(asset["id"])
+                if ticket is None:
+                    raise BackendError("DUPLICATE_UNRESOLVED") from None
+                records = await self._service_records(decision, ticket)
+                if isinstance(records, Outcome):
+                    return records
+        self.backend.remember("tickets", ticket["id"])
+        self.intake_ticket_id = ticket["id"]
+        self.intake_receipt = (
+            f"{'Created' if created else 'Reused'} ticket {ticket['id']} "
+            f"for asset {asset['id']} at site {site['id']}. "
+        )
+        if decision.intake_mode == "record_only":
+            return Outcome("completed", self.intake_receipt + "No new visit was booked.")
+        question = self._time_question(decision)
+        if question:
+            return Outcome(
+                question.status, self.intake_receipt + "No new visit was booked. " + question.reply
+            )
+        booking = decision.model_copy(update={"intent": "schedule", "ticket_id": ticket["id"]})
+        outcome = await self.schedule_service(booking)
+        # Handoffs already include the receipt, including timeout recovery in orchestration.
+        if self.intake_receipt in outcome.reply:
+            return outcome
+        return Outcome(outcome.status, self.intake_receipt + outcome.reply)
 
     @staticmethod
     def _within_access(site: Record, starts_at: str) -> bool:

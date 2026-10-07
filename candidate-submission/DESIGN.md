@@ -1,21 +1,21 @@
 # Design
 
-This document describes the existing-ticket scheduling checkpoint at runtime commit `071a6f2f97a8fcfff8e2139386be259efa61251e`. Proposed rollout steps and future workflows are identified separately from implemented behavior.
+This document describes the local intake and scheduling slice on top of documentation commit `13c2154` and the earlier scheduling runtime at `071a6f2`. Proposed production rollout steps remain separate from implemented behavior.
 
 ## Workflow and success criteria
 
 Northstar staff receive email and portal requests, then cross-reference customer accounts, equipment, open tickets and technician availability. Customers need a confirmed appointment or a clear next step. Dispatch staff need accurate bookings, and safety/operations staff need recorded handoffs when routine service cannot proceed.
 
-The implemented workflow books a qualified one-hour visit for an existing open ticket. It accepts an explicitly authorized earliest slot or an exact date, time and timezone. It checks identity, coverage, safety and availability before booking. Unclear requests ask for clarification; hazards and unsupported work receive a handoff. See [the evaluation bar](EVALS.md#deployment-quality-bar) for measurable acceptance checks.
+The implemented workflow records or reuses a service ticket and, when requested, books a qualified one-hour visit. Existing-ticket scheduling remains supported. It accepts an explicitly authorized earliest slot or an exact date, time and timezone. It checks identity, coverage, safety and availability before booking. Unclear requests ask for clarification; hazards and unsupported work receive a handoff. See [the evaluation bar](EVALS.md#deployment-quality-bar) for measurable acceptance checks.
 
-A ticket tracks the service problem; a visit tracks its appointment. A ticket ID is an optional customer shortcut. The interpreter can search scoped sites, assets and tickets to resolve descriptions without IDs. The current demo emphasizes explicit IDs, and its generic identity clarification asks for a ticket ID. Natural-language intake is incomplete: the assistant cannot yet create a missing ticket. That limitation should not become a requirement for customers to know internal IDs.
+A ticket tracks the service problem; a visit tracks its appointment. A ticket ID is an optional customer shortcut. The interpreter can search scoped sites, assets and tickets to resolve descriptions without IDs. An unambiguous request to send a technician permits creating a missing ticket. A symptom report alone asks whether to record an issue or book a visit. Intake supports one asset per request and S2 interruptions or S3 nonurgent maintenance. Python maps the interpreted issue category to severity; hazards receive an immediate safety handoff. Existing-ticket severity and status are preserved.
 
 The current assumptions are that the injected session establishes customer identity, the backend provides authoritative records, and scheduling permission comes from the request. The fixed 2030 scenario clock belongs to the assessment. Replies display IST while stored timestamps retain the UTC contract.
 
 Questions for a real customer remain open:
 
 - How do customers identify equipment, and which site labels or serial numbers are familiar to them?
-- When may reporting a fault authorize ticket creation, and when is separate permission to book required?
+- Does the agreed permission rule for technician requests fit the customer's operating process?
 - Who owns each handoff queue, and what acknowledgment can we promise?
 - What request volume, response target and escalation capacity must the service support?
 
@@ -26,7 +26,7 @@ Questions for a real customer remain open:
 | Module | Responsibility |
 | --- | --- |
 | `starter/orchestration.py` | Request validation, model interpretation, read-only investigation, execution budget and final response assembly. |
-| `starter/actions.py` | Scheduling eligibility, stable operation identity, clarification, committed outcomes and handoffs. |
+| `starter/actions.py` | Shared service eligibility, ticket reuse/creation, scheduling, stable operation identity, committed outcomes and handoffs. |
 | `starter/backend.py` | Request-scoped HTTP transport, scoped record lookup, evidence references and exact retries. |
 
 The model handles varied language and candidate record selection. Deterministic code owns authority, relationships, live policy, time validation and writes. Tests inject an interpreter or transport at these interfaces and inspect simulator state independently of the reply. Response formatting stays within the action module.
@@ -45,7 +45,17 @@ Writes are serialized within each request. Retries replay the same complete argu
 
 Execution is bounded to eight SDK turns, 48 backend attempts and a 55-second processing budget. Recovery reserves five seconds and three attempts. Provider retries are disabled. Unresolved or uncertain processing creates an operations handoff when possible; a failed handoff returns an error. The assistant never claims an unconfirmed booking or repair completion.
 
-Billing, credit approvals, ticket creation, cancellation, rescheduling and message drafting are unsupported. They receive a human handoff. Future billing work must enforce exact approval requirements from the live policy; those checks are not claimed as implemented here.
+Billing, credit approvals, existing-ticket severity/status updates, cancellation, rescheduling and message drafting are unsupported. They receive a human handoff. Future billing work must enforce exact approval requirements from the live policy; those checks are not claimed as implemented here.
+
+## Intake execution and partial completion
+
+`Actions.handle(Decision)` remains the action interface. Intake adds an issue category, a bounded factual summary and an explicit ticket-only or ticket-and-booking mode. Shared private checks validate scoped identity, active records, coverage and safety before either workflow writes. Booking-specific policy, slots and technician checks remain in scheduling. Backend transport requires no change.
+
+Intake reuses an open/in-progress ticket for the asset, or creates one using a stable operation key. A duplicate-creation conflict triggers one fresh scoped lookup and eligibility check. Multiple open tickets require reconciliation. Exact retry preserves both arguments and key after a lost response. Explicit inaccessible or resolved ticket references never authorize creating a replacement.
+
+Creation and booking are separate writes. A confirmed ticket remains when booking needs clarification or fails, and its ID and evidence remain in the response and recovery handoff. Missing booking time does not prevent authorized intake. Requests conditioned on successful booking require clarification before writing because the backend has no transaction spanning both actions. A failed handoff returns error rather than claiming a completed escalation.
+
+Authorization to create, issue classification and conditional-request recognition depend on interpretation. The action module independently enforces tenant, role, relationships and live eligibility. Coverage/safety changes between reads and creation remain a race because the backend does not atomically enforce all preconditions. No new top-level runtime modules were added.
 
 ## Observability and rollout
 
@@ -66,6 +76,6 @@ Known limitations include false alarms for negated or historical hazard words, m
 
 The candidate estimates 10 to 20 minutes of planning and about 30 minutes of review per slice, or 40 to 50 minutes combined. This excludes implementation/testing time and is not a measured total assessment duration. The complete total remains unrecorded. Commit timestamps do not establish time worked. No time-saving estimate is claimed.
 
-This checkpoint prioritizes one working scheduling path and independent failure checks. Ticket intake, billing, persistent clarification, production operator controls and held-out evaluation remain deferred. [AI_BUILD_LOG.md](AI_BUILD_LOG.md) records the development workflow and corrections.
+This slice extends the same three modules with ticket intake and retains independent failure checks. Billing, persistent clarification, production operator controls and held-out evaluation remain deferred. [AI_BUILD_LOG.md](AI_BUILD_LOG.md) records the development workflow and corrections.
 
 At 800 requests/day, daily averages alone cannot size the system. A production design would need measured peak concurrency and provider capacity, admission control, explicit queue/deadline behavior, operator handoff capacity and transactional protection for eligibility changes. Load tests and verified pricing would be needed before making throughput or cost commitments. None of those production measurements has been performed.
